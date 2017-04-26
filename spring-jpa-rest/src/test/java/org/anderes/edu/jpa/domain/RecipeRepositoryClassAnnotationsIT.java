@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
                 "classpath:unittest-application-context.xml"
 })
 @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-@UsingDataSet(value = { "/prepare.xls" })
+@UsingDataSet(value = { "/data/prepare.xls" })
 public class RecipeRepositoryClassAnnotationsIT {
 
     @Inject
@@ -46,7 +46,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     
     @Test
     @ShouldMatchDataSet(
-            value = { "/prepare.xls" },
+            value = { "/data/prepare.xls" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void shouldBeFindAll() {
         Iterable<Recipe> recipes = repository.findAll();
@@ -69,7 +69,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     
     @Test
     @ShouldMatchDataSet(
-            value = { "/prepare.xls" },
+            value = { "/data/prepare.xls" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void getRecipesByTitle() {
         final Collection<Recipe> recipes = repository.findByTitleLike("%Spaghetti%");
@@ -98,7 +98,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     }
     
     @Test
-    @ShouldMatchDataSet(value = { "/expected-afterUpdate.xls" },
+    @ShouldMatchDataSet(value = { "/data/expected-afterUpdate.xls" },
             excludeColumns = { "INGREDIENT.ID" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ANNOTATION" }
     )
@@ -120,7 +120,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     }
     
     @Test
-    @ShouldMatchDataSet(value = { "/expected-afterDeleteOne.xls" },
+    @ShouldMatchDataSet(value = { "/data/expected-afterDeleteOne.xls" },
             excludeColumns = { "RECIPE.ADDINGDATE" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void shouldBeDelete() {

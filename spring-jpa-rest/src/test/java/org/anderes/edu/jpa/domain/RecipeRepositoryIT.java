@@ -43,9 +43,9 @@ public class RecipeRepositoryIT {
     }
         
     @Test
-    @UsingDataSet(value = { "/prepare.json" })
+    @UsingDataSet(value = { "/data/prepare.json" })
     @ShouldMatchDataSet(
-            value = { "/prepare.json" },
+            value = { "/data/prepare.json" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void shouldBeFindAll() {
         Iterable<Recipe> recipes = repository.findAll();
@@ -60,7 +60,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @UsingDataSet(value = { "/prepare.xls" })
+    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeOneRecipe() {
         final Recipe recipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
         assertNotNull(recipe);
@@ -68,9 +68,9 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @UsingDataSet(value = { "/prepare.xls" })
+    @UsingDataSet(value = { "/data/prepare.xls" })
     @ShouldMatchDataSet(
-            value = { "/prepare.xls" },
+            value = { "/data/prepare.xls" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void getRecipesByTitle() {
         final Collection<Recipe> recipes = repository.findByTitleLike("%Spaghetti%");
@@ -83,7 +83,7 @@ public class RecipeRepositoryIT {
     
     @Test
     @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/prepare.xls" })
+    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeSaveNewRecipe() {
         // given
         final Recipe newRecipe = RecipeBuilder.buildRecipe();
@@ -101,8 +101,8 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @UsingDataSet(value = { "/prepare.xls" })
-    @ShouldMatchDataSet(value = { "/expected-afterUpdate.xls" },
+    @UsingDataSet(value = { "/data/prepare.xls" })
+    @ShouldMatchDataSet(value = { "/data/expected-afterUpdate.xls" },
             excludeColumns = { "INGREDIENT.ID" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ANNOTATION" }
     )
@@ -125,8 +125,8 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @UsingDataSet(value = { "/prepare.xls" })
-    @ShouldMatchDataSet(value = { "/expected-afterDeleteOne.xls" },
+    @UsingDataSet(value = { "/data/prepare.xls" })
+    @ShouldMatchDataSet(value = { "/data/expected-afterDeleteOne.xls" },
             excludeColumns = { "RECIPE.ADDINGDATE" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
     public void shouldBeDelete() {
@@ -140,7 +140,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @UsingDataSet(value = { "/prepare.xls" })
+    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeFindAllTag() {
         final List<String> tags = repository.findAllTag();
         assertThat(tags, is(notNullValue()));

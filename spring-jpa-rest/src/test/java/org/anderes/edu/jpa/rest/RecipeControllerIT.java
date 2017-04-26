@@ -1,15 +1,13 @@
-package org.anderes.edu.jpa.application;
+package org.anderes.edu.jpa.rest;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -47,7 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
                 "classpath:unittest-security-context.xml"
 })
 @WebAppConfiguration
-@UsingDataSet(value = { "/prepare.xls" })
+@UsingDataSet(value = { "/data/prepare.xls" })
 public class RecipeControllerIT {
 
     @Inject
@@ -76,7 +74,7 @@ public class RecipeControllerIT {
     public void shouldBeAllRecipes() throws Exception {
         MvcResult result = mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON.toString() + ";charset=UTF-8"))
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.*", hasSize(9)))
             .andExpect(jsonPath("$.totalElements", is(2)))
             .andReturn();
@@ -87,8 +85,7 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeOneRecipe() throws Exception {
         
-        MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
-                       .with(httpBasic("user", "password")).accept(APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb").accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
@@ -101,10 +98,22 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeSaveNewRecipe() throws Exception {
         final Recipe recipeToSave = createRecipe();
-        mockMvc.perform(post("/recipes")
-                        .contentType(APPLICATION_JSON)
-                        .content(convertObjectToJsonBytes(recipeToSave)))
+        mockMvc.perform(post("/recipes").with(httpBasic("user", "password"))
+            .contentType(APPLICATION_JSON)
+            .content(convertObjectToJsonBytes(recipeToSave)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("http://localhost/recipes/")))
+            .andReturn();
+    }
+    
+    @Test
+    public void shouldBeDeleteRecipe() throws Exception {
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb"))
+            .andExpect(status().is2xxSuccessful())
+            .andReturn();
+        mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalElements", is(1)))
             .andReturn();
     }
     
