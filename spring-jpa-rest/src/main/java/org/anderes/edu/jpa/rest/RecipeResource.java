@@ -40,10 +40,6 @@ public class RecipeResource extends ResourceSupport {
         return uuid;
     }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
     public RecipeResource setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
         return this;
@@ -55,10 +51,6 @@ public class RecipeResource extends ResourceSupport {
      */
     public Long getLastUpdateTime() {
         return this.lastUpdate.getTime();
-    }
-
-    public Date getAddingDate() {
-        return addingDate;
     }
 
     /**
