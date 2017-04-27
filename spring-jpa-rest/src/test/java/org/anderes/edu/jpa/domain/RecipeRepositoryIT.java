@@ -40,9 +40,11 @@ public class RecipeRepositoryIT {
    
     @Before
     public void setup() {
+        
     }
         
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.json" })
     @ShouldMatchDataSet(
             value = { "/data/prepare.json" },
@@ -60,6 +62,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeOneRecipe() {
         final Recipe recipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
@@ -68,6 +71,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.xls" })
     @ShouldMatchDataSet(
             value = { "/data/prepare.xls" },
@@ -101,6 +105,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.xls" })
     @ShouldMatchDataSet(value = { "/data/expected-afterUpdate.xls" },
             excludeColumns = { "INGREDIENT.ID" },
@@ -125,6 +130,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.xls" })
     @ShouldMatchDataSet(value = { "/data/expected-afterDeleteOne.xls" },
             excludeColumns = { "RECIPE.ADDINGDATE" },
@@ -140,6 +146,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
+    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
     @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeFindAllTag() {
         final List<String> tags = repository.findAllTag();

@@ -1,45 +1,32 @@
 
-package org.anderes.edu.jpa.domain;
-
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+package org.anderes.edu.jpa.rest;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.hateoas.ResourceSupport;
 
-@Entity
-public class Ingredient implements Serializable {
+public class IngredientResource extends ResourceSupport {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Size(min = 0, max = 20)
-    @Column(nullable = true, length = 20)
+    private Long dbId;
     private String quantity;
-    @NotNull @Size(min = 1, max = 80)
-    @Column(nullable = false, length = 80)
     private String description;
-    @Size(min = 0, max = 80)
-    @Column(nullable = true, length = 80)
     private String annotation;
 
-    /*package*/ Ingredient() {
+    IngredientResource(Long id) {
+        super();
+        this.dbId = id;
     }
 
-    public Ingredient(final String quantity, final String description, final String annotation) {
-        super();
+    public IngredientResource(final Long id, final String quantity, final String description, final String annotation) {
+        this(id);
         this.quantity = quantity;
         this.description = description;
         this.annotation = annotation;
+    }
+
+    public Long getDbId() {
+        return dbId;
     }
 
     public String getQuantity() {
@@ -65,10 +52,6 @@ public class Ingredient implements Serializable {
     public void setAnnotation(final String annotation) {
         this.annotation = annotation;
     }
-    
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public int hashCode() {
@@ -86,7 +69,7 @@ public class Ingredient implements Serializable {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        Ingredient rhs = (Ingredient) obj;
+        IngredientResource rhs = (IngredientResource) obj;
         return new EqualsBuilder().append(quantity, rhs.quantity).append(description, rhs.description).append(annotation, rhs.annotation).isEquals();
     }
 

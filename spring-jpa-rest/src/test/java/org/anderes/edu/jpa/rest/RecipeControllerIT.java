@@ -72,11 +72,13 @@ public class RecipeControllerIT {
 
     @Test
     public void shouldBeAllRecipes() throws Exception {
-        MvcResult result = mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
+        MvcResult result = mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("size", "10"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.*", hasSize(9)))
+            .andExpect(jsonPath("$.content", hasSize(2)))
             .andExpect(jsonPath("$.totalElements", is(2)))
+            .andExpect(jsonPath("$.content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
+            .andExpect(jsonPath("$.content[0].links[0].rel", is("self")))
             .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -96,6 +98,14 @@ public class RecipeControllerIT {
     }
     
     @Test
+    public void shouldBeNotFindRecipe() throws Exception {
+        
+        mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047xxx").accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andReturn();
+    }
+    
+    @Test
     public void shouldBeSaveNewRecipe() throws Exception {
         final Recipe recipeToSave = createRecipe();
         mockMvc.perform(post("/recipes").with(httpBasic("user", "password"))
@@ -108,13 +118,63 @@ public class RecipeControllerIT {
     
     @Test
     public void shouldBeDeleteRecipe() throws Exception {
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb"))
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb").with(httpBasic("user", "password")))
             .andExpect(status().is2xxSuccessful())
             .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.totalElements", is(1)))
             .andReturn();
+    }
+    
+    @Test
+    public void shouldBeIngredientsFormOneRecipe() throws Exception {
+        
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients")
+                        .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.*", hasSize(3)))
+            .andReturn();
+        final String content = result.getResponse().getContentAsString();
+        System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeFindOneIngredient() throws Exception {
+        
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101")
+                        .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.*", hasSize(5)))
+            .andExpect(jsonPath("$.dbId", is(101)))
+            .andExpect(jsonPath("$.quantity", is("200-300g")))
+            .andReturn();
+        final String content = result.getResponse().getContentAsString();
+        System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeBadRequestOneIngredient() throws Exception {
+        
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101A")
+                        .accept(APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+        final String content = result.getResponse().getContentAsString();
+        System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeNotFindOneIngredient() throws Exception {
+        
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/1012233")
+                        .accept(APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andReturn();
+        final String content = result.getResponse().getContentAsString();
+        System.out.println(content);
     }
     
     private byte[] convertObjectToJsonBytes(Recipe object) throws IOException {

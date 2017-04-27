@@ -94,7 +94,7 @@ public class Recipe implements Serializable {
 	@Column(nullable = false)
 	private Integer rating = Integer.valueOf(0);
 
-	/*package*/ public Recipe() {
+	/*package*/ Recipe() {
 	    super();
     }
 	
