@@ -6,8 +6,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -19,8 +24,7 @@ import javax.persistence.EntityManager;
 
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
-import org.anderes.edu.jpa.domain.Ingredient;
-import org.anderes.edu.jpa.domain.Recipe;
+import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -107,7 +111,7 @@ public class RecipeControllerIT {
     
     @Test
     public void shouldBeSaveNewRecipe() throws Exception {
-        final Recipe recipeToSave = createRecipe();
+        final RecipeResource recipeToSave = createRecipe();
         mockMvc.perform(post("/recipes").with(httpBasic("user", "password"))
             .contentType(APPLICATION_JSON)
             .content(convertObjectToJsonBytes(recipeToSave)))
@@ -148,7 +152,7 @@ public class RecipeControllerIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.*", hasSize(5)))
-            .andExpect(jsonPath("$.dbId", is(101)))
+            .andExpect(jsonPath("$.resourceId", is(101)))
             .andExpect(jsonPath("$.quantity", is("200-300g")))
             .andReturn();
         final String content = result.getResponse().getContentAsString();
@@ -177,23 +181,17 @@ public class RecipeControllerIT {
         System.out.println(content);
     }
     
-    private byte[] convertObjectToJsonBytes(Recipe object) throws IOException {
+    private byte[] convertObjectToJsonBytes(RecipeResource object) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         return mapper.writeValueAsBytes(object);
     }
     
-    private Recipe createRecipe() {
-        final Recipe recipe = new Recipe(UUID.randomUUID().toString());
-        recipe.setTitle("Neues Rezept vom Junit-Test");
-        recipe.setPreamble("Da gibt es einiges zu sagen");
-        recipe.setAddingDate(december(24, 2014));
-        recipe.setLastUpdate(december(29, 2014));
-        recipe.setNoOfPerson("2");
-        recipe.setPreparation("Die Zubereitung ist einfach");
-        recipe.setRating(4);
-        recipe.addIngredient(new Ingredient("100g", "Mehl", "Bioqualität"));
-        recipe.addIngredient(new Ingredient("2", "Tomaten", "Bioqualität"));
+    private RecipeResource createRecipe() {
+        final RecipeResource recipe = new RecipeResource(UUID.randomUUID().toString());
+        recipe.setTitle("Neues Rezept vom Junit-Test").setPreamble("Da gibt es einiges zu sagen")
+            .setAddingDate(december(24, 2014)).setLastUpdate(december(29, 2014)).setNoOfPerson("2")
+            .setPreparation("Die Zubereitung ist einfach").setRating(4).addTag("pasta").addTag("new");
         return recipe;
     }
 

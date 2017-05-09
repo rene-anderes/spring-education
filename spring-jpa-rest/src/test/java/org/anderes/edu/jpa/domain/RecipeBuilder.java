@@ -1,7 +1,7 @@
 package org.anderes.edu.jpa.domain;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 
@@ -32,9 +32,7 @@ public class RecipeBuilder {
 		recipe.addIngredient(new Ingredient("etwas", "Pfeffer", "schwarz"));
 	}
 	
-	private static Date december(int day, int year) {
-	    final Calendar cal = Calendar.getInstance();
-	    cal.set(year, Calendar.DECEMBER, day);
-	    return cal.getTime();
-	}
+	private static LocalDateTime december(int day, int year) {
+        return LocalDateTime.of(year, Month.DECEMBER, day, 0, 0);
+    }
 }

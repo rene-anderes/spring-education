@@ -1,8 +1,13 @@
 package org.anderes.edu.jpa.rest;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +16,9 @@ import javax.inject.Inject;
 
 import org.anderes.edu.jpa.domain.Recipe;
 import org.anderes.edu.jpa.domain.RecipeRepository;
+import org.anderes.edu.jpa.rest.dto.IngredientResource;
+import org.anderes.edu.jpa.rest.dto.RecipeResource;
+import org.anderes.edu.jpa.rest.dto.RecipeShortResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +29,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 @RequestMapping("recipes")
@@ -33,7 +39,7 @@ public class RecipeController {
     @Inject 
     private RecipeRepository repository;
     
-    @RequestMapping(method = GET, produces={APPLICATION_JSON_VALUE})
+    @RequestMapping(method = GET, produces = { APPLICATION_JSON_VALUE })
     public Page<RecipeShortResource> showRecipeShort(Pageable pageable) {
         final Page<Recipe> collection = repository.findAll(pageable);
         
@@ -48,7 +54,7 @@ public class RecipeController {
         return new PageImpl<RecipeShortResource>(content, pageable, content.size());
     }
 
-    @RequestMapping(method = GET, value = "{id}")
+    @RequestMapping(method = GET, value = "{id}", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<RecipeResource> showOneRecipe(@PathVariable("id") String recipeId) {
         final Recipe findRecipe = repository.findOne(recipeId);
         if (findRecipe == null) {
@@ -57,8 +63,8 @@ public class RecipeController {
         final RecipeResource recipeResource = new RecipeResource(findRecipe.getUuid());
         recipeResource.setTitle(findRecipe.getTitle()).setPreamble(findRecipe.getPreamble())
             .setNoOfPerson(findRecipe.getNoOfPerson()).setPreparation(findRecipe.getPreparation())
-            .setAddingDate(findRecipe.getAddingDate()).setLastUpdate(findRecipe.getLastUpdate())
-            .setRating(findRecipe.getRating()).setVersion(findRecipe.getVersion());
+            .setAddingDate(new Date(findRecipe.getAddingDateTime())).setLastUpdate(new Date(findRecipe.getLastUpdateTime()))
+            .setRating(findRecipe.getRating());
         findRecipe.getTags().stream().forEach(t -> recipeResource.addTag(t));
         
         final Link linkRel = linkTo(RecipeController.class)
@@ -72,15 +78,16 @@ public class RecipeController {
     
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = DELETE, value = "{id}")
-    public ResponseEntity<?> deleteRecipe(@PathVariable("id") Recipe recipe) {
-        repository.delete(recipe.getUuid());
+    public ResponseEntity<?> deleteRecipe(@PathVariable("id") String resourceId) {
+        repository.delete(resourceId);
         return ResponseEntity.ok().build();
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping(method = POST, consumes={APPLICATION_JSON_VALUE}, produces={APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> saveRecipe(@RequestBody Recipe recipe) {
-        
+    @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE }, produces = { APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
+        final Recipe recipe = new Recipe();
+        DtoMapper.map(newResource, recipe);
         final Recipe result = repository.save(recipe);
         final URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest().path("/{id}")
@@ -89,7 +96,7 @@ public class RecipeController {
         return ResponseEntity.created(location).build();
     }
     
-    @RequestMapping(method = GET, value = "{id}/ingredients")
+    @RequestMapping(method = GET, value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<List<IngredientResource>> showIngredients(@PathVariable("id") String recipeId) {
         final Recipe findRecipe = repository.findOne(recipeId);
         if (findRecipe == null) {
@@ -100,20 +107,20 @@ public class RecipeController {
                         .collect(Collectors.toList());
         resources.stream().forEach(r -> {
             final Link linkSelfRel = linkTo(RecipeController.class)
-                            .slash(findRecipe.getUuid()).slash("ingredients").slash(r.getDbId()).withSelfRel();
+                            .slash(findRecipe.getUuid()).slash("ingredients").slash(r.getResourceId()).withSelfRel();
             r.add(linkSelfRel);
         });
         return ResponseEntity.ok().body(resources);
     }
     
-    @RequestMapping(method = GET, value = "{id}/ingredients/{imageId}")
-    public HttpEntity<IngredientResource> showOneIngredient(@PathVariable("id") String recipeId, @PathVariable("imageId") Long imageId) {
+    @RequestMapping(method = GET, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
+    public HttpEntity<IngredientResource> showOneIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") Long ingredientId) {
         final Recipe findRecipe = repository.findOne(recipeId);
         if (findRecipe == null) {
             return ResponseEntity.notFound().build();
         }
         final Optional<IngredientResource> resource = findRecipe.getIngredients().stream()
-                        .filter(i -> i.getId() == imageId)
+                        .filter(i -> i.getId() == ingredientId)
                         .map(i -> new IngredientResource(i.getId(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
                         .findFirst();
         if (resource.isPresent()) {

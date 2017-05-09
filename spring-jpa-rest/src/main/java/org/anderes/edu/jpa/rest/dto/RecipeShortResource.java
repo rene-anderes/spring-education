@@ -1,4 +1,4 @@
-package org.anderes.edu.jpa.rest;
+package org.anderes.edu.jpa.rest.dto;
 
 import org.springframework.hateoas.ResourceSupport;
 

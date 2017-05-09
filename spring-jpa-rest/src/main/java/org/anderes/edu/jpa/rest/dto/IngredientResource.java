@@ -1,5 +1,5 @@
 
-package org.anderes.edu.jpa.rest;
+package org.anderes.edu.jpa.rest.dto;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -8,14 +8,14 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class IngredientResource extends ResourceSupport {
 
-    private Long dbId;
+    private Long resourceId;
     private String quantity;
     private String description;
     private String annotation;
 
-    IngredientResource(Long id) {
+    IngredientResource(Long resourceId) {
         super();
-        this.dbId = id;
+        this.resourceId = resourceId;
     }
 
     public IngredientResource(final Long id, final String quantity, final String description, final String annotation) {
@@ -25,8 +25,8 @@ public class IngredientResource extends ResourceSupport {
         this.annotation = annotation;
     }
 
-    public Long getDbId() {
-        return dbId;
+    public Long getResourceId() {
+        return resourceId;
     }
 
     public String getQuantity() {

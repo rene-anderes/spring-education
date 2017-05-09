@@ -1,4 +1,4 @@
-package org.anderes.edu.jpa.rest;
+package org.anderes.edu.jpa.rest.dto;
 
 import java.util.Collections;
 import java.util.Date;
@@ -13,7 +13,6 @@ import org.springframework.hateoas.ResourceSupport;
 public class RecipeResource extends ResourceSupport {
 	
 	private String uuid;
-	private Integer version;
 	private Date lastUpdate = new Date();
     private Date addingDate = new Date();
 	private String title;
@@ -31,10 +30,6 @@ public class RecipeResource extends ResourceSupport {
         this();
         this.uuid = uuid;
     }
-
-	public Integer getVersion() {
-		return version;
-	}
 
 	public String getUuid() {
         return uuid;
@@ -123,10 +118,6 @@ public class RecipeResource extends ResourceSupport {
     public RecipeResource setRating(Integer rating) {
         this.rating = rating;
         return this;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     @Override

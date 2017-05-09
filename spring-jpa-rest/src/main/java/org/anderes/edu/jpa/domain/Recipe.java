@@ -1,16 +1,19 @@
 package org.anderes.edu.jpa.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -19,8 +22,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Version;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -48,14 +49,12 @@ public class Recipe implements Serializable {
 	private Integer version;
 	
 	@NotNull
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
-	private Date lastUpdate = new Date();
+	@Convert(converter = LocalDateTimeConverter.class)
+	private LocalDateTime lastUpdate = LocalDateTime.now();
 	
 	@NotNull
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable = false)
-    private Date addingDate = new Date();
+	@Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime addingDate = LocalDateTime.now();
 
 	@NotNull
     @Size(min = 1, max = 80)
@@ -67,7 +66,7 @@ public class Recipe implements Serializable {
 	@Column(nullable = true)
 	private Image image;
 
-	@NotNull @Valid @Size(min = 1, max = 100)
+	@NotNull @Valid
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "RECIPE_ID")
 	private List<Ingredient> ingredients = new ArrayList<Ingredient>();
@@ -94,8 +93,9 @@ public class Recipe implements Serializable {
 	@Column(nullable = false)
 	private Integer rating = Integer.valueOf(0);
 
-	/*package*/ Recipe() {
+	public Recipe() {
 	    super();
+	    this.uuid = UUID.randomUUID().toString();
     }
 	
 	public Recipe(final String uuid) {
@@ -119,11 +119,11 @@ public class Recipe implements Serializable {
         return uuid;
     }
 
-    public Date getLastUpdate() {
+    public LocalDateTime getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLastUpdate(Date lastUpdate) {
+    public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
     
@@ -132,10 +132,10 @@ public class Recipe implements Serializable {
      * @return time
      */
     public Long getLastUpdateTime() {
-        return this.lastUpdate.getTime();
+        return this.lastUpdate.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
     }
 
-    public Date getAddingDate() {
+    public LocalDateTime getAddingDate() {
         return addingDate;
     }
 
@@ -144,10 +144,10 @@ public class Recipe implements Serializable {
      * @return time
      */
     public Long getAddingDateTime() {
-        return this.addingDate.getTime();
+        return this.addingDate.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
     }
     
-    public void setAddingDate(Date addingDate) {
+    public void setAddingDate(LocalDateTime addingDate) {
         this.addingDate = addingDate;
     }
 
