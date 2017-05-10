@@ -18,6 +18,19 @@
     <context:annotation-config />
     <context:component-scan base-package="org.anderes.edu.jpa.rest" />
     
+    <mvc:annotation-driven>
+        <mvc:argument-resolvers>
+            <!-- Pageable für die REST-Schnittstelle -->
+            <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver" />
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+    
+    <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/list.html" view-name="list"/>
+    
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    
     <!-- using Spring HATEOAS -->
     <bean class="org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration" />
 
@@ -35,17 +48,5 @@
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    
-    <mvc:annotation-driven>
-        <mvc:argument-resolvers>
-            <!-- Pageable für die REST-Schnittstelle -->
-            <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver" />
-        </mvc:argument-resolvers>
-    </mvc:annotation-driven>
-    
-    <mvc:view-controller path="/" view-name="index"/>
-    
-    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
-    <mvc:resources mapping="/resources/**" location="/resources/" />
     
 </beans>
