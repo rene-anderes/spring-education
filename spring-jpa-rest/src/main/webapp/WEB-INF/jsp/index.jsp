@@ -27,6 +27,7 @@
 				    <p id="ingredients"></p>
 				    <h3>Zubereitung</h3>
 				    <p id="preparation"></p>
+				    <p>Rating <span class="w3-badge" id="rating"></span></p>
 				    <p class="w3-tiny">
 				    	Erfasst: <span id="adding"></span><br>
 				    	Aktualisiert: <span id="update"></span><br>
@@ -107,11 +108,12 @@
 				$("#recipe #preamble").html( recipe.preamble );
 				$("#recipe #noofperson").text( recipe.noOfPerson );
 				$("#recipe #preparation").html( recipe.preparation );
+				$("#recipe #rating").html( recipe.rating );
 				$("#recipe #adding").text( cookbook.formatDate(recipe.addingDateTime) );
 				$("#recipe #update").text( cookbook.formatDate(recipe.lastUpdateTime) );
 				$("#tags span").remove();
 				$.each( recipe.tags, function(idx, tag) {
-            		$("#tags").append("<span>" + tag + "&nbsp;</span>");
+            		$("#tags").append("<span class='w3-tag'>" + tag + "</span>&nbsp;");
         		});
 				
 			},
