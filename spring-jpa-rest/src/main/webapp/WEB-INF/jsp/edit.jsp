@@ -24,8 +24,9 @@
 		<h1>Web-Application "spring-jpa-rest"</h1>
 		<div id="recipe">
 			<form class="w3-container">
+				<input type="hidden" id="uuid" name="uuid">
 				<div class="w3-panel">
-					<input class="w3-input" type="text" id="title" name="title">
+					<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
 					<label class="w3-text-gray">Title</label>
 				</div>
 				<div class="w3-panel">
@@ -34,35 +35,16 @@
 				</div>
 				<div class="w3-panel">
 					<label class="w3-text-gray">Zutaten für</label>
-					<input class="w3-input" type="text" id="noOfPerson" name="noOfPerson">
+					<input class="w3-input" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
 					<label class="w3-text-gray">Personen</label>
 				</div>
 				<div class="w3-panel">
-					<h3>Zutaten</h3>
-				</div>
-				
-				<div class="w3-panel">
-					<ul class="w3-ul" style="width:75%">
-						<li id="ingredient">
-							<div class="w3-row">
-								<div class="w3-col s3">
-									<input class="w3-input" type="text" id="quantity" name="quantity">
-									<label class="w3-text-gray">Quantity</label>
-								</div>
-								<div class="w3-col s4">
-									<input class="w3-input" type="text" id="description" name="description">
-									<label class="w3-text-gray">Description</label>
-								</div>
-								<div class="w3-col s4">
-									<input class="w3-input" type="text" id="annotation" name="annotation">
-									<label class="w3-text-gray">Annotation</label>
-								</div>
-								<div class="w3-col s1">
-									<span onclick="removeIngredient(this)" class="w3-button w3-white w3-xlarge w3-right">&times;</span>
-								</div>
-							</div> 
-						</li>
+					<ul class="w3-ul w3-light-gray" id="ingredients">
+						<li><h3>Zutaten</h3></li>
 					</ul>
+				</div>
+				<div class="w3-panel">
+					<button class="w3-button w3-black" onclick="addIngredient()">add</button>
 				</div>
 				<div class="w3-panel">
 					<textarea name="preparation" id="preparation"></textarea>
@@ -87,13 +69,13 @@
 	</div>
 	
 	<script>
-		function handleRecipe( url ) {
+		function getRecipe( url ) {
 			$.getJSON( url )
 				.done( function( recipe ) { 
 					buildRecipe( recipe );
 					$.each(recipe.links, function( idx, link ) {
 						if (link.rel == "ingredients") {
-							//getIngredients( link.href );	
+							getIngredients( link.href );	
 						}
 					});
 				})
@@ -103,14 +85,91 @@
  				})
 		}
 		
+		function getIngredients( url ) {
+			$.getJSON( url )
+				.done( function( ingredients ) {
+					$.each( ingredients, function( idx, ingredient ) {
+						buildIngredient( ingredient );	
+		        	});
+				})
+				.fail( function( xhr, status, error ) {
+   				    var err = status + ", " + error;
+  					console.log( "Request Failed: " + err );
+  				})
+		}
+		
+		function buildIngredient( ingredient ) {
+			console.log(ingredient.description);	
+
+			li = $( "<li class='ingredient'>");
+			li.attr({
+				"id": ingredient.resourceId
+			});
+			li.appendTo( $("#ingredients" ));
+			
+			rowDiv = $("<div class='w3-row-padding'>");
+			rowDiv.appendTo( li );
+			
+			/* ---------- Quantity */
+			colQuantity = $("<div class='w3-col s3'>");
+			colQuantity.appendTo( rowDiv );
+			inputQuantity = $("<input class='w3-input' type='text' min='1' max='255' name='quantity'>");
+			if ( ingredient.quantity ) {
+				inputQuantity.val( ingredient.quantity );
+			}
+			inputQuantity.appendTo( colQuantity );
+			labelQuantity = $("<label class='w3-text-gray'>");
+			labelQuantity.text( "Quantity" );
+			labelQuantity.appendTo( colQuantity );
+			
+			/* ---------- Description */
+			colDescription = $("<div class='w3-col s4'>");
+			colDescription.appendTo( rowDiv );
+			inputDescription = $("<input class='w3-input' type='text' min='1' max='255' required name='description'>");
+			if ( ingredient.description ) {
+				inputDescription.val( ingredient.description );
+			}
+			inputDescription.appendTo( colDescription );
+			labelDescription = $("<label class='w3-text-gray'>");
+			labelDescription.text( "Description" );
+			labelDescription.appendTo( colDescription );
+			
+			/* ---------- Annotation */
+			colAnnotation = $("<div class='w3-col s4'>");
+			colAnnotation.appendTo( rowDiv );
+			inputAnnotation = $("<input class='w3-input' type='text' min='1' max='255' name='description'>");
+			if ( ingredient.annotation ) {
+				inputAnnotation.val( ingredient.annotation );
+			}
+			inputAnnotation.appendTo( colAnnotation );
+			labelAnnotation = $("<label class='w3-text-gray'>");
+			labelAnnotation.text( "Annotation" );
+			labelAnnotation.appendTo( colAnnotation );
+			
+			/* ---------- Remove-Button */
+			colRemove = $("<div class='w3-col s1'>");
+			colRemove.appendTo( rowDiv );
+			spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right  w3-light-gray'>&times;</span>")
+			spanRemove.appendTo( colRemove );
+			spanRemove.click( function() {
+				if (ingredient.resourceId) {
+					removeIngredient( ingredient.resourceId );
+				} else {
+					console.log("should be remove ...");
+					spanRemove.closest( $( ".ingredient" ) ).remove();
+				}	
+			})
+		}
+		
 		function buildRecipe( recipe ) {
+			$( "#recipe #uuid").val( recipe.uuid );
 			$( "#recipe #title" ).val( recipe.title );
 			$( "#recipe #preamble" ).val( recipe.preamble );
 			$( "#recipe #noOfPerson" ).val( recipe.noOfPerson );
 			$( "#recipe #preparation" ).val( recipe.preparation );
 			
 			$.each( recipe.tags, function( idx, tag ) {
-				$("#tags").tagEditor("addTag", tag, false);
+				$( "#tags" ).tagEditor( "addTag", tag, false );
         	});
 			console.log( "recipe: " + recipe.title );
 		}
@@ -121,10 +180,20 @@
 			return k ? p[k] : p;
 		}
 		
-		function removeIngredient( object ) {
-			console.log("Action here .....");
+		function removeIngredient( resourceId ) {
+			console.log( "ResourceId: " + resourceId );
+			$( ".ingredient#" + resourceId ).fadeOut( "fast", function() {
+				$( ".ingredient" ).each( function( index ){
+					console.log( index + ": " + $( this ).attr( "id" ) + " | Hidden: " + $( this ).is(":hidden") );
+				});
+			});
 		}
 	
+		function addIngredient() {
+			ingredient = {};
+			buildIngredient( ingredient )
+		}
+		
 		$(function() {
 			$('#tags').tagEditor({
 			    autocomplete: {
@@ -145,7 +214,7 @@
 			$id = getRequestParams( "id" );
 			console.log( "id: " + $id );
 			$url = "recipes/" + $id;
-			handleRecipe( $url );
+			getRecipe( $url );
 		});
 	</script>
 </body>
