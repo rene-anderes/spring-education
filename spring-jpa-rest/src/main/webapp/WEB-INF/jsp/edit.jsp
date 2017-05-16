@@ -8,6 +8,12 @@
 	<script type="text/javascript" src="resources/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="resources/ckeditor/ckeditor.js"></script>
 	<script type="text/javascript" src="resources/ckeditor/adapters/jquery.js"></script>
+	<script type="text/javascript" src="resources/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="resources/jquery.tag-editor.min.js"></script>
+	<script type="text/javascript" src="resources/jquery.caret.min.js"></script>
+	
+	<link rel="stylesheet" href="resources/jquery-ui.min.css">
+	<link rel="stylesheet" href="resources/jquery.tag-editor.css">
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<title>Edit</title>
@@ -63,6 +69,10 @@
 					<label class="w3-text-gray">Preparation</label>
 				</div>
 				<div class="w3-panel">
+					<textarea name="tags" id="tags"></textarea>
+					<label class="w3-text-gray">Tags</label>
+				</div>
+				<div class="w3-panel">
 					<div class="w3-row-padding">
 						<input class="w3-radio" type="radio" name="rating" value="1" checked><label>1 Stern</label>
 						<input class="w3-radio" type="radio" name="rating" value="2" checked><label>2 Sterne</label>
@@ -98,6 +108,10 @@
 			$( "#recipe #preamble" ).val( recipe.preamble );
 			$( "#recipe #noOfPerson" ).val( recipe.noOfPerson );
 			$( "#recipe #preparation" ).val( recipe.preparation );
+			
+			$.each( recipe.tags, function( idx, tag ) {
+				$("#tags").tagEditor("addTag", tag, false);
+        	});
 			console.log( "recipe: " + recipe.title );
 		}
 		
@@ -112,6 +126,14 @@
 		}
 	
 		$(function() {
+			$('#tags').tagEditor({
+			    autocomplete: {
+			        delay: 0, // show suggestions immediately
+			        position: { collision: 'flip' }, // automatic menu position up/down
+			        source: ['vegetarisch', 'pasta', 'winter', 'hauptspeise', 'dessert']
+			    },
+			    forceLowercase: true
+			});
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
