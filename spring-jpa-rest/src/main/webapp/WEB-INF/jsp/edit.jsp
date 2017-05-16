@@ -99,7 +99,6 @@
 		}
 		
 		function buildIngredient( ingredient ) {
-			console.log(ingredient.description);	
 
 			li = $( "<li class='ingredient'>");
 			li.attr({
@@ -182,7 +181,7 @@
 		}
 		
 		function removeIngredient( resourceId ) {
-			console.log( "ResourceId: " + resourceId );
+			console.log( "remove ResourceId: " + resourceId );
 			$( ".ingredient#" + resourceId ).fadeOut( "fast", function() {
 				$( ".ingredient" ).each( function( index ){
 					console.log( index + ": " + $( this ).attr( "id" ) + " | Hidden: " + $( this ).is(":hidden") );
