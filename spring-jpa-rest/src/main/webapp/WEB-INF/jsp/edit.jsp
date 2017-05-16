@@ -155,8 +155,9 @@
 				if (ingredient.resourceId) {
 					removeIngredient( ingredient.resourceId );
 				} else {
-					console.log("should be remove ...");
-					spanRemove.closest( $( ".ingredient" ) ).remove();
+					$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
+						$( this ).closest( $( ".ingredient" ) ).remove();
+					});
 				}	
 			})
 		}
