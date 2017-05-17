@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,10 +21,10 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
+import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.junit.After;
 import org.junit.Before;
@@ -54,8 +55,6 @@ public class RecipeControllerIT {
 
     @Inject
     private WebApplicationContext ctx;
-    @Inject
-    private EntityManager manager;
     private MockMvc mockMvc;
     
     @Inject @Rule 
@@ -71,7 +70,7 @@ public class RecipeControllerIT {
 
     @After
     public void tearDown() throws Exception {
-        manager.clear();
+
     }
 
     @Test
@@ -113,16 +112,30 @@ public class RecipeControllerIT {
     public void shouldBeSaveNewRecipe() throws Exception {
         final RecipeResource recipeToSave = createRecipe();
         mockMvc.perform(post("/recipes").with(httpBasic("user", "password"))
-            .contentType(APPLICATION_JSON)
-            .content(convertObjectToJsonBytes(recipeToSave)))
+                .contentType(APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(recipeToSave)))
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", containsString("http://localhost/recipes/")))
             .andReturn();
     }
     
     @Test
+    public void shouldBeUpdateRecipe() throws Exception {
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
+                        .accept(APPLICATION_JSON).with(httpBasic("user", "password")))
+                        .andExpect(status().isOk()).andReturn();
+        final ObjectMapper mapper = new ObjectMapper();
+        final RecipeResource resource = mapper.readValue(result.getResponse().getContentAsString(), RecipeResource.class);
+        resource.setRating(3);
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb").content(convertObjectToJsonBytes(resource))
+                        .contentType(APPLICATION_JSON).with(httpBasic("user", "password")))
+            .andExpect(status().isOk()).andReturn();
+    }
+    
+    @Test
     public void shouldBeDeleteRecipe() throws Exception {
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb").with(httpBasic("user", "password")))
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7").with(httpBasic("user", "password")))
             .andExpect(status().is2xxSuccessful())
             .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
@@ -164,8 +177,8 @@ public class RecipeControllerIT {
         
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101A")
                         .accept(APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn();
+                        .andExpect(status().isBadRequest())
+                        .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
     }
@@ -175,16 +188,34 @@ public class RecipeControllerIT {
         
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/1012233")
                         .accept(APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-            .andReturn();
+                        .andExpect(status().isNotFound())
+                        .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeSaveNewIngredient() throws Exception {
+        
+        final IngredientResource newIngredient = new IngredientResource("1g", "Salz", "beliebig");
+        mockMvc.perform(post("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients").with(httpBasic("user", "password"))
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(newIngredient)))
+                        .andExpect(status().isCreated())
+                        .andExpect(header().string("Location", containsString("http://localhost/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/1")))
+                        .andReturn();
     }
     
     private byte[] convertObjectToJsonBytes(RecipeResource object) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         return mapper.writeValueAsBytes(object);
+    }
+    
+    private String convertObjectToJsonBytes(IngredientResource object) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+        return mapper.writeValueAsString(object);
     }
     
     private RecipeResource createRecipe() {

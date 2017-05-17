@@ -1,8 +1,10 @@
 package org.anderes.edu.jpa.rest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.anderes.edu.jpa.domain.Ingredient;
 import org.anderes.edu.jpa.domain.Recipe;
 import org.anderes.edu.jpa.domain.RecipeRepository;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
@@ -24,6 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,7 +88,7 @@ public class RecipeController {
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE }, produces = { APPLICATION_JSON_VALUE })
+    @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
         final Recipe recipe = new Recipe();
         DtoMapper.map(newResource, recipe);
@@ -94,6 +98,18 @@ public class RecipeController {
                         .buildAndExpand(result.getUuid()).toUri();
 
         return ResponseEntity.created(location).build();
+    }
+    
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(method = PUT, value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
+    public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource) {
+        final Recipe findRecipe = repository.findOne(resourceId);
+        if (findRecipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        DtoMapper.map(resource, findRecipe);
+        repository.save(findRecipe);
+        return ResponseEntity.ok().build();
     }
     
     @RequestMapping(method = GET, value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
@@ -127,5 +143,27 @@ public class RecipeController {
             return ResponseEntity.ok().body(resource.get());
         }
         return ResponseEntity.notFound().build();
+    }
+    
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @RequestMapping(method = POST, value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> saveIngredient(@PathVariable("id") String recipeId, @RequestBody IngredientResource resource) {
+        
+        final Recipe recipe = repository.findOne(recipeId);
+        if (recipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        final Ingredient ingredient = new Ingredient(resource.getQuantity(), resource.getDescription(), resource.getAnnotation());
+        recipe.addIngredient(ingredient);
+        final Recipe result = repository.save(recipe);
+        final Optional<Long> ingredientId = result.getIngredients().stream().filter(i -> i.equals(ingredient)).map(i -> i.getId()).findAny();
+        if(!ingredientId.isPresent()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        };
+        
+        final URI location = ServletUriComponentsBuilder
+                        .fromCurrentRequest().path("/{ingredientId}")
+                        .buildAndExpand(ingredientId.get()).toUri();
+        return ResponseEntity.created(location).build();
     }
 }

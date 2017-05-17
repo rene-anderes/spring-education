@@ -40,12 +40,22 @@ public class RecipeResource extends ResourceSupport {
         return this;
     }
     
+    public RecipeResource setAddingDate(Date addingDate) {
+        this.addingDate = addingDate;
+        return this;
+    }
+    
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by the Date object.
      * @return time
      */
     public Long getLastUpdateTime() {
         return this.lastUpdate.getTime();
+    }
+    
+    public RecipeResource setLastUpdateTime(Long lastUpdateTime) {
+        this.lastUpdate = new Date(lastUpdateTime);
+        return this;
     }
 
     /**
@@ -56,11 +66,11 @@ public class RecipeResource extends ResourceSupport {
         return this.addingDate.getTime();
     }
     
-    public RecipeResource setAddingDate(Date addingDate) {
-        this.addingDate = addingDate;
+    public RecipeResource setAddingDateTime(Long addingDateTime) {
+        this.addingDate = new Date(addingDateTime);
         return this;
     }
-
+    
     public String getTitle() {
 		return title;
 	}

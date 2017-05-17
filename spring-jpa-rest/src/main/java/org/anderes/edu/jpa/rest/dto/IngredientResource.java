@@ -13,11 +13,21 @@ public class IngredientResource extends ResourceSupport {
     private String description;
     private String annotation;
 
-    IngredientResource(Long resourceId) {
+    public IngredientResource() {
         super();
+    }
+    
+    public IngredientResource(Long resourceId) {
+        this();
         this.resourceId = resourceId;
     }
 
+    public IngredientResource(final String quantity, final String description, final String annotation) {
+        this.quantity = quantity;
+        this.description = description;
+        this.annotation = annotation;
+    }
+    
     public IngredientResource(final Long id, final String quantity, final String description, final String annotation) {
         this(id);
         this.quantity = quantity;
