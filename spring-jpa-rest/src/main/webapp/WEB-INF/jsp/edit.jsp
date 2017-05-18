@@ -113,8 +113,8 @@
 			colQuantity = $("<div class='w3-col s3'>");
 			colQuantity.appendTo( rowDiv );
 			inputQuantity = $("<input class='w3-input' type='text' min='1' max='255' name='quantity'>");
-			if ( ingredient.quantity ) {
-				inputQuantity.val( ingredient.quantity );
+			if ( ingredient.portion ) {
+				inputQuantity.val( ingredient.portion );
 			}
 			inputQuantity.appendTo( colQuantity );
 			labelQuantity = $("<label class='w3-text-gray'>");
@@ -137,8 +137,8 @@
 			colAnnotation = $("<div class='w3-col s4'>");
 			colAnnotation.appendTo( rowDiv );
 			inputAnnotation = $("<input class='w3-input' type='text' min='1' max='255' name='description'>");
-			if ( ingredient.annotation ) {
-				inputAnnotation.val( ingredient.annotation );
+			if ( ingredient.comment ) {
+				inputAnnotation.val( ingredient.comment );
 			}
 			inputAnnotation.appendTo( colAnnotation );
 			labelAnnotation = $("<label class='w3-text-gray'>");

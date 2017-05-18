@@ -166,7 +166,7 @@ public class RecipeControllerIT {
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.*", hasSize(5)))
             .andExpect(jsonPath("$.resourceId", is("c0e5582e-252f-4e94-8a49-e12b4b047112")))
-            .andExpect(jsonPath("$.quantity", is("250g")))
+            .andExpect(jsonPath("$.portion", is("250g")))
             .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);

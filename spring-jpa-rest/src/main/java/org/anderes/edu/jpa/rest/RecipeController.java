@@ -152,7 +152,7 @@ public class RecipeController {
         if (recipe == null) {
             return ResponseEntity.notFound().build();
         }
-        final Ingredient ingredient = new Ingredient(resource.getQuantity(), resource.getDescription(), resource.getAnnotation());
+        final Ingredient ingredient = new Ingredient(resource.getPortion(), resource.getDescription(), resource.getComment());
         recipe.addIngredient(ingredient);
         final Recipe result = repository.save(recipe);
         final Optional<String> ingredientId = result.getIngredients().stream().filter(i -> i.equals(ingredient)).map(i -> i.getUuid()).findAny();

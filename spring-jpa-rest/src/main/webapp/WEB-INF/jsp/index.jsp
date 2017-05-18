@@ -140,12 +140,12 @@
         			var tdPortion = $( "<td>" ).attr( {
         				"style" : "white-space:nowrap;"
         			} );
-        			if ( ingredient.quantity ) {
-        				tdPortion.text( ingredient.quantity );
+        			if ( ingredient.portion ) {
+        				tdPortion.text( ingredient.portion );
         			}
         			var tdDescr = $( "<td>" );
-        			if ( ingredient.annotation ) {
-        				tdDescr.html( ingredient.description + " " + ingredient.annotation );
+        			if ( ingredient.comment ) {
+        				tdDescr.html( ingredient.description + " " + ingredient.comment );
         			} else {
         				tdDescr.html( ingredient.description );
         			}
