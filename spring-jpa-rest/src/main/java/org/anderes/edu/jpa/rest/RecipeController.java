@@ -8,7 +8,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,7 +65,7 @@ public class RecipeController {
         final RecipeResource recipeResource = new RecipeResource(findRecipe.getUuid());
         recipeResource.setTitle(findRecipe.getTitle()).setPreamble(findRecipe.getPreamble())
             .setNoOfPerson(findRecipe.getNoOfPerson()).setPreparation(findRecipe.getPreparation())
-            .setAddingDate(new Date(findRecipe.getAddingDateTime())).setLastUpdate(new Date(findRecipe.getLastUpdateTime()))
+            .setAddingDate(findRecipe.getAddingDateTime()).setEditingDate(findRecipe.getLastUpdateTime())
             .setRating(findRecipe.getRating());
         findRecipe.getTags().stream().forEach(t -> recipeResource.addTag(t));
         

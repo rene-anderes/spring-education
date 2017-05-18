@@ -17,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -221,15 +220,15 @@ public class RecipeControllerIT {
     private RecipeResource createRecipe() {
         final RecipeResource recipe = new RecipeResource(UUID.randomUUID().toString());
         recipe.setTitle("Neues Rezept vom Junit-Test").setPreamble("Da gibt es einiges zu sagen")
-            .setAddingDate(december(24, 2014)).setLastUpdate(december(29, 2014)).setNoOfPerson("2")
+            .setAddingDate(december(24, 2014)).setEditingDate(december(29, 2014)).setNoOfPerson("2")
             .setPreparation("Die Zubereitung ist einfach").setRating(4).addTag("pasta").addTag("new");
         return recipe;
     }
 
-    private Date december(int day, int year) {
+    private Long december(int day, int year) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, Calendar.DECEMBER, day);
-        return cal.getTime();
+        return cal.getTime().getTime();
     }
     
 }

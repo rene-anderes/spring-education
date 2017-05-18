@@ -34,39 +34,29 @@ public class RecipeResource extends ResourceSupport {
 	public String getUuid() {
         return uuid;
     }
-
-    public RecipeResource setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-        return this;
-    }
-    
-    public RecipeResource setAddingDate(Date addingDate) {
-        this.addingDate = addingDate;
-        return this;
-    }
     
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by the Date object.
      * @return time
      */
-    public Long getLastUpdateTime() {
+    public Long getEditingDate() {
         return this.lastUpdate.getTime();
     }
     
-    public RecipeResource setLastUpdateTime(Long lastUpdateTime) {
-        this.lastUpdate = new Date(lastUpdateTime);
-        return this;
-    }
-
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by the Date object.
      * @return time
      */
-    public Long getAddingDateTime() {
+    public Long getAddingDate() {
         return this.addingDate.getTime();
     }
     
-    public RecipeResource setAddingDateTime(Long addingDateTime) {
+    public RecipeResource setEditingDate(Long lastUpdateTime) {
+        this.lastUpdate = new Date(lastUpdateTime);
+        return this;
+    }
+    
+    public RecipeResource setAddingDate(Long addingDateTime) {
         this.addingDate = new Date(addingDateTime);
         return this;
     }
