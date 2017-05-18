@@ -99,7 +99,7 @@ public class Recipe implements Serializable {
     }
 	
 	public Recipe(final String uuid) {
-        this();
+	    super();
         this.uuid = uuid;
     }
 

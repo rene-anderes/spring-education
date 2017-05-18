@@ -2,11 +2,10 @@
 package org.anderes.edu.jpa.domain;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -20,8 +19,8 @@ public class Ingredient implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(nullable = false, updatable = false, unique = true)
+    private String uuid;
     @Size(min = 0, max = 20)
     @Column(nullable = true, length = 20)
     private String quantity;
@@ -32,11 +31,13 @@ public class Ingredient implements Serializable {
     @Column(nullable = true, length = 80)
     private String annotation;
 
-    /*package*/ Ingredient() {
+    public Ingredient() {
+        super();
+        uuid = UUID.randomUUID().toString();
     }
 
     public Ingredient(final String quantity, final String description, final String annotation) {
-        super();
+        this();
         this.quantity = quantity;
         this.description = description;
         this.annotation = annotation;
@@ -66,8 +67,8 @@ public class Ingredient implements Serializable {
         this.annotation = annotation;
     }
     
-    public Long getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
     @Override
@@ -92,6 +93,6 @@ public class Ingredient implements Serializable {
 
     @Override
     public String toString() {
-    	return new ToStringBuilder(this).append("quantity", quantity).append("description", description).append("annotation", annotation).build();
+    	return new ToStringBuilder(this).append("uuid", uuid).append("quantity", quantity).append("description", description).append("annotation", annotation).build();
     }
 }

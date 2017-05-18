@@ -30,6 +30,7 @@ public class DtoMapperTest {
         DtoMapper.map(resource, recipe);
         
         // then
+        assertThat(recipe.getUuid(), is(resource.getUuid()));
         assertThat(recipe.getTitle(), is("Arabische Spaghetti"));
         assertThat(recipe.getTags().size(), is(2));
         assertThat(recipe.getTags(), hasItems("test", "vegetarisch"));

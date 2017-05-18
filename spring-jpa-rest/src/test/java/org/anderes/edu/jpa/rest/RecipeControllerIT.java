@@ -160,24 +160,24 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeFindOneIngredient() throws Exception {
         
-        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101")
+        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047112")
                         .accept(APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.*", hasSize(5)))
-            .andExpect(jsonPath("$.resourceId", is(101)))
-            .andExpect(jsonPath("$.quantity", is("200-300g")))
+            .andExpect(jsonPath("$.resourceId", is("c0e5582e-252f-4e94-8a49-e12b4b047112")))
+            .andExpect(jsonPath("$.quantity", is("250g")))
             .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
     }
     
     @Test
-    public void shouldBeBadRequestOneIngredient() throws Exception {
+    public void shouldBeNotFoundOneIngredient() throws Exception {
         
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101A")
                         .accept(APPLICATION_JSON))
-                        .andExpect(status().isBadRequest())
+                        .andExpect(status().isNotFound())
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -198,11 +198,11 @@ public class RecipeControllerIT {
     public void shouldBeSaveNewIngredient() throws Exception {
         
         final IngredientResource newIngredient = new IngredientResource("1g", "Salz", "beliebig");
-        mockMvc.perform(post("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients").with(httpBasic("user", "password"))
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients").with(httpBasic("user", "password"))
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isCreated())
-                        .andExpect(header().string("Location", containsString("http://localhost/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/1")))
+                        .andExpect(header().string("Location", containsString("http://localhost/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients/")))
                         .andReturn();
     }
     

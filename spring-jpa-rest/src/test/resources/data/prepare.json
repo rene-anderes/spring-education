@@ -42,49 +42,49 @@
 		"TAGS": "vorspeise"
 	}],
 	"INGREDIENT": [{
-		"ID": 203,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047111",
 		"ANNOTATION": null,
 		"DESCRIPTION": "Zucker",
 		"QUANTITY": "50g",
 		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
 	},
 	{
-		"ID": 100,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047112",
 		"ANNOTATION": null,
 		"DESCRIPTION": "Spaghetti",
 		"QUANTITY": "250g",
 		"RECIPE_ID":"c0e5582e-252f-4e94-8a49-e12b4b047afb" 
 	},
 	{
-		"ID": 101,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047113",
 		"ANNOTATION": "Bruststückez",
 		"DESCRIPTION": "Poulet",
 		"QUANTITY": "200-300g",
 		"RECIPE_ID":"c0e5582e-252f-4e94-8a49-e12b4b047afb" 
 	},
 	{
-		"ID": 102,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047114",
 		"ANNOTATION": "oder Lauch",
 		"DESCRIPTION": "Frühlingszwiebeln",
 		"QUANTITY": "4-5",
 		"RECIPE_ID":"c0e5582e-252f-4e94-8a49-e12b4b047afb" 
 	},
 	{
-		"ID": 200,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047115",
 		"ANNOTATION": "gelb oder rot",
 		"DESCRIPTION": "Peproni",
 		"QUANTITY": "2-3",
 		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
 	},
 	{
-		"ID": 201,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047116",
 		"ANNOTATION": null,
 		"DESCRIPTION": "Tomate",
 		"QUANTITY": "1",
 		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
 	},
 	{
-		"ID": 202,
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047117",
 		"ANNOTATION": null,
 		"DESCRIPTION": "Peperoncini",
 		"QUANTITY": "1",

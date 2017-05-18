@@ -8,7 +8,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class IngredientResource extends ResourceSupport {
 
-    private Long resourceId;
+    private String resourceId;
     private String quantity;
     private String description;
     private String annotation;
@@ -17,7 +17,7 @@ public class IngredientResource extends ResourceSupport {
         super();
     }
     
-    public IngredientResource(Long resourceId) {
+    public IngredientResource(String resourceId) {
         this();
         this.resourceId = resourceId;
     }
@@ -28,14 +28,14 @@ public class IngredientResource extends ResourceSupport {
         this.annotation = annotation;
     }
     
-    public IngredientResource(final Long id, final String quantity, final String description, final String annotation) {
-        this(id);
+    public IngredientResource(final String resourceId, final String quantity, final String description, final String annotation) {
+        this(resourceId);
         this.quantity = quantity;
         this.description = description;
         this.annotation = annotation;
     }
 
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
 

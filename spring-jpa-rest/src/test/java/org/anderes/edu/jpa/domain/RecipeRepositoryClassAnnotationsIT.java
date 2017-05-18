@@ -28,7 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
                 "classpath:application-context.xml",
-                "classpath:jpa-context.xml",
+                "classpath:unittest-jpa-context.xml",
                 "classpath:unittest-application-context.xml"
 })
 @WebAppConfiguration
@@ -49,7 +49,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     @Test
     @ShouldMatchDataSet(
             value = { "/data/prepare.xls" },
-            orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
+            orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void shouldBeFindAll() {
         Iterable<Recipe> recipes = repository.findAll();
         assertThat(recipes, is(notNullValue()));
@@ -72,7 +72,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     @Test
     @ShouldMatchDataSet(
             value = { "/data/prepare.xls" },
-            orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
+            orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void getRecipesByTitle() {
         final Collection<Recipe> recipes = repository.findByTitleLike("%Spaghetti%");
 
@@ -101,8 +101,8 @@ public class RecipeRepositoryClassAnnotationsIT {
     
     @Test
     @ShouldMatchDataSet(value = { "/data/expected-afterUpdate.xls" },
-            excludeColumns = { "INGREDIENT.ID" },
-            orderBy = { "RECIPE.UUID", "INGREDIENT.ANNOTATION" }
+            excludeColumns = { "INGREDIENT.UUID" },
+            orderBy = { "RECIPE.UUID", "INGREDIENT.DESCRIPTION" }
     )
     public void shouldBeUpdateRecipe() {
         final Recipe updateRecipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
@@ -124,7 +124,7 @@ public class RecipeRepositoryClassAnnotationsIT {
     @Test
     @ShouldMatchDataSet(value = { "/data/expected-afterDeleteOne.xls" },
             excludeColumns = { "RECIPE.ADDINGDATE" },
-            orderBy = { "RECIPE.UUID", "INGREDIENT.ID" })
+            orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void shouldBeDelete() {
         final Recipe toDelete = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
         assertThat("Das Rezept mit der ID 'c0e5582e-252f-4e94-8a49-e12b4b047afb' existiert nicht in der Datenbank", toDelete, is(not(nullValue())));

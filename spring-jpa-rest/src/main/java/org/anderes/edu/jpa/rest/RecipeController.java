@@ -1,12 +1,11 @@
 package org.anderes.edu.jpa.rest;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
 import java.util.Date;
@@ -119,7 +118,7 @@ public class RecipeController {
             return ResponseEntity.notFound().build();
         }
         final List<IngredientResource> resources = findRecipe.getIngredients().stream()
-                        .map(i -> new IngredientResource(i.getId(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
+                        .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
                         .collect(Collectors.toList());
         resources.stream().forEach(r -> {
             final Link linkSelfRel = linkTo(RecipeController.class)
@@ -130,14 +129,14 @@ public class RecipeController {
     }
     
     @RequestMapping(method = GET, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
-    public HttpEntity<IngredientResource> showOneIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") Long ingredientId) {
+    public HttpEntity<IngredientResource> showOneIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
         final Recipe findRecipe = repository.findOne(recipeId);
         if (findRecipe == null) {
             return ResponseEntity.notFound().build();
         }
         final Optional<IngredientResource> resource = findRecipe.getIngredients().stream()
-                        .filter(i -> i.getId() == ingredientId)
-                        .map(i -> new IngredientResource(i.getId(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
+                        .filter(i -> i.getUuid().equals(ingredientId))
+                        .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
                         .findFirst();
         if (resource.isPresent()) {
             return ResponseEntity.ok().body(resource.get());
@@ -156,7 +155,7 @@ public class RecipeController {
         final Ingredient ingredient = new Ingredient(resource.getQuantity(), resource.getDescription(), resource.getAnnotation());
         recipe.addIngredient(ingredient);
         final Recipe result = repository.save(recipe);
-        final Optional<Long> ingredientId = result.getIngredients().stream().filter(i -> i.equals(ingredient)).map(i -> i.getId()).findAny();
+        final Optional<String> ingredientId = result.getIngredients().stream().filter(i -> i.equals(ingredient)).map(i -> i.getUuid()).findAny();
         if(!ingredientId.isPresent()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         };
