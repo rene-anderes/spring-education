@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
+import org.anderes.edu.jpa.domain.Ingredient;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.junit.After;
@@ -202,6 +203,19 @@ public class RecipeControllerIT {
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isCreated())
                         .andExpect(header().string("Location", containsString("http://localhost/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients/")))
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeUpdateIngredient() throws Exception {
+        
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", "250g", "Spaghetti", "Bio");
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/" + ingredient.getResourceId())
+                        .with(httpBasic("user", "password"))
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(ingredient)))
+                        .andExpect(status().isOk())
                         .andReturn();
     }
     

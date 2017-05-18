@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -143,6 +142,27 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
     
+    @RequestMapping(method = PUT, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> updateIngredient(@PathVariable("id") String recipeId, 
+                    @PathVariable("ingredientId") String ingredientId, @RequestBody IngredientResource resource) {
+        
+        final Recipe findRecipe = repository.findOne(recipeId);
+        if (findRecipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        final Optional<Ingredient> ingredient = findRecipe.getIngredients().stream().filter(i -> i.getUuid().equals(ingredientId)).findFirst();
+        if (ingredient.isPresent()) {
+            ingredient.get().setAnnotation(resource.getComment());
+            ingredient.get().setDescription(resource.getDescription());
+            ingredient.get().setQuantity(resource.getPortion());
+            repository.save(findRecipe);
+            return ResponseEntity.ok().build();
+        }
+        
+        return ResponseEntity.notFound().build();
+    }
+    
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = POST, value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveIngredient(@PathVariable("id") String recipeId, @RequestBody IngredientResource resource) {
@@ -153,15 +173,11 @@ public class RecipeController {
         }
         final Ingredient ingredient = new Ingredient(resource.getPortion(), resource.getDescription(), resource.getComment());
         recipe.addIngredient(ingredient);
-        final Recipe result = repository.save(recipe);
-        final Optional<String> ingredientId = result.getIngredients().stream().filter(i -> i.equals(ingredient)).map(i -> i.getUuid()).findAny();
-        if(!ingredientId.isPresent()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        };
+        repository.save(recipe);
         
         final URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest().path("/{ingredientId}")
-                        .buildAndExpand(ingredientId.get()).toUri();
+                        .buildAndExpand(ingredient.getUuid()).toUri();
         return ResponseEntity.created(location).build();
     }
 }

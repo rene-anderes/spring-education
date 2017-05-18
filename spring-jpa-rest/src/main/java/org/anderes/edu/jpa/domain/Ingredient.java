@@ -36,6 +36,13 @@ public class Ingredient implements Serializable {
         uuid = UUID.randomUUID().toString();
     }
 
+    public Ingredient(final String uuid, final String quantity, final String description, final String annotation) {
+        this.uuid = uuid;
+        this.quantity = quantity;
+        this.description = description;
+        this.annotation = annotation;
+    }
+    
     public Ingredient(final String quantity, final String description, final String annotation) {
         this();
         this.quantity = quantity;
