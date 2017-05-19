@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
-import org.anderes.edu.jpa.domain.Ingredient;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.junit.After;
@@ -222,13 +221,28 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeDeleteIngredient() throws Exception {
         
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113"))
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113")
+                .with(httpBasic("user", "password")))
                 .andExpect(status().isOk())
                 .andReturn();
         
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113"))
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113")
+                .with(httpBasic("user", "password")))
                 .andExpect(status().isNotFound())
                 .andReturn();
+    }
+    
+    @Test
+    public void shouldBeGetAllTags() throws Exception {
+        
+        final MvcResult result = mockMvc.perform(get("/recipes/tags")
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.*", hasSize(4)))
+                .andReturn();
+        
+        final String content = result.getResponse().getContentAsString();
+        System.out.println(content);
     }
     
     private byte[] convertObjectToJsonBytes(RecipeResource object) throws IOException {

@@ -1,19 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+<c:url var="resources" value="/resources"/>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript" src="resources/jquery-3.2.1.min.js"></script>
-	<script type="text/javascript" src="resources/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript" src="resources/ckeditor/adapters/jquery.js"></script>
-	<script type="text/javascript" src="resources/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="resources/jquery.tag-editor.min.js"></script>
-	<script type="text/javascript" src="resources/jquery.caret.min.js"></script>
+	<script type="text/javascript" src="${ resources }/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="${ resources }/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript" src="${ resources }/ckeditor/adapters/jquery.js"></script>
+	<script type="text/javascript" src="${ resources }/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="${ resources }/jquery.tag-editor.min.js"></script>
+	<script type="text/javascript" src="${ resources }/jquery.caret.min.js"></script>
 	
-	<link rel="stylesheet" href="resources/jquery-ui.min.css">
-	<link rel="stylesheet" href="resources/jquery.tag-editor.css">
+	<link rel="stylesheet" href="${ resources }/jquery-ui.min.css">
+	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<title>Edit</title>
@@ -194,15 +196,25 @@
 			buildIngredient( ingredient )
 		}
 		
+		function init() {
+			$.getJSON( "recipes/tags" )
+				.done( function( tags ) { 
+					$( "#tags" ).tagEditor( { 
+						autocomplete: {
+				        	source: tags,
+				        	delay: 0,
+			        		position: { collision: 'flip' },
+				    	},
+				    	forceLowercase: true
+				    } );	
+				})
+				.fail( function( xhr, status, error ) {
+	  				var err = status + ", " + error;
+	 				console.log( "Request Failed: " + err );
+ 				})
+		}
+		
 		$(function() {
-			$('#tags').tagEditor({
-			    autocomplete: {
-			        delay: 0, // show suggestions immediately
-			        position: { collision: 'flip' }, // automatic menu position up/down
-			        source: ['vegetarisch', 'pasta', 'winter', 'hauptspeise', 'dessert']
-			    },
-			    forceLowercase: true
-			});
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
@@ -211,6 +223,7 @@
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
 			});
+			init();
 			$id = getRequestParams( "id" );
 			console.log( "id: " + $id );
 			$url = "recipes/" + $id;

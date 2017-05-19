@@ -8,6 +8,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -181,6 +183,7 @@ public class RecipeController {
         return ResponseEntity.created(location).build();
     }
     
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = DELETE, value = "{id}/ingredients/{ingredientId}")
     public ResponseEntity<?> deleteIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
         
@@ -196,4 +199,11 @@ public class RecipeController {
         }
         return ResponseEntity.notFound().build();
     }
+    
+    @RequestMapping(method = GET, value = "tags", produces = { APPLICATION_JSON_VALUE })
+    public HttpEntity<Collection<String>> showAllTags() {
+        final List<String> tags = repository.findAllTag();
+        return ResponseEntity.ok().body(new HashSet<String>(tags));
+    }
+        
 }
