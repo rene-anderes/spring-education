@@ -219,6 +219,18 @@ public class RecipeControllerIT {
                         .andReturn();
     }
     
+    @Test
+    public void shouldBeDeleteIngredient() throws Exception {
+        
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113"))
+                .andExpect(status().isOk())
+                .andReturn();
+        
+        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+    
     private byte[] convertObjectToJsonBytes(RecipeResource object) throws IOException {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);

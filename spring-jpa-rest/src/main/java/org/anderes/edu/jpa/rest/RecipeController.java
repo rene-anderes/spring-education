@@ -180,4 +180,20 @@ public class RecipeController {
                         .buildAndExpand(ingredient.getUuid()).toUri();
         return ResponseEntity.created(location).build();
     }
+    
+    @RequestMapping(method = DELETE, value = "{id}/ingredients/{ingredientId}")
+    public ResponseEntity<?> deleteIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
+        
+        final Recipe recipe = repository.findOne(recipeId);
+        if (recipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        final Optional<Ingredient> ingredient = recipe.getIngredients().stream().filter(i -> i.getUuid().equals(ingredientId)).findFirst();
+        if (ingredient.isPresent()) {
+            recipe.removeIngredient(ingredient.get());
+            repository.save(recipe);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
