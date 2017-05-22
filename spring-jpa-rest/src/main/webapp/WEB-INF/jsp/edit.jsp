@@ -25,7 +25,7 @@
 	<div class="w3-container">
 		<h1>Web-Application "spring-jpa-rest"</h1>
 		<div id="recipe">
-			<form class="w3-container">
+			<form action="javascript:save();" class="w3-container" id="recipeForm">
 				<input type="hidden" id="uuid" name="uuid">
 				<div class="w3-panel">
 					<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
@@ -66,6 +66,7 @@
 					</div>
 					<p class="w3-text-gray">Rating</p>
 				</div>
+				<div class="w3-panel"><button class="w3-button w3-red" type="submit">Speichern</button></div>
 			</form> 
 		</div>
 	</div>
@@ -169,7 +170,7 @@
 			$( "#recipe #preamble" ).val( recipe.preamble );
 			$( "#recipe #noOfPerson" ).val( recipe.noOfPerson );
 			$( "#recipe #preparation" ).val( recipe.preparation );
-			
+
 			$.each( recipe.tags, function( idx, tag ) {
 				$( "#tags" ).tagEditor( "addTag", tag, false );
         	});
@@ -196,17 +197,23 @@
 			buildIngredient( ingredient )
 		}
 		
-		function init() {
+		function save() {
+			console.log("and action ...");
+		}
+		
+		function init( initDone ) {
 			$.getJSON( "recipes/tags" )
 				.done( function( tags ) { 
+					$allTags = tags;
 					$( "#tags" ).tagEditor( { 
 						autocomplete: {
-				        	source: tags,
+				        	source: $allTags,
 				        	delay: 0,
-			        		position: { collision: 'flip' },
+			        		position: { collision: "flip" }
 				    	},
 				    	forceLowercase: true
-				    } );	
+				    } );
+				    initDone();
 				})
 				.fail( function( xhr, status, error ) {
 	  				var err = status + ", " + error;
@@ -223,11 +230,12 @@
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
 			});
-			init();
-			$id = getRequestParams( "id" );
-			console.log( "id: " + $id );
-			$url = "recipes/" + $id;
-			getRecipe( $url );
+			init( function() {
+				$id = getRequestParams( "id" );
+				console.log( "id: " + $id );
+				$url = "recipes/" + $id;
+				getRecipe( $url );
+			});
 		});
 	</script>
 </body>
