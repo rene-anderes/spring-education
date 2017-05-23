@@ -1,6 +1,6 @@
 /* surrounding tag container */
 .tag-editor {
-    list-style-type: none; padding: 0 5px 0 0; margin: 0; overflow: hidden; border: 1px solid #ccc; cursor: text;
+    list-style-type: none; padding: 0px; margin: 0; overflow: hidden; border-bottom: 1px solid #ccc; cursor: text;
     font: normal 15px Verdana; color: #555; background: #fff; line-height: 20px;
 }
 
@@ -21,12 +21,12 @@
 
 /* tag style */
 .tag-editor .tag-editor-tag {
-    padding-left: 5px; color: #46799b; background: #e0eaf1; white-space: nowrap;
+    padding: 8px; color: #46799b; background: #e0eaf1; white-space: nowrap;
     overflow: hidden; cursor: pointer; border-radius: 2px 0 0 2px;
 }
 
 /* delete icon */
-.tag-editor .tag-editor-delete { background: #e0eaf1; cursor: pointer; border-radius: 0 2px 2px 0; padding-left: 3px; padding-right: 4px; }
+.tag-editor .tag-editor-delete { background: #e0eaf1; cursor: pointer; border-radius: 0 2px 2px 0; padding: 8px; }
 .tag-editor .tag-editor-delete i { line-height: 18px; display: inline-block; }
 .tag-editor .tag-editor-delete i:before { font-size: 16px; color: #8ba7ba; content: "×"; font-style: normal; }
 .tag-editor .tag-editor-delete:hover i:before { color: #d65454; }

@@ -24,6 +24,9 @@
 
 	<div class="w3-container">
 		<h1>Web-Application "spring-jpa-rest"</h1>
+		<div id="warning" class="w3-panel w3-yellow w3-display-container">
+			<p id="msg"></p>
+		</div>
 		<div id="recipe">
 			<form action="javascript:save();" class="w3-container" id="recipeForm">
 				<input type="hidden" id="uuid" name="uuid">
@@ -66,7 +69,7 @@
 					</div>
 					<p class="w3-text-gray">Rating</p>
 				</div>
-				<div class="w3-panel"><button class="w3-button w3-red" type="submit">Speichern</button></div>
+				<div class="w3-panel"><button class="w3-button w3-red" type="submit">Speichern</button><span id="msg">&nbsp;</span></div>
 			</form> 
 		</div>
 	</div>
@@ -170,11 +173,11 @@
 			$( "#recipe #preamble" ).val( recipe.preamble );
 			$( "#recipe #noOfPerson" ).val( recipe.noOfPerson );
 			$( "#recipe #preparation" ).val( recipe.preparation );
-
 			$.each( recipe.tags, function( idx, tag ) {
 				$( "#tags" ).tagEditor( "addTag", tag, false );
         	});
-			console.log( "recipe: " + recipe.title );
+        	$( "input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
+        	console.log( "rating :" + recipe.rating );
 		}
 		
 		function getRequestParams( k ){
@@ -198,7 +201,50 @@
 		}
 		
 		function save() {
+			
+			$recipe = {};
+			$recipe.uuid = $( "input[name='uuid']" ).val();
+			$recipe.title = $( "input[name='title']" ).val();
+			$recipe.preamble = CKEDITOR.instances['preamble'].getData();
+			$recipe.noOfPerson = $( "input[name='noOfPerson']" ).val();
+			$recipe.preparation = CKEDITOR.instances['preparation'].getData();
+			$recipe.rating = $( "input[name='rating']:checked" ).val();
+			$tags = $( "textarea[name='tags']" ).val();
+			$recipe.tags = $tags.split(',');
+			
+			$json = JSON.stringify($recipe);
+			console.log( "Recipe : " + $json );
+			
+			$.ajax({
+				    url: "recipes/" + $recipe.uuid,
+				    method: "PUT",
+				    contentType: "application/json; charset=UTF-8",
+				    data: $json
+			    })
+				.done( function( data, textStatus, jqXHR ) {
+					updateIngredients();
+			        alert("Rezept gespeichert.");
+				})
+				.fail( function( xhr, status, error ) {
+   				    var err = status + ", " + error;
+  					console.log( "Request Failed: " + err );
+  				});
+			
+		}
+		
+		function updateIngredients() {
 			console.log("and action ...");
+			$( ".ingredient" ).each( function( index ) {
+				if ( $( this ).is(":hidden") ) {
+					console.log( "Ingredient for delete - uuid : " + $( this ).attr( "id" ) );
+				} else {
+					if ( !$( this ).attr( "id" ) ) {
+						console.log( "new Ingredient : " + $( this ).find( "input[name='description']" ).val() );
+					} else {
+						console.log( "exists Ingredient - uuid : " + $( this ).attr( "id" ) );
+					}
+				}
+			});
 		}
 		
 		function init( initDone ) {
@@ -221,7 +267,7 @@
  				})
 		}
 		
-		$(function() {
+		$( function() {
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
@@ -235,7 +281,12 @@
 				console.log( "id: " + $id );
 				$url = "recipes/" + $id;
 				getRecipe( $url );
+				$( "#msg" ).hide();
 			});
+		});
+		$( document ).ajaxError( function( event, request, settings ) {
+			$( "#msg" ).show();
+  			$( "#msg" ).text( "Error requesting page " + settings.url  );
 		});
 	</script>
 </body>

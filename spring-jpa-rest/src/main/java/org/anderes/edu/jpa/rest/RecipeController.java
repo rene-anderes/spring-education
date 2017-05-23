@@ -8,6 +8,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -91,6 +92,8 @@ public class RecipeController {
     public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
         final Recipe recipe = new Recipe();
         DtoMapper.map(newResource, recipe);
+        recipe.setAddingDate(LocalDateTime.now());
+        recipe.setLastUpdate(LocalDateTime.now());
         final Recipe result = repository.save(recipe);
         final URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest().path("/{id}")
@@ -102,12 +105,13 @@ public class RecipeController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = PUT, value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
     public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource) {
-        final Recipe findRecipe = repository.findOne(resourceId);
-        if (findRecipe == null) {
+        final Recipe existsRecipe = repository.findOne(resourceId);
+        if (existsRecipe == null) {
             return ResponseEntity.notFound().build();
         }
-        DtoMapper.map(resource, findRecipe);
-        repository.save(findRecipe);
+        DtoMapper.map(resource, existsRecipe);
+        existsRecipe.setLastUpdate(LocalDateTime.now());
+        repository.save(existsRecipe);
         return ResponseEntity.ok().build();
     }
     

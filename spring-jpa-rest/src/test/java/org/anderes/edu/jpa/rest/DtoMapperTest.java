@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -47,9 +46,6 @@ public class DtoMapperTest {
         assertThat(recipe.getRating(), is(4));
         assertThat(recipe.getPreparation(), is("Pouletfleisch in schmale Streifen schneiden und kurz anbraten"));
         assertThat(recipe.getIngredients().size(), is(2));
-        assertThat(recipe.getAddingDate(), is(LocalDateTime.of(2000, Month.DECEMBER, 29, 0, 0)));
-        assertThat(recipe.getLastUpdate(), is(LocalDateTime.of(2001, Month.DECEMBER, 29, 0, 0)));
-        
     }
 
     private Long december(int year, int dayOfMonth) {
