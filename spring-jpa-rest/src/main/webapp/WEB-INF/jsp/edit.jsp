@@ -215,20 +215,21 @@
 			$json = JSON.stringify($recipe);
 			console.log( "Recipe : " + $json );
 			
-			$.ajax({
+			$.when(
+				$.ajax({
 				    url: "recipes/" + $recipe.uuid,
 				    method: "PUT",
 				    contentType: "application/json; charset=UTF-8",
 				    data: $json
 			    })
-				.done( function( data, textStatus, jqXHR ) {
-					updateIngredients();
-			        alert("Rezept gespeichert.");
-				})
 				.fail( function( xhr, status, error ) {
    				    var err = status + ", " + error;
   					console.log( "Request Failed: " + err );
-  				});
+  				})
+  			).then( function() {
+  				updateIngredients();
+			    alert("Rezept gespeichert.");
+  			})
 			
 		}
 		
@@ -268,6 +269,7 @@
 		}
 		
 		$( function() {
+			$( "#msg" ).hide();
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
@@ -281,7 +283,6 @@
 				console.log( "id: " + $id );
 				$url = "recipes/" + $id;
 				getRecipe( $url );
-				$( "#msg" ).hide();
 			});
 		});
 		$( document ).ajaxError( function( event, request, settings ) {
