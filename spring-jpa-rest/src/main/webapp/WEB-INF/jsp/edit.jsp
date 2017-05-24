@@ -201,7 +201,13 @@
 		}
 		
 		function save() {
-			
+			updateRecipe().then( function() {
+				alert("Rezept gespeichert.");
+			})
+		}
+		
+		function updateRecipe() {
+			var deferred = $.Deferred();
 			$recipe = {};
 			$recipe.uuid = $( "input[name='uuid']" ).val();
 			$recipe.title = $( "input[name='title']" ).val();
@@ -215,25 +221,25 @@
 			$json = JSON.stringify($recipe);
 			console.log( "Recipe : " + $json );
 			
-			$.when(
-				$.ajax({
+			$.ajax({
 				    url: "recipes/" + $recipe.uuid,
 				    method: "PUT",
 				    contentType: "application/json; charset=UTF-8",
 				    data: $json
-			    })
-				.fail( function( xhr, status, error ) {
+			})
+			.fail( function( xhr, status, error ) {
    				    var err = status + ", " + error;
   					console.log( "Request Failed: " + err );
-  				})
-  			).then( function() {
-  				updateIngredients( $recipe.uuid );
-			    alert("Rezept gespeichert.");
+  			})
+  			.then( function() {
+  				updateIngredients( $recipe.uuid ).then( deferred.resolve );
   			})
 			
+			return deferred.promise();
 		}
 		
 		function updateIngredients( recipeId ) {
+			var deferred = $.Deferred();
 			$( ".ingredient" ).each( function( index, li ) {
 				$( "body" ).queue( function() {
 					$ingredient = {};
@@ -251,40 +257,45 @@
 					updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
 				})
 			});
+			$( "body" ).promise().done( deferred.resolve );
+			return deferred.promise();
 		}
 		
 		function updateIngredient( isHidden, ingredient, recipeId ) {
+			$url = "recipes/" + recipeId + "/ingredients/";
+			
 			if ( isHidden ) {
 				console.log( "Ingredient for delete : " + JSON.stringify( $ingredient ) );
 				$.ajax({
 					type: "DELETE",
-					url: "recipes/" + recipeId + "/ingredients/" + $ingredient.resourceId,
-					success: function() { $("body" ).dequeue(); }
+					url: $url + $ingredient.resourceId,
+					success: function() { $( "body" ).dequeue(); }
 				});
 			} else {
 				if ( $ingredient.resourceId == undefined ) {
 					console.log( "new Ingredient : " + JSON.stringify( $ingredient ) );
 					$.ajax({
 						type: "POST",
-						url: "recipes/" + recipeId + "/ingredients",
+						url: $url,
 						data: JSON.stringify( $ingredient ),
 						contentType: "application/json; charset=UTF-8",
-						success: function() { $("body" ).dequeue(); }
+						success: function() { $( "body" ).dequeue(); }
 					});
 				} else {
 					console.log( "exists Ingredient : " + JSON.stringify( $ingredient ) );
 					$.ajax({
 						type: "PUT",
-						url: "recipes/" + recipeId + "/ingredients/" + $ingredient.resourceId,
+						url: $url + $ingredient.resourceId,
 						data: JSON.stringify( $ingredient ),
 						contentType: "application/json; charset=UTF-8",
-						success: function() { $("body" ).dequeue(); }
+						success: function() { $( "body" ).dequeue(); }
 					});
 				}
 			}
 		}
 		
-		function init( initDone ) {
+		function init() {
+			var deferred = $.Deferred();
 			$.getJSON( "recipes/tags" )
 				.done( function( tags ) { 
 					$allTags = tags;
@@ -296,12 +307,14 @@
 				    	},
 				    	forceLowercase: true
 				    } );
-				    initDone();
 				})
 				.fail( function( xhr, status, error ) {
 	  				var err = status + ", " + error;
 	 				console.log( "Request Failed: " + err );
+	 				deferred.resolve;
  				})
+ 				.then( deferred.resolve );
+ 			return deferred.promise();
 		}
 		
 		$( function() {
@@ -314,7 +327,7 @@
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
 			});
-			init( function() {
+			init().then( function() {
 				$id = getRequestParams( "id" );
 				console.log( "id: " + $id );
 				$url = "recipes/" + $id;
