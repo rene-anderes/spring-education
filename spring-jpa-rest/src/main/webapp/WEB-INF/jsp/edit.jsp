@@ -118,7 +118,7 @@
 			/* ---------- Quantity */
 			colQuantity = $("<div class='w3-col s3'>");
 			colQuantity.appendTo( rowDiv );
-			inputQuantity = $("<input class='w3-input' type='text' min='1' max='255' name='quantity'>");
+			inputQuantity = $("<input class='w3-input' type='text' min='1' max='255' name='portion'>");
 			if ( ingredient.portion ) {
 				inputQuantity.val( ingredient.portion );
 			}
@@ -142,7 +142,7 @@
 			/* ---------- Annotation */
 			colAnnotation = $("<div class='w3-col s4'>");
 			colAnnotation.appendTo( rowDiv );
-			inputAnnotation = $("<input class='w3-input' type='text' min='1' max='255' name='description'>");
+			inputAnnotation = $("<input class='w3-input' type='text' min='1' max='255' name='comment'>");
 			if ( ingredient.comment ) {
 				inputAnnotation.val( ingredient.comment );
 			}
@@ -227,25 +227,63 @@
   					console.log( "Request Failed: " + err );
   				})
   			).then( function() {
-  				updateIngredients();
+  				updateIngredients( $recipe.uuid );
 			    alert("Rezept gespeichert.");
   			})
 			
 		}
 		
-		function updateIngredients() {
-			console.log("and action ...");
-			$( ".ingredient" ).each( function( index ) {
-				if ( $( this ).is(":hidden") ) {
-					console.log( "Ingredient for delete - uuid : " + $( this ).attr( "id" ) );
-				} else {
-					if ( !$( this ).attr( "id" ) ) {
-						console.log( "new Ingredient : " + $( this ).find( "input[name='description']" ).val() );
-					} else {
-						console.log( "exists Ingredient - uuid : " + $( this ).attr( "id" ) );
+		function updateIngredients( recipeId ) {
+			$( ".ingredient" ).each( function( index, li ) {
+				$( "body" ).queue( function() {
+					$ingredient = {};
+					$ingredient.resourceId = $( li ).attr( "id" );
+					$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
+					if ( $ingredient.portion == undefined ) {
+						$ingredient.portion = null;
 					}
-				}
+					$ingredient.description = $( li ).find( "input[name='description']" ).val();
+					$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
+					if ( $ingredient.comment == undefined ) {
+						$ingredient.comment = null;
+					}
+					
+					console.log( "Ingredient: " + JSON.stringify( $ingredient ) );
+					
+					updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
+				})
 			});
+		}
+		
+		function updateIngredient( isHidden, ingredient, recipeId ) {
+			if ( isHidden ) {
+				console.log( "Ingredient for delete : " + JSON.stringify( $ingredient ) );
+				$.ajax({
+					type: "DELETE",
+					url: "recipes/" + recipeId + "/ingredients/" + $ingredient.resourceId,
+					success: function() { $("body" ).dequeue(); }
+				});
+			} else {
+				if ( $ingredient.resourceId == undefined ) {
+					console.log( "new Ingredient : " + JSON.stringify( $ingredient ) );
+					$.ajax({
+						type: "POST",
+						url: "recipes/" + recipeId + "/ingredients",
+						data: JSON.stringify( $ingredient ),
+						contentType: "application/json; charset=UTF-8",
+						success: function() { $("body" ).dequeue(); }
+					});
+				} else {
+					console.log( "exists Ingredient : " + JSON.stringify( $ingredient ) );
+					$.ajax({
+						type: "PUT",
+						url: "recipes/" + recipeId + "/ingredients/" + $ingredient.resourceId,
+						data: JSON.stringify( $ingredient ),
+						contentType: "application/json; charset=UTF-8",
+						success: function() { $("body" ).dequeue(); }
+					});
+				}
+			}
 		}
 		
 		function init( initDone ) {
