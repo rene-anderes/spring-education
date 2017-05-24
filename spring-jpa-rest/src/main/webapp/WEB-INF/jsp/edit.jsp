@@ -247,9 +247,7 @@
 					if ( $ingredient.comment == undefined ) {
 						$ingredient.comment = null;
 					}
-					
-					console.log( "Ingredient: " + JSON.stringify( $ingredient ) );
-					
+				
 					updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
 				})
 			});
