@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <c:url var="resources" value="/resources"/>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,7 +50,7 @@
 					</ul>
 				</div>
 				<div class="w3-panel">
-					<button class="w3-button w3-black" onclick="addIngredient()">add</button>
+					<button class="w3-button w3-circle w3-red" onclick="addIngredient()">+</button>
 				</div>
 				<div class="w3-panel">
 					<textarea name="preparation" id="preparation"></textarea>
@@ -61,33 +62,45 @@
 				</div>
 				<div class="w3-panel">
 					<div class="w3-row-padding">
-						<input class="w3-radio" type="radio" name="rating" value="1" checked><label>1 Stern</label>
-						<input class="w3-radio" type="radio" name="rating" value="2" checked><label>2 Sterne</label>
-						<input class="w3-radio" type="radio" name="rating" value="3" checked><label>3 Sterne</label>
-						<input class="w3-radio" type="radio" name="rating" value="4" checked><label>4 Sterne</label>
-						<input class="w3-radio" type="radio" name="rating" value="5" checked><label>5 Sterne</label>
+						<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-green">1</span></label>
+						<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-green">2</span></label>
+						<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-green">3</span></label>
+						<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-green">4</span></label>
+						<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-green">5</span></label>
 					</div>
 					<p class="w3-text-gray">Rating</p>
 				</div>
-				<div class="w3-panel"><button class="w3-button w3-red" type="submit">Speichern</button><span id="msg">&nbsp;</span></div>
+				<hr>
+				<div class="w3-panel w3-row-padding">
+					<div class="w3-col s1"><button class="w3-button w3-red" type="submit">Speichern</button></div>
+					<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
+					<div class="w3-col s9"></div>
+				</div> 
+				<hr>
 			</form> 
 		</div>
 	</div>
 	
 	<script>
+		var $recipesUrl = "recipes";
+		
 		function getRecipe( url ) {
+			var $ingredientsUrl;
 			$.getJSON( url )
 				.done( function( recipe ) { 
 					buildRecipe( recipe );
 					$.each(recipe.links, function( idx, link ) {
 						if (link.rel == "ingredients") {
-							getIngredients( link.href );	
+							$ingredientsUrl = link.href;
 						}
 					});
 				})
 				.fail( function( xhr, status, error ) {
 	  				var err = status + ", " + error;
 	 				console.log( "Request Failed: " + err );
+ 				})
+ 				.then( function() {
+ 					getIngredients( $ingredientsUrl );
  				})
 		}
 		
@@ -154,11 +167,11 @@
 			/* ---------- Remove-Button */
 			colRemove = $("<div class='w3-col s1'>");
 			colRemove.appendTo( rowDiv );
-			spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right  w3-light-gray'>&times;</span>")
+			spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-light-gray'>&times;</span>")
 			spanRemove.appendTo( colRemove );
 			spanRemove.click( function() {
 				if (ingredient.resourceId) {
-					removeIngredient( ingredient.resourceId );
+					$( ".ingredient#" + resourceId ).fadeOut( "fast" );
 				} else {
 					$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
 						$( this ).closest( $( ".ingredient" ) ).remove();
@@ -177,22 +190,12 @@
 				$( "#tags" ).tagEditor( "addTag", tag, false );
         	});
         	$( "input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
-        	console.log( "rating :" + recipe.rating );
 		}
 		
 		function getRequestParams( k ){
 			var p = {};
 			location.search.replace( /[?&]+([^=&]+)=([^&]*)/gi, function( s,k,v )  { p[k] = v } )
 			return k ? p[k] : p;
-		}
-		
-		function removeIngredient( resourceId ) {
-			console.log( "remove ResourceId: " + resourceId );
-			$( ".ingredient#" + resourceId ).fadeOut( "fast", function() {
-				$( ".ingredient" ).each( function( index ){
-					console.log( index + ": " + $( this ).attr( "id" ) + " | Hidden: " + $( this ).is(":hidden") );
-				});
-			});
 		}
 	
 		function addIngredient() {
@@ -202,7 +205,11 @@
 		
 		function save() {
 			updateRecipe().then( function() {
-				alert("Rezept gespeichert.");
+				$( "#status" ).fadeIn();
+  				$( "#status" ).text( "Rezept gespeichert." );
+  				setTimeout( function() {
+  					$( "#status" ).fadeOut();
+  				}, 1000);
 			})
 		}
 		
@@ -221,19 +228,39 @@
 			$json = JSON.stringify($recipe);
 			console.log( "Recipe : " + $json );
 			
-			$.ajax({
-				    url: "recipes/" + $recipe.uuid,
-				    method: "PUT",
-				    contentType: "application/json; charset=UTF-8",
-				    data: $json
-			})
-			.fail( function( xhr, status, error ) {
-   				    var err = status + ", " + error;
-  					console.log( "Request Failed: " + err );
-  			})
-  			.then( function() {
-  				updateIngredients( $recipe.uuid ).then( deferred.resolve );
-  			})
+			if ( $recipe.uuid ) {
+				// bestehendes Rezept
+				$.ajax({
+					    url: $recipesUrl + "/" + $recipe.uuid,
+					    method: "PUT",
+					    contentType: "application/json; charset=UTF-8",
+					    data: $json
+				})
+				.fail( function( xhr, status, error ) {
+	   				    var err = status + ", " + error;
+	  					console.log( "Request Failed: " + err );
+	  			})
+	  			.then( function() {
+	  				updateIngredients( $recipe.uuid ).then( deferred.resolve );
+	  			})
+  			} else {
+  				// neues Rezept
+  				$.ajax({
+					    url: $recipesUrl,
+					    method: "POST",
+					    contentType: "application/json; charset=UTF-8",
+					    data: $json
+				})
+				.fail( function( xhr, status, error ) {
+	   				    var err = status + ", " + error;
+	  					console.log( "Request Failed: " + err );
+	  			})
+	  			.then( function( data, status, xhr ) {
+	  				$location = xhr.getResponseHeader('Location');
+	  				$uuid = $location.substr( $location.lastIndexOf("/") +1 );
+	  				updateIngredients( $uuid ).then( deferred.resolve );
+	  			})
+  			}
 			
 			return deferred.promise();
 		}
@@ -262,7 +289,7 @@
 		}
 		
 		function updateIngredient( isHidden, ingredient, recipeId ) {
-			$url = "recipes/" + recipeId + "/ingredients/";
+			$url = $recipesUrl + "/" + recipeId + "/ingredients/";
 			
 			if ( isHidden ) {
 				console.log( "Ingredient for delete : " + JSON.stringify( $ingredient ) );
@@ -296,7 +323,7 @@
 		
 		function init() {
 			var deferred = $.Deferred();
-			$.getJSON( "recipes/tags" )
+			$.getJSON( $recipesUrl + "/" + "tags" )
 				.done( function( tags ) { 
 					$allTags = tags;
 					$( "#tags" ).tagEditor( { 
@@ -317,8 +344,24 @@
  			return deferred.promise();
 		}
 		
+		function start() {
+			$id = getRequestParams( "id" );
+			if ( $id ) {
+				console.log( "Rezept mit id '" + $id + "' bearbeiten....");
+				$url = $recipesUrl + "/" + $id;
+				getRecipe( $url );
+			} else {
+				console.log( "Neues Rezept erstellen....");
+				$recipe = {};
+				$recipe.tags = [];
+				buildRecipe( $recipe );
+				addIngredient(); 
+			}
+		}
+		
 		$( function() {
 			$( "#msg" ).hide();
+			$( "#status" ).hide();
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
@@ -327,12 +370,7 @@
 			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
 			});
-			init().then( function() {
-				$id = getRequestParams( "id" );
-				console.log( "id: " + $id );
-				$url = "recipes/" + $id;
-				getRecipe( $url );
-			});
+			init().then( function() { start(); } );
 		});
 		$( document ).ajaxError( function( event, request, settings ) {
 			$( "#msg" ).show();
