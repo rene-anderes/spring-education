@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 <c:url var="resources" value="/resources"/>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -111,8 +112,8 @@
 				$("#recipe #noofperson").text( recipe.noOfPerson );
 				$("#recipe #preparation").html( recipe.preparation );
 				$("#recipe #rating").html( recipe.rating );
-				$("#recipe #adding").text( cookbook.formatDate(recipe.addingDateTime) );
-				$("#recipe #update").text( cookbook.formatDate(recipe.lastUpdateTime) );
+				$("#recipe #adding").text( cookbook.formatDate( recipe.addingDate ) );
+				$("#recipe #update").text( cookbook.formatDate( recipe.editingDate ) );
 				$("#tags span").remove();
 				$.each( recipe.tags, function(idx, tag) {
             		$("#tags").append("<span class='w3-tag'>" + tag + "</span>&nbsp;");
@@ -162,7 +163,7 @@
 	
 	$(function() {
 		cookbook.init();
-		$url = "/spring-jpa-rest/recipes/";
+		$url = "recipes/";
 		cookbook.getRecipes( $url );
 	});
 	$(document).ajaxStart(function(){
