@@ -3,6 +3,7 @@ Einfache Beispielapplikation "Kochbuch"
 Technologie
 	Spring DI
 	Spring REST
+	Spring HATEOAS
 	Spring Data (JPA)
 	Spring Security
 	Spring Testframework
