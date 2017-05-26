@@ -20,6 +20,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
@@ -35,9 +37,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Entity
 @NamedQuery(
-    name = "Recipe.findAllTag",
-    query = "select r.tags from Recipe r"
-)
+        name = "Recipe.findAllTag",
+        query = "select r.tags from Recipe r"
+    )
+@NamedEntityGraph(
+        name = "Recipe.short.list",
+        attributeNodes = {
+            @NamedAttributeNode("uuid"),
+            @NamedAttributeNode("title")
+        }
+    )
 public class Recipe implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -67,7 +76,7 @@ public class Recipe implements Serializable {
 	private Image image;
 
 	@NotNull @Valid
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "RECIPE_ID")
 	private List<Ingredient> ingredients = new ArrayList<Ingredient>();
 

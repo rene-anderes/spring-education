@@ -55,4 +55,8 @@
 
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect" />
     
+    <!-- Wenn '<prop key="eclipselink.weaving">' auf true ist -->
+    <!-- siehe http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/instrument/classloading/InstrumentationLoadTimeWeaver.html -->
+    <!-- <bean id="loadTimeWeaver" class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />  -->
+    
 </beans>
