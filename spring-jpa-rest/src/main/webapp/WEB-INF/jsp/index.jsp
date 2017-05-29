@@ -100,8 +100,8 @@
    						console.log( "Request Failed: " + err );
 	  				})
 					.then( function( json ) { 
-							cookbook.handleRecipesList( json.content );
-							deferred.resolve;
+						cookbook.handleRecipesList( json.content );
+						deferred.resolve;
 					})
 				return deferred.promise();
 			},
