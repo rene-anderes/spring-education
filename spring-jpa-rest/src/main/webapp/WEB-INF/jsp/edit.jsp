@@ -77,6 +77,7 @@
 					<div class="w3-col s9"></div>
 				</div> 
 				<hr>
+				<p><a id="back">Cancel / zurück zur Rezeptliste</a></p>
 			</form> 
 		</div>
 	</div>
@@ -107,6 +108,7 @@
 		function getIngredients( url ) {
 			$.getJSON( url )
 				.done( function( ingredients ) {
+					$( "#ingredients li" ).remove();
 					$.each( ingredients, function( idx, ingredient ) {
 						buildIngredient( ingredient );	
 		        	});
@@ -118,7 +120,7 @@
 		}
 		
 		function buildIngredient( ingredient ) {
-
+			
 			li = $( "<li class='ingredient'>");
 			li.attr({
 				"id": ingredient.resourceId
@@ -170,8 +172,8 @@
 			spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-light-gray'>&times;</span>")
 			spanRemove.appendTo( colRemove );
 			spanRemove.click( function() {
-				if (ingredient.resourceId) {
-					$( ".ingredient#" + resourceId ).fadeOut( "fast" );
+				if ( ingredient.resourceId ) {
+					$( ".ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
 				} else {
 					$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
 						$( this ).closest( $( ".ingredient" ) ).remove();
@@ -205,10 +207,10 @@
 		
 		function save() {
 			updateRecipe().then( function() {
-				$( "#status" ).fadeIn();
+				$( "#status" ).fadeIn( "fast");
   				$( "#status" ).text( "Rezept gespeichert." );
   				setTimeout( function() {
-  					$( "#status" ).fadeOut();
+  					$( "#status" ).fadeOut( "slow" );
   				}, 1000);
 			})
 		}
@@ -241,7 +243,11 @@
 	  					console.log( "Request Failed: " + err );
 	  			})
 	  			.then( function() {
-	  				updateIngredients( $recipe.uuid ).then( deferred.resolve );
+	  				updateIngredients( $recipe.uuid ).then( function() {
+	  					buildRecipeById( $recipe.uuid ); // Daten in der View aktualisieren
+	  					deferred.resolve(); 
+	  				} );
+	  				
 	  			})
   			} else {
   				// neues Rezept
@@ -257,8 +263,11 @@
 	  			})
 	  			.then( function( data, status, xhr ) {
 	  				$location = xhr.getResponseHeader('Location');
-	  				$uuid = $location.substr( $location.lastIndexOf("/") +1 );
-	  				updateIngredients( $uuid ).then( deferred.resolve );
+	  				$uuid = $location.substr( $location.lastIndexOf("/") + 1 );
+	  				updateIngredients( $uuid ).then( function() {
+	  					buildRecipeById( $uuid ); // Daten in der View aktualisieren
+	  					deferred.resolve(); 
+	  				} );
 	  			})
   			}
 			
@@ -345,17 +354,26 @@
 		}
 		
 		function start() {
-			$id = getRequestParams( "id" );
-			if ( $id ) {
-				console.log( "Rezept mit id '" + $id + "' bearbeiten....");
-				$url = $recipesUrl + "/" + $id;
+			buildRecipeById( getRequestParams( "id" ) );
+		}
+		
+		function buildRecipeById( resourceId ) {
+			if ( resourceId ) {
+				console.log( "Rezept mit id '" + resourceId + "' bearbeiten....");
+				$url = $recipesUrl + "/" + resourceId;
 				getRecipe( $url );
+				$( "#back" ).attr({
+					"href": "list.html?id=" + resourceId
+				});
 			} else {
 				console.log( "Neues Rezept erstellen....");
 				$recipe = {};
 				$recipe.tags = [];
 				buildRecipe( $recipe );
-				addIngredient(); 
+				addIngredient();
+				$( "#back" ).attr({
+					"href": "list.html"
+				}); 
 			}
 		}
 		

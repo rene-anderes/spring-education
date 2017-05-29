@@ -9,6 +9,9 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="${ resources }/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="${ resources }/jquery-ui.min.js"></script>
+
+<link rel="stylesheet" href="${ resources }/jquery-ui.min.css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <title>Liste</title>
@@ -16,10 +19,12 @@
 <body>
 	<div class="w3-container">
 		<h1>Web-Application "spring-jpa-rest"</h1>
-		<div class="w3-row">
+		<div class="w3-row-padding">
 			<div class="w3-col s6">
 				<p>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></p>
 				<ul class="w3-ul" style="width:75%" id="list"></ul>
+				<hr>
+				<p><a href="edit.html" class="w3-button w3-circle w3-red">+</a></p>
 			</div>
 			<div class="w3-col s6">
 				<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
@@ -36,25 +41,69 @@
 				    	Aktualisiert: <span id="update"></span><br>
 				    </p>
 				    <p id="tags" class="w3-tiny">Stichworte:&nbsp;</p>
+				    <p id="resourceId"></p>
+				    <hr>
+				    <p><a id="editLink" class="w3-button w3-red">Editieren</a>&nbsp;<a id="delete" class="w3-button w3-red">Löschen</a></p>
 			    </div>
 			</div>
 		</div>
+		<div id="dialog" title="Confirmation Required">Das Rezept wirklich löschen?</div>
 	</div>
 	<script>
+		var $recipesUrl = "recipes";
+		
 		var cookbook = {
 			
 			init: function() {
-				$("#recipe").hide();
-				$("#choice").show();
+				$( "#recipe" ).hide();
+				$( "#choice" ).show();
+				$( "#recipe #resourceId").hide();
+				$( "#dialog" ).dialog({
+					autoOpen: false,
+				    modal: true,
+				    show: { effect: "fade", duration: 200 },
+				    buttons : {
+					    "Confirm" : function() {
+					    	cookbook.deleteRecipe();        
+					    },
+					    "Cancel" : function() {
+					    	$(this).dialog( "close" );
+					    }
+					}
+				});
+				$( "#delete" ).on( "click", function( e ) {
+				    e.preventDefault();
+				    $( "#dialog" ).dialog( "open" );
+				});
 			},
 			
-			getRecipes: function( url ) {
+			deleteRecipe: function() {
+				$recourceId = $( "#recipe #resourceId" ).text();
+				$.ajax({
+					    url: $recipesUrl + "/" + $recourceId,
+					    method: "DELETE"
+				})
+				.fail( function( xhr, status, error ) {
+	   				    var err = status + ", " + error;
+	  					console.log( "Request Failed: " + err );
+	  			})
+	  			.then( function() {
+	  				location.reload();	  				
+	  			})
+			},
+			
+			showRecipes: function( url ) {
+				var deferred = $.Deferred();
 				$.getJSON( url )
-					.done( function(json) { cookbook.handleRecipesList( json.content ) })
 					.fail( function( xhr, status, error ) {
     				    var err = status + ", " + error;
    						console.log( "Request Failed: " + err );
 	  				})
+					.then( function( json ) { 
+							cookbook.handleRecipesList( json.content );
+							deferred.resolve;
+					})
+				return deferred.promise();
 			},
 			
 			handleRecipesList: function( collection ) {
@@ -69,14 +118,14 @@
 					a.text( recipe.title );
 					a.click( function() {
 						$("#recipe").hide();
-						cookbook.getRecipe( url );
+						cookbook.showRecipe( url );
 					});
 					li = $( "<li>" ).append( a );
 					li.appendTo( "#list" );
 				});
 			}, 
 			
-			getRecipe: function( url ) {
+			showRecipe: function( url ) {
 				$.getJSON( url )
 					.done( function( recipe ) { 
 						cookbook.buildRecipe( recipe );
@@ -107,24 +156,25 @@
 			},
 			
 			buildRecipe: function( recipe ) {
-				$("#recipe #title").html( recipe.title );
-				$("#recipe #preamble").html( recipe.preamble );
-				$("#recipe #noofperson").text( recipe.noOfPerson );
-				$("#recipe #preparation").html( recipe.preparation );
-				$("#recipe #rating").html( recipe.rating );
-				$("#recipe #adding").text( cookbook.formatDate( recipe.addingDate ) );
-				$("#recipe #update").text( cookbook.formatDate( recipe.editingDate ) );
-				$("#tags span").remove();
+				$( "#editLink").attr( {
+        				"href" : "edit.html?id=" + recipe.uuid
+        		});
+				
+				// Rezept-View mit Daten abfüllen        			
+				$( "#recipe #title" ).html( recipe.title );
+				$( "#recipe #preamble" ).html( recipe.preamble );
+				$( "#recipe #noofperson" ).text( recipe.noOfPerson );
+				$( "#recipe #preparation" ).html( recipe.preparation );
+				$( "#recipe #rating" ).html( recipe.rating );
+				$( "#recipe #adding" ).text( cookbook.formatDate( recipe.addingDate ) );
+				$( "#recipe #update" ).text( cookbook.formatDate( recipe.editingDate ) );
+				$( "#tags span" ).remove();
 				$.each( recipe.tags, function(idx, tag) {
             		$("#tags").append("<span class='w3-tag'>" + tag + "</span>&nbsp;");
         		});
+        		$( "#recipe #resourceId" ).text( recipe.uuid );
 				
 			},
-			
-			formatDate: function( number ) {
-				$myDate = new Date(number);
-        		return $myDate.toLocaleString();
-        	},
 			
 			buildIngredients: function( ingredients ) {
 				ingredients.sort(function(a, b){
@@ -158,13 +208,31 @@
         			tr.append( tdDescr );
         			$("#ingredients table").append( tr );
 		        });
-			}
+			},
+			
+			checkUrlParameter: function() {
+				$resourceId = cookbook.getRequestParams( "id" )
+				if ( $resourceId ) {
+					$url = $recipesUrl + "/" + $resourceId;
+					cookbook.showRecipe( $url );
+				}
+			}, 
+			
+			getRequestParams: function( k ){
+				var p = {};
+				location.search.replace( /[?&]+([^=&]+)=([^&]*)/gi, function( s,k,v )  { p[k] = v } )
+				return k ? p[k] : p;
+			},
+			 			
+			formatDate: function( number ) {
+				$myDate = new Date(number);
+        		return $myDate.toLocaleString();
+        	}
 		};
 	
 	$(function() {
 		cookbook.init();
-		$url = "recipes/";
-		cookbook.getRecipes( $url );
+		cookbook.showRecipes( $recipesUrl ).then( cookbook.checkUrlParameter() );
 	});
 	$(document).ajaxStart(function(){
     	$("#loading").show();

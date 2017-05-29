@@ -26,6 +26,7 @@
     </mvc:annotation-driven>
     
     <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/list.html" view-name="index"/>
     <mvc:view-controller path="/edit.html" view-name="edit"/>
     
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
