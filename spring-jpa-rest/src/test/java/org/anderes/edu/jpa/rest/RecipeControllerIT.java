@@ -25,7 +25,6 @@ import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
                 "classpath:unittest-security-context.xml"
 })
 @WebAppConfiguration
-@UsingDataSet(value = { "/data/prepare.xls" })
+@UsingDataSet(value = { "/data/prepare.json" })
 public class RecipeControllerIT {
 
     @Inject
@@ -67,18 +66,13 @@ public class RecipeControllerIT {
                         .build();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
     @Test
     public void shouldBeAllRecipes() throws Exception {
         MvcResult result = mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("size", "10"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json;charset=UTF-8"))
-            .andExpect(jsonPath("$.content", hasSize(2)))
-            .andExpect(jsonPath("$.totalElements", is(2)))
+            .andExpect(jsonPath("$.content", hasSize(3)))
+            .andExpect(jsonPath("$.totalElements", is(3)))
             .andExpect(jsonPath("$.content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
             .andExpect(jsonPath("$.content[0].links[0].rel", is("self")))
             .andReturn();
@@ -108,13 +102,24 @@ public class RecipeControllerIT {
     }
     
     @Test
-    public void shouldBeSaveNewRecipe() throws Exception {
-        final RecipeResource recipeToSave = createRecipe();
+    public void shouldBeSaveNewRecipePOST() throws Exception {
+        final RecipeResource recipeToSave = createRecipeWithoutUUID();
         mockMvc.perform(post("/recipes").with(httpBasic("user", "password"))
                 .contentType(APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(recipeToSave)))
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", containsString("http://localhost/recipes/")))
+            .andReturn();
+    }
+    
+    @Test
+    public void shouldBeSaveNewRecipePUT() throws Exception {
+        final RecipeResource recipeToSave = createRecipeWithUUID();
+        mockMvc.perform(put("/recipes/" + recipeToSave.getUuid()).with(httpBasic("user", "password"))
+                .contentType(APPLICATION_JSON)
+                .content(convertObjectToJsonBytes(recipeToSave)))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("http://localhost/recipes/" + recipeToSave.getUuid())))
             .andReturn();
     }
     
@@ -127,7 +132,8 @@ public class RecipeControllerIT {
         final RecipeResource resource = mapper.readValue(result.getResponse().getContentAsString(), RecipeResource.class);
         resource.setRating(3);
         
-        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb").content(convertObjectToJsonBytes(resource))
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
+                        .content(convertObjectToJsonBytes(resource))
                         .contentType(APPLICATION_JSON).with(httpBasic("user", "password")))
             .andExpect(status().isOk()).andReturn();
     }
@@ -139,7 +145,7 @@ public class RecipeControllerIT {
             .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.totalElements", is(1)))
+            .andExpect(jsonPath("$.totalElements", is(2)))
             .andReturn();
     }
     
@@ -221,14 +227,14 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeDeleteIngredient() throws Exception {
         
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113")
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
                 .with(httpBasic("user", "password")))
                 .andExpect(status().isOk())
                 .andReturn();
         
-        mockMvc.perform(delete("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047113")
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
                 .with(httpBasic("user", "password")))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andReturn();
     }
     
@@ -257,11 +263,19 @@ public class RecipeControllerIT {
         return mapper.writeValueAsString(object);
     }
     
-    private RecipeResource createRecipe() {
+    private RecipeResource createRecipeWithUUID() {
         final RecipeResource recipe = new RecipeResource(UUID.randomUUID().toString());
         recipe.setTitle("Neues Rezept vom Junit-Test").setPreamble("Da gibt es einiges zu sagen")
             .setAddingDate(december(24, 2014)).setEditingDate(december(29, 2014)).setNoOfPerson("2")
             .setPreparation("Die Zubereitung ist einfach").setRating(4).addTag("pasta").addTag("new");
+        return recipe;
+    }
+    
+    private RecipeResource createRecipeWithoutUUID() {
+        final RecipeResource recipe = new RecipeResource();
+        recipe.setTitle("Omeletten-Gemüse-Gratin").setPreamble("Omeletten hausgemacht")
+            .setAddingDate(december(24, 2014)).setEditingDate(december(29, 2014)).setNoOfPerson("2")
+            .setPreparation("Mehl, Eier, Salz (ca. 1/4 TL) und die Herbes de Provence in eine Schüssel geben und glatt rühren.").setRating(4).addTag("vegi").addTag("new");
         return recipe;
     }
 

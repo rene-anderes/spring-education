@@ -60,7 +60,7 @@ public class RecipeRepositoryIT {
             assertThat(recipe.getTitle(), is(notNullValue()));
             counter++;
         }
-        assertThat(counter, is(2));
+        assertThat(counter, is(3));
     }
     
     @Test

@@ -90,16 +90,8 @@ public class RecipeController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
-        final Recipe recipe = new Recipe();
-        DtoMapper.map(newResource, recipe);
-        recipe.setAddingDate(LocalDateTime.now());
-        recipe.setLastUpdate(LocalDateTime.now());
-        final Recipe result = repository.save(recipe);
-        final URI location = ServletUriComponentsBuilder
-                        .fromCurrentRequest().path("/{id}")
-                        .buildAndExpand(result.getUuid()).toUri();
-
-        return ResponseEntity.created(location).build();
+        final Recipe newRecipe = new Recipe();
+        return saveNewRecipe(newResource, newRecipe);
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -107,12 +99,23 @@ public class RecipeController {
     public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource) {
         final Recipe existsRecipe = repository.findOne(resourceId);
         if (existsRecipe == null) {
-            return ResponseEntity.notFound().build();
+            final Recipe newRecipe = new Recipe(resourceId);
+            return saveNewRecipe(resource, newRecipe);
+        } else {
+            DtoMapper.map(resource, existsRecipe);
+            existsRecipe.setLastUpdate(LocalDateTime.now());
+            repository.save(existsRecipe);
+            return ResponseEntity.ok().build();
         }
-        DtoMapper.map(resource, existsRecipe);
-        existsRecipe.setLastUpdate(LocalDateTime.now());
-        repository.save(existsRecipe);
-        return ResponseEntity.ok().build();
+    }
+
+    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Recipe newRecipe) {
+        DtoMapper.map(resource, newRecipe);
+        newRecipe.setAddingDate(LocalDateTime.now());
+        newRecipe.setLastUpdate(LocalDateTime.now());
+        final Recipe result = repository.save(newRecipe);
+        final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getUuid()).toUri();
+        return ResponseEntity.created(location).build();
     }
     
     @RequestMapping(method = GET, value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
@@ -201,7 +204,7 @@ public class RecipeController {
             repository.save(recipe);
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
     
     @RequestMapping(method = GET, value = "tags", produces = { APPLICATION_JSON_VALUE })
