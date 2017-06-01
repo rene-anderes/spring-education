@@ -151,6 +151,7 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
     
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = PUT, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> updateIngredient(@PathVariable("id") String recipeId, 
                     @PathVariable("ingredientId") String ingredientId, @RequestBody IngredientResource resource) {
