@@ -50,7 +50,8 @@
 		<div id="dialog" title="Confirmation Required">Das Rezept wirklich löschen?</div>
 	</div>
 	<script>
-		var $recipesUrl = "recipes";
+		var $rootUrl = "/spring-jpa-rest"
+		var $recipesUrl = $rootUrl + "/recipes";
 		
 		var cookbook = {
 			
@@ -157,7 +158,7 @@
 			
 			buildRecipe: function( recipe ) {
 				$( "#editLink").attr( {
-        				"href" : "edit.html?id=" + recipe.uuid
+        				"href" : $rootUrl + "/edit.html?id=" + recipe.uuid
         		});
 				
 				// Rezept-View mit Daten abfüllen        			

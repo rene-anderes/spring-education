@@ -88,6 +88,7 @@ public class RecipeControllerIT {
             .andExpect(content().contentType("application/json;charset=UTF-8"))
             .andExpect(jsonPath("$.uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
             .andExpect(jsonPath("$.title", is("Arabische Spaghetti")))
+            .andExpect(jsonPath("$.addingDate", is(1390428200000L)))
             .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -115,7 +116,7 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeSaveNewRecipePUT() throws Exception {
         final RecipeResource recipeToSave = createRecipeWithUUID();
-        mockMvc.perform(put("/recipes/" + recipeToSave.getUuid()).with(httpBasic("user", "password"))
+        mockMvc.perform(put("/recipes/" + recipeToSave.getUuid() + "?updateDate=false").with(httpBasic("user", "password"))
                 .contentType(APPLICATION_JSON)
                 .content(convertObjectToJsonBytes(recipeToSave)))
             .andExpect(status().isCreated())

@@ -1,5 +1,6 @@
 package org.anderes.edu.jpa.rest;
 
+import static java.lang.Boolean.TRUE;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -8,7 +9,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +36,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -91,16 +95,18 @@ public class RecipeController {
     @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
         final Recipe newRecipe = new Recipe();
-        return saveNewRecipe(newResource, newRecipe);
+        return saveNewRecipe(newResource, newRecipe, TRUE);
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = PUT, value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
-    public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource) {
+    public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource,
+            @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate) {
+        System.out.println("updateDate: " + updateDate);
         final Recipe existsRecipe = repository.findOne(resourceId);
         if (existsRecipe == null) {
             final Recipe newRecipe = new Recipe(resourceId);
-            return saveNewRecipe(resource, newRecipe);
+            return saveNewRecipe(resource, newRecipe, updateDate);
         } else {
             DtoMapper.map(resource, existsRecipe);
             existsRecipe.setLastUpdate(LocalDateTime.now());
@@ -109,10 +115,16 @@ public class RecipeController {
         }
     }
 
-    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Recipe newRecipe) {
+    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Recipe newRecipe, final Boolean updateDate) {
         DtoMapper.map(resource, newRecipe);
-        newRecipe.setAddingDate(LocalDateTime.now());
-        newRecipe.setLastUpdate(LocalDateTime.now());
+        if (updateDate) {
+            newRecipe.setAddingDate(LocalDateTime.now());
+            newRecipe.setLastUpdate(LocalDateTime.now());
+        } else {
+            // Datum übernehmen
+            newRecipe.setAddingDate(LocalDateTime.ofInstant(Instant.ofEpochMilli(resource.getAddingDate()), ZoneId.systemDefault()));
+            newRecipe.setLastUpdate(LocalDateTime.ofInstant(Instant.ofEpochMilli(resource.getEditingDate()), ZoneId.systemDefault()));
+        }
         final Recipe result = repository.save(newRecipe);
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getUuid()).toUri();
         return ResponseEntity.created(location).build();

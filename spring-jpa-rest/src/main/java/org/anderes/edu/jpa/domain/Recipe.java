@@ -2,6 +2,7 @@ package org.anderes.edu.jpa.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -141,7 +142,7 @@ public class Recipe implements Serializable {
      * @return time
      */
     public Long getLastUpdateTime() {
-        return this.lastUpdate.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
+        return this.lastUpdate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     public LocalDateTime getAddingDate() {
@@ -153,7 +154,7 @@ public class Recipe implements Serializable {
      * @return time
      */
     public Long getAddingDateTime() {
-        return this.addingDate.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli();
+        return this.addingDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
     
     public void setAddingDate(LocalDateTime addingDate) {
