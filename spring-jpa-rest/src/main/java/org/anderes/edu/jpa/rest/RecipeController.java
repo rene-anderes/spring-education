@@ -69,11 +69,8 @@ public class RecipeController {
             return ResponseEntity.notFound().build();
         }
         final RecipeResource recipeResource = new RecipeResource(findRecipe.getUuid());
-        recipeResource.setTitle(findRecipe.getTitle()).setPreamble(findRecipe.getPreamble())
-            .setNoOfPerson(findRecipe.getNoOfPerson()).setPreparation(findRecipe.getPreparation())
-            .setAddingDate(findRecipe.getAddingDateTime()).setEditingDate(findRecipe.getLastUpdateTime())
-            .setRating(findRecipe.getRating());
-        findRecipe.getTags().stream().forEach(t -> recipeResource.addTag(t));
+        DtoMapper.map(findRecipe, recipeResource);
+        recipeResource.setAddingDate(findRecipe.getAddingDateTime()).setEditingDate(findRecipe.getLastUpdateTime());
         
         final Link linkRel = linkTo(RecipeController.class)
                         .slash(findRecipe.getUuid())

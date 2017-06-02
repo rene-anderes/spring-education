@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -46,8 +47,36 @@ public class DtoMapperTest {
         assertThat(recipe.getRating(), is(4));
         assertThat(recipe.getPreparation(), is("Pouletfleisch in schmale Streifen schneiden und kurz anbraten"));
         assertThat(recipe.getIngredients().size(), is(2));
+        assertThat(LocalDateTime.now().minusMinutes(1l).isBefore(recipe.getAddingDate()), is(true));
+        assertThat(LocalDateTime.now().minusMinutes(1l).isBefore(recipe.getLastUpdate()), is(true));
     }
 
+    @Test
+    public void shouldBeMapRecipeResource() {
+    
+        // given
+        final Recipe recipe = new Recipe(UUID.randomUUID().toString());
+        recipe.setTitle("Arabische Spaghetti").setPreamble("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird...")
+            .setNoOfPerson("2").setPreparation("Pouletfleisch in schmale Streifen schneiden und kurz anbraten")
+            .setRating(4).addTag("test").addTag("vegetarisch").setAddingDate(LocalDateTime.of(2000, Month.DECEMBER, 29, 0, 0))
+            .setLastUpdate(LocalDateTime.of(2000, Month.DECEMBER, 29, 0, 0));
+        
+        final RecipeResource resource = new RecipeResource(recipe.getUuid());
+        
+        // when
+        DtoMapper.map(recipe, resource);
+        
+        // then
+        assertThat(resource.getUuid(), is(recipe.getUuid()));
+        assertThat(resource.getTitle(), is("Arabische Spaghetti"));
+        assertThat(resource.getTags().size(), is(2));
+        assertThat(resource.getTags(), hasItems("test", "vegetarisch"));
+        assertThat(resource.getPreamble(), is("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird..."));
+        assertThat(resource.getNoOfPerson(), is("2"));
+        assertThat(resource.getRating(), is(4));
+        assertThat(resource.getPreparation(), is("Pouletfleisch in schmale Streifen schneiden und kurz anbraten"));
+    }
+    
     private Long december(int year, int dayOfMonth) {
         final LocalDate localDate = LocalDate.of(year, Month.DECEMBER, dayOfMonth);
         return DateUtils.truncate(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), Calendar.DAY_OF_MONTH).getTime();

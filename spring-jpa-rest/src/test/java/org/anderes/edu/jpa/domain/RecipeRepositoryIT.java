@@ -85,7 +85,7 @@ public class RecipeRepositoryIT {
     
     @ShouldMatchDataSet(value = { "/data/expected-afterRecipeInsertNew.json" },
             excludeColumns = { "INGREDIENT.UUID", "INGREDIENT.RECIPE_ID", "RECIPE.UUID", "TAGS.RECIPE_ID" },
-            orderBy = { "RECIPE.TITLE", "INGREDIENT.DESCRIPTION", "TAGS.TAGS" }
+            orderBy = { "INGREDIENT.DESCRIPTION", "INGREDIENT.ANNOTATION", "RECIPE.TITLE", "TAGS.TAGS" }
     )
     @Test
     public void shouldBeSaveNewRecipe() {

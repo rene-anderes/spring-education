@@ -117,8 +117,9 @@ public class Recipe implements Serializable {
 		return image;
 	}
 
-	public void setImage(Image image) {
+	public Recipe setImage(Image image) {
 		this.image = image;
+		return this;
 	}
 
 	public Integer getVersion() {
@@ -133,8 +134,9 @@ public class Recipe implements Serializable {
         return lastUpdate;
     }
 
-    public void setLastUpdate(LocalDateTime lastUpdate) {
+    public Recipe setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
+        return this;
     }
     
     /**
@@ -157,24 +159,28 @@ public class Recipe implements Serializable {
         return this.addingDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
     
-    public void setAddingDate(LocalDateTime addingDate) {
+    public Recipe setAddingDate(LocalDateTime addingDate) {
         this.addingDate = addingDate;
+        return this;
     }
 
     public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public Recipe setTitle(String title) {
 		this.title = title;
+        return this;
 	}
 
-	public void addIngredient(final Ingredient ingredient) {
+	public Recipe addIngredient(final Ingredient ingredient) {
 		ingredients.add(ingredient);
+        return this;
 	}
 	
-	public void removeIngredient(final Ingredient ingredient) {
+	public Recipe removeIngredient(final Ingredient ingredient) {
 		ingredients.remove(ingredient);
+        return this;
 	}
 
 	public List<Ingredient> getIngredients() {
@@ -185,24 +191,27 @@ public class Recipe implements Serializable {
 		return preparation;
 	}
 
-	public void setPreparation(final String preparation) {
+	public Recipe setPreparation(final String preparation) {
 		this.preparation = preparation;
+        return this;
 	}
 
 	public String getPreamble() {
 		return preamble;
 	}
 
-	public void setPreamble(final String preamble) {
+	public Recipe setPreamble(final String preamble) {
 		this.preamble = preamble;
+        return this;
 	}
 
 	public String getNoOfPerson() {
 		return noOfPerson;
 	}
 
-	public void setNoOfPerson(final String noOfPerson) {
+	public Recipe setNoOfPerson(final String noOfPerson) {
 		this.noOfPerson = noOfPerson;
+        return this;
 	}
 
 	public Set<String> getTags() {
@@ -214,16 +223,18 @@ public class Recipe implements Serializable {
 		return this;
 	}
 	
-	public void removeTag(final String tag) {
+	public Recipe removeTag(final String tag) {
 		this.tags.remove(tag);
+        return this;
 	}
 
     public Integer getRating() {
         return rating;
     }
 
-    public void setRating(Integer rating) {
+    public Recipe setRating(Integer rating) {
         this.rating = rating;
+        return this;
     }
     
     @Override
