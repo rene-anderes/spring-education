@@ -19,6 +19,7 @@ public class Ingredient implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @NotNull @Size(min = 36, max = 36)
     @Column(nullable = false, updatable = false, unique = true)
     private String uuid;
     @Size(min = 0, max = 20)

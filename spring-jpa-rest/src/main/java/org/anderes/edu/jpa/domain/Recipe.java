@@ -3,7 +3,6 @@ package org.anderes.edu.jpa.domain;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,6 +52,7 @@ public class Recipe implements Serializable {
 	
 	@Id
 	@Column(nullable = false)
+	@NotNull @Size(min = 36, max = 36)
 	private String uuid;
 
 	@Version

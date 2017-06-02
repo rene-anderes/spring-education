@@ -32,6 +32,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
                 "classpath:unittest-application-context.xml"
 })
 @WebAppConfiguration
+@CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
+@UsingDataSet(value = { "/data/prepare.json" })
 public class RecipeRepositoryIT {
 
     @Inject
@@ -46,8 +48,6 @@ public class RecipeRepositoryIT {
     }
         
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.json" })
     @ShouldMatchDataSet(
             value = { "/data/prepare.json" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
@@ -64,8 +64,6 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeOneRecipe() {
         final Recipe recipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
         assertNotNull(recipe);
@@ -73,10 +71,8 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
     @ShouldMatchDataSet(
-            value = { "/data/prepare.xls" },
+            value = { "/data/prepare.json" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void getRecipesByTitle() {
         final Collection<Recipe> recipes = repository.findByTitleLike("%Spaghetti%");
@@ -87,9 +83,11 @@ public class RecipeRepositoryIT {
         assertThat(recipe.getTitle(), is("Arabische Spaghetti"));
     }
     
+    @ShouldMatchDataSet(value = { "/data/expected-afterRecipeInsertNew.json" },
+            excludeColumns = { "INGREDIENT.UUID", "INGREDIENT.RECIPE_ID", "RECIPE.UUID", "TAGS.RECIPE_ID" },
+            orderBy = { "RECIPE.TITLE", "INGREDIENT.DESCRIPTION", "TAGS.TAGS" }
+    )
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeSaveNewRecipe() {
         // given
         final Recipe newRecipe = RecipeBuilder.buildRecipe();
@@ -107,9 +105,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
-    @ShouldMatchDataSet(value = { "/data/expected-afterUpdate.xls" },
+    @ShouldMatchDataSet(value = { "/data/expected-afterRecipeUpdate.json" },
             excludeColumns = { "INGREDIENT.UUID" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.DESCRIPTION" }
     )
@@ -132,10 +128,7 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
-    @ShouldMatchDataSet(value = { "/data/expected-afterDeleteOne.xls" },
-            excludeColumns = { "RECIPE.ADDINGDATE" },
+    @ShouldMatchDataSet(value = { "/data/expected-afterRecipeDelete.json" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void shouldBeDelete() {
         final Recipe toDelete = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
@@ -148,11 +141,9 @@ public class RecipeRepositoryIT {
     }
     
     @Test
-    @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
-    @UsingDataSet(value = { "/data/prepare.xls" })
     public void shouldBeFindAllTag() {
         final List<String> tags = repository.findAllTag();
         assertThat(tags, is(notNullValue()));
-        assertThat(tags.size(), is(4));
+        assertThat(tags.size(), is(6));
     }
 }

@@ -1,0 +1,93 @@
+{
+	"RECIPE": [{
+		"UUID": "adf99b55-4804-4398-af4e-e37ec2c692c7",
+		"LASTUPDATE": "2014-01-31 23:03:20",
+		"ADDINGDATE": "2015-01-23 23:03:20",
+		"NOOFPERSON": "4",
+		"PREAMBLE": null,
+		"PREPARATION": "<p>Die Zitrone auspressen und den Saft, mit dem Öl, Salz, Pfeffer und Curry in eine Schüssel geben und verrühren. Die Avocados in Würfelchen schneiden, nicht zu klein damit es kein Mus ",
+		"TITLE": "Avocadotatar",
+		"IMAGE_DESCRIPTION": null,
+		"IMAGE_URL": null,
+		"RATING": 5,
+		"VERSION": 1
+	},
+	{
+		"UUID": "adf99b55-4804-4398-af55-e37ec2c692ff",
+		"LASTUPDATE": "2014-01-31 23:03:20",
+		"ADDINGDATE": "2016-01-23 23:03:20",
+		"NOOFPERSON": "4-5",
+		"PREAMBLE": null,
+		"PREPARATION": "<p>Die Auberginen in ca. 4-5mm dicke Streifen schneiden. Diese auf beiden Seiten salzen und für mind. 30 Min. auf die Seite stellen.",
+		"TITLE": "Auberginen Lasagne",
+		"IMAGE_DESCRIPTION": null,
+		"IMAGE_URL": null,
+		"RATING": 5,
+		"VERSION": 1
+	}],
+	"TAGS": [{
+		"RECIPE_ID": "adf99b55-4804-4398-af4e-e37ec2c692c7",
+		"TAGS": "kalt"
+	},
+	{
+		"RECIPE_ID": "adf99b55-4804-4398-af4e-e37ec2c692c7",
+		"TAGS": "vorspeise"
+	},
+	{
+		"RECIPE_ID": "adf99b55-4804-4398-af55-e37ec2c692ff",
+		"TAGS": "pasta"
+	},
+	{
+		"RECIPE_ID": "adf99b55-4804-4398-af55-e37ec2c692ff",
+		"TAGS": "vorspeise"
+	}],
+	"INGREDIENT": [{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047111",
+		"ANNOTATION": null,
+		"DESCRIPTION": "Zucker",
+		"QUANTITY": "50g",
+		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047115",
+		"ANNOTATION": "gelb oder rot",
+		"DESCRIPTION": "Peproni",
+		"QUANTITY": "2-3",
+		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047116",
+		"ANNOTATION": null,
+		"DESCRIPTION": "Tomate",
+		"QUANTITY": "1",
+		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047117",
+		"ANNOTATION": null,
+		"DESCRIPTION": "Peperoncini",
+		"QUANTITY": "1",
+		"RECIPE_ID":"adf99b55-4804-4398-af4e-e37ec2c692c7" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047211",
+		"ANNOTATION": null,
+		"DESCRIPTION": "Auberginen",
+		"QUANTITY": "1 kg",
+		"RECIPE_ID":"adf99b55-4804-4398-af55-e37ec2c692ff" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047212",
+		"ANNOTATION": null,
+		"DESCRIPTION": "Feta-Käse",
+		"QUANTITY": "100 g",
+		"RECIPE_ID":"adf99b55-4804-4398-af55-e37ec2c692ff" 
+	},
+	{
+		"UUID": "c0e5582e-252f-4e94-8a49-e12b4b047213",
+		"ANNOTATION": "Bio",
+		"DESCRIPTION": "Knoblizehen",
+		"QUANTITY": "2-3",
+		"RECIPE_ID":"adf99b55-4804-4398-af55-e37ec2c692ff" 
+	}]
+}

@@ -84,14 +84,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <db.url>jdbc:derby://localhost:1527/sun-appserv-samples;create=true</db.url>
+                <db.url>jdbc:derby://localhost:1527/CookbookDB2;create=true</db.url>
                 <eclipselink.showsql>true</eclipselink.showsql>
             </properties>
         </profile>
         <profile>
             <id>live</id>
             <properties>
-                <db.url>jdbc:derby://localhost:1527/CookbookDB</db.url>
+                <db.url>jdbc:derby://localhost:1527/CookbookDB2</db.url>
                 <eclipselink.showsql>false</eclipselink.showsql>
             </properties>
         </profile>
