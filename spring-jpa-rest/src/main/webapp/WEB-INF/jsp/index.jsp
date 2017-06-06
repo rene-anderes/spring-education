@@ -52,6 +52,8 @@
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
+		var $pageSize = 10;
+		var $pageNo = 0;
 		
 		var cookbook = {
 			
@@ -233,7 +235,7 @@
 	
 	$(function() {
 		cookbook.init();
-		cookbook.showRecipes( $recipesUrl ).then( cookbook.checkUrlParameter() );
+		cookbook.showRecipes( $recipesUrl + "?sort=title" ).then( cookbook.checkUrlParameter() );
 	});
 	$(document).ajaxStart(function(){
     	$("#loading").show();
