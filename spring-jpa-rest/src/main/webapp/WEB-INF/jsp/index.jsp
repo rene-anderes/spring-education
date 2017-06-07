@@ -24,6 +24,10 @@
 				<p>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></p>
 				<ul class="w3-ul" style="width:75%" id="list"></ul>
 				<hr>
+				 <div class="w3-bar">
+					<a id="prevPage" class="w3-button">&laquo;</a>
+					<a id="nextPage" class="w3-button">&raquo;</a>
+				</div> 
 				<p><a href="edit.html" class="w3-button w3-circle w3-red">+</a></p>
 			</div>
 			<div class="w3-col s6">
@@ -78,10 +82,22 @@
 				    e.preventDefault();
 				    $( "#dialog" ).dialog( "open" );
 				});
+				$( "#nextPage" ).on( "click", function( e ){
+					e.preventDefault();
+					$pageNo = $pageNo + 1;
+					cookbook.showRecipes( $recipesUrl );
+				});
+				$( "#prevPage" ).on( "click", function( e ){
+					e.preventDefault();
+					if ( $pageNo > 0) {
+						$pageNo--;
+						cookbook.showRecipes( $recipesUrl );
+					}
+				});
 			},
 			
 			deleteRecipe: function() {
-				$recourceId = $( "#recipe #resourceId" ).text();
+				var $recourceId = $( "#recipe #resourceId" ).text();
 				$.ajax({
 					    url: $recipesUrl + "/" + $recourceId,
 					    method: "DELETE"
@@ -97,19 +113,21 @@
 			
 			showRecipes: function( url ) {
 				var deferred = $.Deferred();
-				$.getJSON( url )
+				var $completeUrl = url + "?sort=title&page=" + $pageNo + "&size=" + $pageSize;
+				$.getJSON( $completeUrl )
 					.fail( function( xhr, status, error ) {
     				    var err = status + ", " + error;
    						console.log( "Request Failed: " + err );
 	  				})
 					.then( function( json ) { 
 						cookbook.handleRecipesList( json.content );
-						deferred.resolve;
+						deferred.resolve();
 					})
 				return deferred.promise();
 			},
 			
 			handleRecipesList: function( collection ) {
+				$( "#list li").remove();
 				$.each($(collection), function( idx, recipe ) {
 					var url = "";
 					$.each(recipe.links, function( idx, link ) {
@@ -126,6 +144,11 @@
 					li = $( "<li>" ).append( a );
 					li.appendTo( "#list" );
 				});
+				if ( $( "#list li" ).length < $pageSize ) {
+					$( "#nextPage" ).fadeOut( "fast" );
+				} else {
+					$( "#nextPage" ).show();
+				} 
 			}, 
 			
 			showRecipe: function( url ) {
@@ -214,7 +237,7 @@
 			},
 			
 			checkUrlParameter: function() {
-				$resourceId = cookbook.getRequestParams( "id" )
+				var $resourceId = cookbook.getRequestParams( "id" )
 				if ( $resourceId ) {
 					$url = $recipesUrl + "/" + $resourceId;
 					cookbook.showRecipe( $url );
@@ -228,14 +251,14 @@
 			},
 			 			
 			formatDate: function( number ) {
-				$myDate = new Date(number);
+				var $myDate = new Date(number);
         		return $myDate.toLocaleString();
         	}
 		};
 	
 	$(function() {
 		cookbook.init();
-		cookbook.showRecipes( $recipesUrl + "?sort=title" ).then( cookbook.checkUrlParameter() );
+		cookbook.showRecipes( $recipesUrl ).then( cookbook.checkUrlParameter() );
 	});
 	$(document).ajaxStart(function(){
     	$("#loading").show();
