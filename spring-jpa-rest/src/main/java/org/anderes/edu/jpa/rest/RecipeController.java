@@ -119,12 +119,16 @@ public class RecipeController {
             newRecipe.setLastUpdate(LocalDateTime.now());
         } else {
             // Datum übernehmen
-            newRecipe.setAddingDate(LocalDateTime.ofInstant(Instant.ofEpochMilli(resource.getAddingDate()), ZoneId.systemDefault()));
-            newRecipe.setLastUpdate(LocalDateTime.ofInstant(Instant.ofEpochMilli(resource.getEditingDate()), ZoneId.systemDefault()));
+            newRecipe.setAddingDate(longToLocatDateTime(resource.getAddingDate()));
+            newRecipe.setLastUpdate(longToLocatDateTime(resource.getEditingDate()));
         }
         final Recipe result = repository.save(newRecipe);
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getUuid()).toUri();
         return ResponseEntity.created(location).build();
+    }
+
+    private LocalDateTime longToLocatDateTime(final Long datetime) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.systemDefault());
     }
     
     @RequestMapping(method = GET, value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
