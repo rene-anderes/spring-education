@@ -41,7 +41,7 @@
 				</div>
 				<div class="w3-panel">
 					<label class="w3-text-gray">Zutaten für</label>
-					<input class="w3-input" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
+					<input class="w3-input" style="width:25%" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
 					<label class="w3-text-gray">Personen</label>
 				</div>
 				<div class="w3-panel">
@@ -382,7 +382,7 @@
 			$( "#status" ).hide();
 			CKEDITOR.replace( "preamble", {
 			    language: "de",
-			    contentsCss: "resources/ckEditorContents.css"
+			    contentsCss: "resources/ckEditorContents.css"				
 			});
 			CKEDITOR.replace( "preparation", {
 			    language: "de",

@@ -28,7 +28,8 @@
 					<a id="prevPage" class="w3-button">&laquo;</a>
 					<a id="nextPage" class="w3-button">&raquo;</a>
 				</div> 
-				<p><a href="edit.html" class="w3-button w3-circle w3-red">+</a></p>
+				<c:url var="editUrl" value="/edit.html"/>
+				<p><a href="${ editUrl }" class="w3-button w3-circle w3-red">+</a></p>
 			</div>
 			<div class="w3-col s6">
 				<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
