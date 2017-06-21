@@ -380,12 +380,14 @@
 		$( function() {
 			$( "#msg" ).hide();
 			$( "#status" ).hide();
+			// Konfigration für alle Instanzen des ckEditor
+			CKEDITOR.config.resize_enabled = true;
+			CKEDITOR.config.language = "de";
 			CKEDITOR.replace( "preamble", {
-			    language: "de",
+				removeButtons: 'Cut,Copy,Paste,Undo,Redo,Anchor,Underline,Strike,Subscript,Superscript,About',
 			    contentsCss: "resources/ckEditorContents.css"				
 			});
 			CKEDITOR.replace( "preparation", {
-			    language: "de",
 			    contentsCss: "resources/ckEditorContents.css"
 			});
 			init().then( function() { start(); } );
