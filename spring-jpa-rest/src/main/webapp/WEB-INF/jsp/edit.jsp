@@ -376,26 +376,68 @@
 				}); 
 			}
 		}
-		
+				
 		$( function() {
 			$( "#msg" ).hide();
 			$( "#status" ).hide();
-			// Konfigration für alle Instanzen des ckEditor
-			CKEDITOR.config.resize_enabled = true;
-			CKEDITOR.config.language = "de";
-			CKEDITOR.replace( "preamble", {
-				removeButtons: 'Cut,Copy,Paste,Undo,Redo,Anchor,Underline,Strike,Subscript,Superscript,About',
-			    contentsCss: "resources/ckEditorContents.css"				
-			});
-			CKEDITOR.replace( "preparation", {
-			    contentsCss: "resources/ckEditorContents.css"
-			});
+			initckEditor();
 			init().then( function() { start(); } );
 		});
 		$( document ).ajaxError( function( event, request, settings ) {
 			$( "#msg" ).show();
   			$( "#msg" ).text( "Error requesting page " + settings.url  );
 		});
+		
+		function initckEditor() {
+			// Toolbarkonfigurator: http://ckeditor.com/latest/samples/toolbarconfigurator/index.html
+			CKEDITOR.replace( "preamble", {
+			    contentsCss: "resources/ckEditorContents.css",
+			    resize_enabled: true,
+			    language: "de",
+			    toolbarGroups: [
+					{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+					{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+					{ name: 'forms', groups: [ 'forms' ] },
+					'/',
+					{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+					{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+					{ name: 'document', groups: [ 'document', 'doctools', 'mode' ] },
+					{ name: 'links', groups: [ 'links' ] },
+					{ name: 'insert', groups: [ 'insert' ] },
+					'/',
+					{ name: 'styles', groups: [ 'styles' ] },
+					{ name: 'colors', groups: [ 'colors' ] },
+					{ name: 'tools', groups: [ 'tools' ] },
+					{ name: 'others', groups: [ 'others' ] },
+					{ name: 'about', groups: [ 'about' ] }
+				],	
+				removeButtons: 'Save,Templates,Cut,Undo,Copy,Paste,PasteText,PasteFromWord,Preview,NewPage,Print,Redo,Replace,Find,SelectAll,Scayt,Form,Radio,Checkbox,TextField,Textarea,Select,Button,ImageButton,HiddenField,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,JustifyLeft,JustifyCenter,JustifyBlock,BidiLtr,BidiRtl,Language,Anchor,Unlink,Link,Image,Flash,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,FontSize,Font,Format,Styles,TextColor,BGColor,Maximize,ShowBlocks,About,JustifyRight'		
+			});
+			CKEDITOR.replace( "preparation", {
+			    contentsCss: "resources/ckEditorContents.css",
+			    resize_enabled: true,
+			    language: "de",
+			    toolbarGroups: [
+					{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+					{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+					{ name: 'forms', groups: [ 'forms' ] },
+					'/',
+					{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+					{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+					{ name: 'document', groups: [ 'document', 'doctools', 'mode' ] },
+					{ name: 'links', groups: [ 'links' ] },
+					{ name: 'insert', groups: [ 'insert' ] },
+					'/',
+					{ name: 'styles', groups: [ 'styles' ] },
+					{ name: 'colors', groups: [ 'colors' ] },
+					{ name: 'tools', groups: [ 'tools' ] },
+					{ name: 'others', groups: [ 'others' ] },
+					{ name: 'about', groups: [ 'about' ] }
+				],	
+				removeButtons: 'Save,Templates,Cut,Undo,Copy,Paste,PasteText,PasteFromWord,Preview,NewPage,Print,Redo,Replace,Find,SelectAll,Scayt,Form,Radio,Checkbox,TextField,Textarea,Select,Button,ImageButton,HiddenField,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,JustifyLeft,JustifyCenter,JustifyBlock,BidiLtr,BidiRtl,Language,Anchor,Unlink,Link,Image,Flash,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,FontSize,Font,Format,Styles,TextColor,BGColor,Maximize,ShowBlocks,About,JustifyRight'		
+			});
+		}
+
 	</script>
 </body>
 </html>
