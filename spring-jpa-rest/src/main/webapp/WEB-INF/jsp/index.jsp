@@ -48,11 +48,28 @@
 				    <p id="tags" class="w3-tiny">Stichworte:&nbsp;</p>
 				    <p id="resourceId"></p>
 				    <hr>
-				    <p><a id="editLink" class="w3-button w3-red">Editieren</a>&nbsp;<a id="delete" class="w3-button w3-red">Löschen</a></p>
+				    <p><a id="editLink" class="w3-button w3-red">Editieren</a>&nbsp;<a id="delete" onclick="dialogDelete.show();" class="w3-button w3-red">Löschen</a></p>
 			    </div>
 			</div>
 		</div>
-		<div id="dialog" title="Confirmation Required">Das Rezept wirklich löschen?</div>
+		
+	</div>
+	<div id="dialogDelete" class="w3-modal">
+		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
+			<header class="w3-container w3-blue">
+				<span onclick="dialogDelete.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
+				<h2>Confirmation Required</h2>
+			</header>
+			<div id="London" class="w3-container city">
+				<p>Das Rezept wirklich löschen?</p>
+			</div>
+			<div class="w3-container w3-light-grey w3-padding">
+				<div class="w3-bar w3-right-align">
+					<button class="w3-button w3-red" onclick="dialogDelete.confirm();">Ja</button>
+					<button class="w3-button w3-red" onclick="dialogDelete.cancel();">Nein</button>
+				</div>
+			</div>
+		</div>
 	</div>
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
@@ -60,28 +77,30 @@
 		var $pageSize = 10;
 		var $pageNo = 0;
 		
+		var dialogDelete = {
+		
+			cancel: function() {
+				$( "#dialogDelete" ).hide();
+			},
+			
+			show: function() {
+				$( "#dialogDelete" ).show();
+			},
+			
+			confirm: function() {
+				cookbook.deleteRecipe(); 
+			}
+		}
+		
 		var cookbook = {
 			
 			init: function() {
 				$( "#recipe" ).hide();
 				$( "#choice" ).show();
 				$( "#recipe #resourceId").hide();
-				$( "#dialog" ).dialog({
-					autoOpen: false,
-				    modal: true,
-				    show: { effect: "fade", duration: 200 },
-				    buttons : {
-					    "Confirm" : function() {
-					    	cookbook.deleteRecipe();        
-					    },
-					    "Cancel" : function() {
-					    	$(this).dialog( "close" );
-					    }
-					}
-				});
 				$( "#delete" ).on( "click", function( e ) {
 				    e.preventDefault();
-				    $( "#dialog" ).dialog( "open" );
+				    dialogDelete.show();
 				});
 				$( "#nextPage" ).on( "click", function( e ){
 					e.preventDefault();
