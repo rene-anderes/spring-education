@@ -60,13 +60,29 @@
 				<span onclick="dialogDelete.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
 				<h2>Confirmation Required</h2>
 			</header>
-			<div id="London" class="w3-container city">
+			<div class="w3-container">
 				<p>Das Rezept wirklich löschen?</p>
 			</div>
 			<div class="w3-container w3-light-grey w3-padding">
 				<div class="w3-bar w3-right-align">
 					<button class="w3-button w3-red" onclick="dialogDelete.confirm();">Ja</button>
 					<button class="w3-button w3-red" onclick="dialogDelete.cancel();">Nein</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="dialogMessage" class="w3-modal">
+		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
+			<header class="w3-container w3-blue">
+				<span onclick="dialogMessage.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
+				<h2>Meldung</h2>
+			</header>
+			<div class="w3-container">
+				<p id="messageText"></p>
+			</div>
+			<div class="w3-container w3-light-grey w3-padding">
+				<div class="w3-bar w3-right-align">
+					<button class="w3-button w3-red" onclick="dialogMessage.cancel();">OK</button>
 				</div>
 			</div>
 		</div>
@@ -88,7 +104,22 @@
 			},
 			
 			confirm: function() {
-				cookbook.deleteRecipe(); 
+				$( "#dialogDelete" ).hide();
+				cookbook.deleteRecipe()
+					.fail( function( message ) { dialogMessage.show( message )} )
+					.then( function() {  location.reload; } ); 
+			}
+		}
+		
+		var dialogMessage = {
+		
+			show: function( message ) {
+				$( "#dialogMessage #messageText").html( message );
+				$( "#dialogMessage" ).show();
+			},
+			
+			cancel: function() {
+				$( "#dialogMessage" ).hide();
 			}
 		}
 		
@@ -117,18 +148,21 @@
 			},
 			
 			deleteRecipe: function() {
+				var deferred = $.Deferred();
 				var $recourceId = $( "#recipe #resourceId" ).text();
 				$.ajax({
 					    url: $recipesUrl + "/" + $recourceId,
 					    method: "DELETE"
 				})
 				.fail( function( xhr, status, error ) {
-	   				    var err = status + ", " + error;
-	  					console.log( "Request Failed: " + err );
+	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", "  + error;
+	  					console.log( err );
+	  					deferred.reject( err );
 	  			})
 	  			.then( function() {
-	  				location.reload();	  				
+	  				deferred.resolve();
 	  			})
+	  			return deferred.promise();
 			},
 			
 			showRecipes: function( url ) {
@@ -136,8 +170,9 @@
 				var $completeUrl = url + "?sort=title&page=" + $pageNo + "&size=" + $pageSize;
 				$.getJSON( $completeUrl )
 					.fail( function( xhr, status, error ) {
-    				    var err = status + ", " + error;
-   						console.log( "Request Failed: " + err );
+	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", "  + error;
+	  					console.log( err );
+	  					deferred.reject( err );
 	  				})
 					.then( function( json ) { 
 						cookbook.handleRecipesList( json.content );
@@ -278,7 +313,9 @@
 	
 	$(function() {
 		cookbook.init();
-		cookbook.showRecipes( $recipesUrl ).then( cookbook.checkUrlParameter() );
+		cookbook.showRecipes( $recipesUrl )
+			.fail( function( message ) { dialogMessage.show( message )} )
+			.then( cookbook.checkUrlParameter() );
 	});
 	$(document).ajaxStart(function(){
     	$("#loading").show();
