@@ -30,6 +30,7 @@
 				</div> 
 				<c:url var="editUrl" value="/edit.html"/>
 				<p><a href="${ editUrl }" class="w3-button w3-circle w3-red">+</a></p>
+				<p><button id="loginData" onclick="dialogLogin.show()" class="w3-button w3-red">Login Daten</button>
 			</div>
 			<div class="w3-col s6">
 				<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
@@ -57,7 +58,7 @@
 	<div id="dialogDelete" class="w3-modal">
 		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
 			<header class="w3-container w3-blue">
-				<span onclick="dialogDelete.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
+				<span onclick="dialogDelete.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
 				<h2>Confirmation Required</h2>
 			</header>
 			<div class="w3-container">
@@ -74,7 +75,7 @@
 	<div id="dialogMessage" class="w3-modal">
 		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
 			<header class="w3-container w3-blue">
-				<span onclick="dialogMessage.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
+				<span onclick="dialogMessage.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
 				<h2>Meldung</h2>
 			</header>
 			<div class="w3-container">
@@ -87,242 +88,285 @@
 			</div>
 		</div>
 	</div>
+	<div id="dialogLogin" class="w3-modal">
+		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width: 500px">
+
+			<div class="w3-center">
+				<br><span onclick="dialogLogin.cancel();" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Dialog">&times;</span>
+				<img src="img_avatar4.png" alt="Avatar" style="width: 30%" class="w3-circle w3-margin-top">
+			</div>
+
+			<form class="w3-container" action="javascript:dialogLogin.confirm();">
+				<div class="w3-section">
+					<label><b>Username</b></label>
+					<input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Username" name="usrname" required>
+					<label><b>Password</b></label>
+					<input class="w3-input w3-border" type="password" placeholder="Enter Password" name="psw" required>
+					<button class="w3-button w3-block w3-red w3-section w3-padding" type="submit">save</button>
+				</div>
+			</form>
+
+			<div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+				<button onclick="dialogLogin.cancel();" type="button" class="w3-button w3-red">Cancel</button>
+			</div>
+		</div>
+	</div>
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
 		var $pageSize = 10;
 		var $pageNo = 0;
-		
+
 		var dialogDelete = {
-		
-			cancel: function() {
-				$( "#dialogDelete" ).hide();
+
+			cancel : function() {
+				$("#dialogDelete").hide();
 			},
-			
-			show: function() {
-				$( "#dialogDelete" ).show();
+
+			show : function() {
+				$("#dialogDelete").show();
 			},
-			
-			confirm: function() {
-				$( "#dialogDelete" ).hide();
-				cookbook.deleteRecipe()
-					.fail( function( message ) { dialogMessage.show( message )} )
-					.then( function() {  location.reload; } ); 
+
+			confirm : function() {
+				$("#dialogDelete").hide();
+				cookbook.deleteRecipe().fail(function(message) {
+					dialogMessage.show(message)
+				}).then(function() {
+					location.reload;
+				});
 			}
 		}
-		
+
 		var dialogMessage = {
-		
-			show: function( message ) {
-				$( "#dialogMessage #messageText").html( message );
-				$( "#dialogMessage" ).show();
+
+			show : function(message) {
+				$("#dialogMessage #messageText").html(message);
+				$("#dialogMessage").show();
 			},
-			
-			cancel: function() {
-				$( "#dialogMessage" ).hide();
+
+			cancel : function() {
+				$("#dialogMessage").hide();
+			},
+			confirm : function() {
+				$("#dialogMessage").hide();
+				
+			}
+		}
+
+		var dialogLogin = {
+		
+			cancel : function() {
+				$("#dialogLogin").hide();
+			},
+
+			show : function() {
+				$("#dialogLogin").show();
 			}
 		}
 		
 		var cookbook = {
-			
-			init: function() {
-				$( "#recipe" ).hide();
-				$( "#choice" ).show();
-				$( "#recipe #resourceId").hide();
-				$( "#delete" ).on( "click", function( e ) {
-				    e.preventDefault();
-				    dialogDelete.show();
+
+			init : function() {
+				$("#recipe").hide();
+				$("#choice").show();
+				$("#recipe #resourceId").hide();
+				$("#delete").on("click", function(e) {
+					e.preventDefault();
+					dialogDelete.show();
 				});
-				$( "#nextPage" ).on( "click", function( e ){
+				$("#nextPage").on("click", function(e) {
 					e.preventDefault();
 					$pageNo = $pageNo + 1;
-					cookbook.showRecipes( $recipesUrl );
+					cookbook.showRecipes($recipesUrl);
 				});
-				$( "#prevPage" ).on( "click", function( e ){
+				$("#prevPage").on("click", function(e) {
 					e.preventDefault();
-					if ( $pageNo > 0) {
+					if ($pageNo > 0) {
 						$pageNo--;
-						cookbook.showRecipes( $recipesUrl );
+						cookbook.showRecipes($recipesUrl);
 					}
 				});
 			},
-			
-			deleteRecipe: function() {
+
+			deleteRecipe : function() {
 				var deferred = $.Deferred();
-				var $recourceId = $( "#recipe #resourceId" ).text();
+				var $recourceId = $("#recipe #resourceId").text();
 				$.ajax({
-					    url: $recipesUrl + "/" + $recourceId,
-					    method: "DELETE"
+					url : $recipesUrl + "/" + $recourceId,
+					method : "DELETE"
+				}).fail(
+						function(xhr, status, error) {
+							var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+							console.log(err);
+							deferred.reject(err);
+						}).then(function() {
+					deferred.resolve();
 				})
-				.fail( function( xhr, status, error ) {
-	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", "  + error;
-	  					console.log( err );
-	  					deferred.reject( err );
-	  			})
-	  			.then( function() {
-	  				deferred.resolve();
-	  			})
-	  			return deferred.promise();
-			},
-			
-			showRecipes: function( url ) {
-				var deferred = $.Deferred();
-				var $completeUrl = url + "?sort=title&page=" + $pageNo + "&size=" + $pageSize;
-				$.getJSON( $completeUrl )
-					.fail( function( xhr, status, error ) {
-	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", "  + error;
-	  					console.log( err );
-	  					deferred.reject( err );
-	  				})
-					.then( function( json ) { 
-						cookbook.handleRecipesList( json.content );
-						deferred.resolve();
-					})
 				return deferred.promise();
 			},
-			
-			handleRecipesList: function( collection ) {
-				$( "#list li").remove();
-				$.each($(collection), function( idx, recipe ) {
+
+			showRecipes : function(url) {
+				var deferred = $.Deferred();
+				var $completeUrl = url + "?sort=title&page=" + $pageNo
+						+ "&size=" + $pageSize;
+				$.getJSON($completeUrl).fail(
+						function(xhr, status, error) {
+							var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+							console.log(err);
+							deferred.reject(err);
+						}).then(function(json) {
+					cookbook.handleRecipesList(json.content);
+					deferred.resolve();
+				})
+				return deferred.promise();
+			},
+
+			handleRecipesList : function(collection) {
+				$("#list li").remove();
+				$.each($(collection), function(idx, recipe) {
 					var url = "";
-					$.each(recipe.links, function( idx, link ) {
+					$.each(recipe.links, function(idx, link) {
 						if (link.rel == "self") {
-							url = link.href;	
+							url = link.href;
 						}
 					});
-					a = $( "<a>" ).attr( "href", "#" );
-					a.text( recipe.title );
-					a.click( function() {
+					a = $("<a>").attr("href", "#");
+					a.text(recipe.title);
+					a.click(function() {
 						$("#recipe").hide();
-						cookbook.showRecipe( url );
+						cookbook.showRecipe(url);
 					});
-					li = $( "<li>" ).append( a );
-					li.appendTo( "#list" );
+					li = $("<li>").append(a);
+					li.appendTo("#list");
 				});
-				if ( $( "#list li" ).length < $pageSize ) {
-					$( "#nextPage" ).fadeOut( "fast" );
+				if ($("#list li").length < $pageSize) {
+					$("#nextPage").fadeOut("fast");
 				} else {
-					$( "#nextPage" ).show();
-				} 
-			}, 
-			
-			showRecipe: function( url ) {
-				$.getJSON( url )
-					.done( function( recipe ) { 
-						cookbook.buildRecipe( recipe );
-						$.each(recipe.links, function( idx, link ) {
-							if (link.rel == "ingredients") {
-								cookbook.getIngredients( link.href );	
-							}
-						});
-					})
-					.fail( function( xhr, status, error ) {
-    				    var err = status + ", " + error;
-   						console.log( "Request Failed: " + err );
-	  				})
-			
+					$("#nextPage").show();
+				}
 			},
-			
-			getIngredients: function( url ) {
-				$.getJSON( url )
-					.done( function( ingredients ){
-						cookbook.buildIngredients( ingredients );
-						$("#choice").hide();
-						$("#recipe").fadeIn();
-					})
-					.fail( function( xhr, status, error ) {
-    				    var err = status + ", " + error;
-   						console.log( "Request Failed: " + err );
-	  				})
+
+			showRecipe : function(url) {
+				$.getJSON(url).done(function(recipe) {
+					cookbook.buildRecipe(recipe);
+					$.each(recipe.links, function(idx, link) {
+						if (link.rel == "ingredients") {
+							cookbook.getIngredients(link.href);
+						}
+					});
+				}).fail(function(xhr, status, error) {
+					var err = status + ", " + error;
+					console.log("Request Failed: " + err);
+				})
+
 			},
-			
-			buildRecipe: function( recipe ) {
-				$( "#editLink").attr( {
-        				"href" : $rootUrl + "/edit.html?id=" + recipe.uuid
-        		});
-				
+
+			getIngredients : function(url) {
+				$.getJSON(url).done(function(ingredients) {
+					cookbook.buildIngredients(ingredients);
+					$("#choice").hide();
+					$("#recipe").fadeIn();
+				}).fail(function(xhr, status, error) {
+					var err = status + ", " + error;
+					console.log("Request Failed: " + err);
+				})
+			},
+
+			buildRecipe : function(recipe) {
+				$("#editLink").attr({
+					"href" : $rootUrl + "/edit.html?id=" + recipe.uuid
+				});
+
 				// Rezept-View mit Daten abfüllen        			
-				$( "#recipe #title" ).html( recipe.title );
-				$( "#recipe #preamble" ).html( recipe.preamble );
-				$( "#recipe #noofperson" ).text( recipe.noOfPerson );
-				$( "#recipe #preparation" ).html( recipe.preparation );
-				$( "#recipe #rating" ).html( recipe.rating );
-				$( "#recipe #adding" ).text( cookbook.formatDate( recipe.addingDate ) );
-				$( "#recipe #update" ).text( cookbook.formatDate( recipe.editingDate ) );
-				$( "#tags span" ).remove();
-				$.each( recipe.tags, function(idx, tag) {
-            		$("#tags").append("<span class='w3-tag'>" + tag + "</span>&nbsp;");
-        		});
-        		$( "#recipe #resourceId" ).text( recipe.uuid );
-				
+				$("#recipe #title").html(recipe.title);
+				$("#recipe #preamble").html(recipe.preamble);
+				$("#recipe #noofperson").text(recipe.noOfPerson);
+				$("#recipe #preparation").html(recipe.preparation);
+				$("#recipe #rating").html(recipe.rating);
+				$("#recipe #adding").text(
+						cookbook.formatDate(recipe.addingDate));
+				$("#recipe #update").text(
+						cookbook.formatDate(recipe.editingDate));
+				$("#tags span").remove();
+				$.each(recipe.tags, function(idx, tag) {
+					$("#tags").append(
+							"<span class='w3-tag'>" + tag + "</span>&nbsp;");
+				});
+				$("#recipe #resourceId").text(recipe.uuid);
+
 			},
-			
-			buildIngredients: function( ingredients ) {
-				ingredients.sort(function(a, b){
-					var a1= a.description, b1 = b.description;
-					if( a1== b1 ) return 0;
-					return a1 > b1 ? 1: -1;
+
+			buildIngredients : function(ingredients) {
+				ingredients.sort(function(a, b) {
+					var a1 = a.description, b1 = b.description;
+					if (a1 == b1)
+						return 0;
+					return a1 > b1 ? 1 : -1;
 				});
 				$("#ingredients table").remove();
-				ingredientsTable = $("<table>").attr( {
-        			"class" : "w3-table w3-bordered",
-        	        "style" : "width: 50%;"
-        		} );
-				$("#ingredients").append( ingredientsTable )
-				$.each( ingredients, function( idx, ingredient ) {
-					var tr = $( "<tr>" );
-        			var tdPortion = $( "<td>" ).attr( {
-        				"style" : "white-space:nowrap;"
-        			} );
-        			if ( ingredient.portion ) {
-        				tdPortion.text( ingredient.portion );
-        			}
-        			var tdDescr = $( "<td>" );
-        			if ( ingredient.comment ) {
-        				tdDescr.html( ingredient.description + " " + ingredient.comment );
-        			} else {
-        				tdDescr.html( ingredient.description );
-        			}
-        			var tdSpace = $( "<td>" ).html( "&nbsp;" );
-        			tr.append( tdPortion );
-        			tr.append( tdSpace );
-        			tr.append( tdDescr );
-        			$("#ingredients table").append( tr );
-		        });
+				ingredientsTable = $("<table>").attr({
+					"class" : "w3-table w3-bordered",
+					"style" : "width: 50%;"
+				});
+				$("#ingredients").append(ingredientsTable)
+				$.each(ingredients, function(idx, ingredient) {
+					var tr = $("<tr>");
+					var tdPortion = $("<td>").attr({
+						"style" : "white-space:nowrap;"
+					});
+					if (ingredient.portion) {
+						tdPortion.text(ingredient.portion);
+					}
+					var tdDescr = $("<td>");
+					if (ingredient.comment) {
+						tdDescr.html(ingredient.description + " "
+								+ ingredient.comment);
+					} else {
+						tdDescr.html(ingredient.description);
+					}
+					var tdSpace = $("<td>").html("&nbsp;");
+					tr.append(tdPortion);
+					tr.append(tdSpace);
+					tr.append(tdDescr);
+					$("#ingredients table").append(tr);
+				});
 			},
-			
-			checkUrlParameter: function() {
-				var $resourceId = cookbook.getRequestParams( "id" )
-				if ( $resourceId ) {
+
+			checkUrlParameter : function() {
+				var $resourceId = cookbook.getRequestParams("id")
+				if ($resourceId) {
 					$url = $recipesUrl + "/" + $resourceId;
-					cookbook.showRecipe( $url );
+					cookbook.showRecipe($url);
 				}
-			}, 
-			
-			getRequestParams: function( k ){
+			},
+
+			getRequestParams : function(k) {
 				var p = {};
-				location.search.replace( /[?&]+([^=&]+)=([^&]*)/gi, function( s,k,v )  { p[k] = v } )
+				location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(s,
+						k, v) {
+					p[k] = v
+				})
 				return k ? p[k] : p;
 			},
-			 			
-			formatDate: function( number ) {
+
+			formatDate : function(number) {
 				var $myDate = new Date(number);
-        		return $myDate.toLocaleString();
-        	}
+				return $myDate.toLocaleString();
+			}
 		};
-	
-	$(function() {
-		cookbook.init();
-		cookbook.showRecipes( $recipesUrl )
-			.fail( function( message ) { dialogMessage.show( message )} )
-			.then( cookbook.checkUrlParameter() );
-	});
-	$(document).ajaxStart(function(){
-    	$("#loading").show();
-	}); 
-	$(document).ajaxStop(function(){
-    	$("#loading").hide();
-	});	
+
+		$(function() {
+			cookbook.init();
+			cookbook.showRecipes($recipesUrl).fail(function(message) {
+				dialogMessage.show(message)
+			}).then(cookbook.checkUrlParameter());
+		});
+		$(document).ajaxStart(function() {
+			$("#loading").show();
+		});
+		$(document).ajaxStop(function() {
+			$("#loading").hide();
+		});
 	</script>
 </body>
 </html>
