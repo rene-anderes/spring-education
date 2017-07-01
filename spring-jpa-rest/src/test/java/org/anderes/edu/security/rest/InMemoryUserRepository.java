@@ -7,7 +7,7 @@ import java.util.Optional;
 public class InMemoryUserRepository implements UserRepository {
 
     @Override
-    public Optional<Long> checkLogin(String name, String password) {
+    public Optional<Long> checkLogin(String username, String password) {
         return Optional.of(42L);
     }
 

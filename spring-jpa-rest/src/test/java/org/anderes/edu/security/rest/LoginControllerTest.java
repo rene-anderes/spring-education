@@ -38,18 +38,17 @@ public class LoginControllerTest {
     
     @Before
     public void setUp() {
-        mockMvc = MockMvcBuilders
-                        .webAppContextSetup(ctx)
-                        .apply(springSecurity())
-                        .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
     }
     
     @Test
     public void shouldBeCorrectLogin() throws Exception {
+        // given
         JSONObject o = new JSONObject();
         o.putIfAbsent("name", "Anderes");
         o.putIfAbsent("password", "123456");
        
+        // when / then
         MvcResult result = mockMvc.perform(post("/login")
                 .content(o.toJSONString())
                 .contentType(APPLICATION_JSON_UTF8)
@@ -59,6 +58,7 @@ public class LoginControllerTest {
             .andExpect(content().string(is(not(nullValue()))))
             .andExpect(content().string(startsWith("{")))
             .andReturn();
+        
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
     }
