@@ -1,0 +1,3 @@
+jwt:
+  header: Authorization
+  secret: my-very-secret-key

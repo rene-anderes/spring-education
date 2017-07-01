@@ -11,8 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>4.3.8.RELEASE</spring.version>
-        <spring.security.version>4.2.2.RELEASE</spring.security.version>
+        <spring.version>4.3.9.RELEASE</spring.version>
+        <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <db.derby.version>10.13.1.1</db.derby.version>
         <db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
         <db.user>APP</db.user>
@@ -142,6 +142,14 @@
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
         </dependency>
+        <!-- / Spring Security -->
+        <!-- JSON Web Token -->
+         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+         <!-- / JSON Web Token -->
         <!-- Dependencies Injection -->
         <dependency>
             <groupId>javax.inject</groupId>

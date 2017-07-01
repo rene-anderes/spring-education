@@ -11,7 +11,7 @@
         <param-value>
             classpath:application-context.xml
             classpath:jpa-context.xml
-            classpath:application-security-context.xml
+            classpath:security-context.xml
         </param-value>
     </context-param>
 

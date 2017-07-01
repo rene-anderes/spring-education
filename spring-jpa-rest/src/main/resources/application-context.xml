@@ -16,7 +16,7 @@
 
     <tx:annotation-driven />
     <context:annotation-config />
-    <context:component-scan base-package="org.anderes.edu.jpa.rest" />
+    <context:component-scan base-package="org.anderes.edu" />
     
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
