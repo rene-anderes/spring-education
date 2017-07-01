@@ -44,12 +44,12 @@ public class LoginControllerTest {
     @Test
     public void shouldBeCorrectLogin() throws Exception {
         // given
-        JSONObject o = new JSONObject();
+        final JSONObject o = new JSONObject();
         o.putIfAbsent("name", "Anderes");
         o.putIfAbsent("password", "123456");
        
         // when / then
-        MvcResult result = mockMvc.perform(post("/login")
+        MvcResult result = mockMvc.perform(post("/users/login")
                 .content(o.toJSONString())
                 .contentType(APPLICATION_JSON_UTF8)
                 .accept(APPLICATION_JSON_UTF8))

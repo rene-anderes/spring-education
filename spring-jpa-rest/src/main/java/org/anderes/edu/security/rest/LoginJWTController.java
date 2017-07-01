@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("login")
+@RequestMapping("users")
 public class LoginJWTController {
 
     @Inject 
@@ -26,7 +26,7 @@ public class LoginJWTController {
     @Inject
     private JwtTokenGenerator jwtTokenGenerator;
       
-    @RequestMapping(method = POST, consumes = { APPLICATION_JSON_UTF8_VALUE }, produces = { APPLICATION_JSON_UTF8_VALUE })
+    @RequestMapping(value="login", method = POST, consumes = { APPLICATION_JSON_UTF8_VALUE }, produces = { APPLICATION_JSON_UTF8_VALUE })
     public HttpEntity<JwtToken> login(@RequestBody UserData userData) {
         
         Optional<Long> optionalId = repository.checkLogin(userData.getName(), userData.getPassword());
