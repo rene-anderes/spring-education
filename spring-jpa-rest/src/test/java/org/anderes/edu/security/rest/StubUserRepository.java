@@ -1,10 +1,10 @@
 package org.anderes.edu.security.rest;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
-public class InMemoryUserRepository implements UserRepository {
+public class StubUserRepository implements UserRepository {
 
     @Override
     public Optional<Long> checkLogin(String username, String password) {
@@ -15,7 +15,7 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Collection<String> getRolesByName(String name) {
+    public Set<String> getRolesByName(String name) {
         HashSet<String> roles = new HashSet<String>(2);
         roles.add("user");
         roles.add("admin");

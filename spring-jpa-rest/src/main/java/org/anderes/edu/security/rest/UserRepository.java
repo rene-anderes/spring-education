@@ -1,12 +1,12 @@
 package org.anderes.edu.security.rest;
 
-import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository {
 
     Optional<Long> checkLogin(String name, String password);
 
-    Collection<String> getRolesByName(String name);
+    Set<String> getRolesByName(String name);
 
 }

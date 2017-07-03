@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.anderes.edu.security.domain.UserData;
 import org.anderes.edu.security.jwt.transfer.JwtUserDto;
 import org.anderes.edu.security.jwt.util.JwtTokenGenerator;
 import org.springframework.http.HttpEntity;

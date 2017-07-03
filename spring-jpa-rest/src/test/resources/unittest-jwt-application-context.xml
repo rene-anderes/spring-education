@@ -24,7 +24,7 @@
     
     <bean id="jwtAuthenticationSuccessHandler" class="org.anderes.edu.security.jwt.JwtAuthenticationSuccessHandler" />
     
-    <bean id="inMemoryUserRepository" class="org.anderes.edu.security.rest.InMemoryUserRepository" />
+    <bean id="stubUserRepository" class="org.anderes.edu.security.rest.StubUserRepository" />
     
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="jwtAuthenticationProvider" /> 

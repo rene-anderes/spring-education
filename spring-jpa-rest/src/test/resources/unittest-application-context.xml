@@ -13,6 +13,5 @@
     </bean>
     
     <bean name="customDataTypeFactory" class="org.anderes.edu.dbunitburner.CustomDataTypeFactory"></bean>
-    
-    <bean id="inMemoryUserRepository" class="org.anderes.edu.security.rest.InMemoryUserRepository" />
+  
 </beans>

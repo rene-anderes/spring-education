@@ -30,7 +30,7 @@ import net.minidev.json.JSONObject;
         "classpath:unittest-jwt-application-context.xml"
 })
 @WebAppConfiguration
-public class LoginControllerTest {
+public class LoginControllerIT {
 
     @Inject
     private WebApplicationContext ctx;
