@@ -13,10 +13,14 @@ public class JwtTokenGenerator {
 
     @Value("${jwt.secret}")
     private String secret;
+    @Value("${jwt.anonymous.user}")
+    private String anonymousUser;
+    @Value("${jwt.anonymous.role}")
+    private String anonymousRole;
     
     /**
-     * Generates a JWT token containing username as subject, and userId and role as additional claims. These properties are taken from the specified
-     * User object. Tokens validity is infinite.
+     * Generates a JWT token containing username as subject, and userId and role as additional claims.
+     * These properties are taken from the specified User object. Tokens validity is infinite.
      *
      * @param user the user for which the token will be generated
      * @return the JWT token
@@ -29,4 +33,12 @@ public class JwtTokenGenerator {
         return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
+    /**
+     * Generates a JWT token for anonymous
+     * @return the JWT token
+     */
+    public String generateTokenForAnonymous() {
+        final JwtUserDto user = new JwtUserDto(Long.MAX_VALUE, anonymousUser, anonymousRole);
+        return generateToken(user);
+    }
 }

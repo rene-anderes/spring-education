@@ -2,13 +2,14 @@ package org.anderes.edu.security.jwt;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.anderes.edu.security.jwt.exception.JwtTokenMissingException;
 import org.anderes.edu.security.jwt.model.JwtAuthenticationToken;
+import org.anderes.edu.security.jwt.util.JwtTokenGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -18,6 +19,8 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
     private final static String BEARER = "Bearer ";
     @Value("${jwt.header}")
     private String tokenHeader;
+    @Inject
+    private JwtTokenGenerator generator;
 
     public JwtAuthenticationTokenFilter() {
         super("/**");
@@ -28,11 +31,13 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        
+       
         String header = request.getHeader(tokenHeader);
-
+        
         if (header == null || !header.startsWith(BEARER)) {
-            throw new JwtTokenMissingException("No JWT token found in request headers");
+            final String authToken = generator.generateTokenForAnonymous();
+            final JwtAuthenticationToken authentication = new JwtAuthenticationToken(authToken);
+            return getAuthenticationManager().authenticate(authentication);
         }
 
         String authToken = header.substring(BEARER.length());
@@ -41,7 +46,7 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
 
         return getAuthenticationManager().authenticate(authRequest);
     }
-
+    
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {

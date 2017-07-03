@@ -40,10 +40,10 @@ public class InMemoryUserRepository implements UserRepository {
         if (users == null) {
             users = new HashSet<>();
             final UserData user_1 = new UserData(42L, "admin", "password");
-            user_1.setRoles("admin", "user");
+            user_1.setRoles("ROLE_ADMIN", "ROLE_USER");
             users.add(user_1);
             final UserData user_2 = new UserData(43L, "user", "password");
-            user_2.setRoles("user");
+            user_2.setRoles("ROLE_USER");
             users.add(user_2);
         }
         return users;

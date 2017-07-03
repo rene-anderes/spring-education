@@ -51,4 +51,22 @@ public class JwtTokenGeneratorValidatorTest {
         assertThat(userFromToken.get().getRoles(), hasItems("Admin", "User"));
     }
 
+    @Test
+    public void checkAnonymous() {
+        
+        // when
+        String token =jwtTokenGenerator.generateTokenForAnonymous();
+        // then
+        assertThat(token, is(not(nullValue())));
+        
+        // when
+        Optional<JwtUserDto> userFromToken = validator.parseToken(token);
+        // then
+        assertThat(userFromToken, is(not(nullValue())));
+        assertThat(userFromToken.isPresent(), is(true));
+        assertThat(userFromToken.get().getId(), is(Long.MAX_VALUE));
+        assertThat(userFromToken.get().getUsername(), is("anonymousUser"));
+        assertThat(userFromToken.get().getRoles(), hasItems("ROLE_ANONYMOUS"));
+        
+    }
 }

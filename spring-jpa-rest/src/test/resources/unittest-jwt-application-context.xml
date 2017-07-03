@@ -10,6 +10,7 @@
       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <context:component-scan base-package="org.anderes.edu.security" />
+    <context:property-placeholder  location="classpath:/config/application.properties"/>
 
     <mvc:annotation-driven>
         <mvc:message-converters>

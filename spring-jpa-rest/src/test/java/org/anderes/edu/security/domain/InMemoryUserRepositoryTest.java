@@ -46,6 +46,6 @@ public class InMemoryUserRepositoryTest {
         final Set<String> roles = repository.getRolesByName("admin");
         
         // then
-        assertThat(roles, hasItems("admin", "user"));
+        assertThat(roles, hasItems("ROLE_ADMIN", "ROLE_USER"));
     }
 }

@@ -16,7 +16,8 @@
 
     <tx:annotation-driven />
     <context:annotation-config />
-    <context:component-scan base-package="org.anderes.edu.jpa.rest" />
+    <context:property-placeholder  location="classpath:/config/application.properties"/>
+    <context:component-scan base-package="org.anderes.edu" />
     
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
@@ -51,5 +52,6 @@
     </bean>
     
     <bean id="inMemoryUserRepository" class="org.anderes.edu.security.domain.InMemoryUserRepository" />
+
        
 </beans>
