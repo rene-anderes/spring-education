@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+
 <c:url var="resources" value="/resources"/>
+<c:set var="recipeId" value="${ param.recipeId }"/>
+<c:set var="token" value="${ param.token }"/>
 
 <!DOCTYPE html>
 <html>
@@ -30,7 +33,8 @@
 		</div>
 		<div id="recipe">
 			<form action="javascript:save();" class="w3-container" id="recipeForm">
-				<input type="hidden" id="uuid" name="uuid">
+				<input type="hidden" id="uuid" name="uuid" value="${ recipeId }">
+				<input type="hidden" id="token" name="token" value="${ token }">
 				<div class="w3-panel">
 					<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
 					<label class="w3-text-gray">Title</label>
@@ -83,7 +87,9 @@
 	</div>
 	
 	<script>
-		var $recipesUrl = "recipes";
+		var $rootUrl = "/spring-jpa-rest"
+		var $recipesUrl = $rootUrl + "/recipes";
+		var $token = null;
 		
 		function getRecipe( url ) {
 			var $ingredientsUrl;
@@ -226,6 +232,7 @@
 			$recipe.rating = $( "input[name='rating']:checked" ).val();
 			$tags = $( "textarea[name='tags']" ).val();
 			$recipe.tags = $tags.split(',');
+			$token =  $( "input[name='token']" ).val();
 			
 			$json = JSON.stringify($recipe);
 			console.log( "Recipe : " + $json );
@@ -236,7 +243,8 @@
 					    url: $recipesUrl + "/" + $recipe.uuid,
 					    method: "PUT",
 					    contentType: "application/json; charset=UTF-8",
-					    data: $json
+					    data: $json,
+						headers: { "Authorization": "Bearer " + $token }
 				})
 				.fail( function( xhr, status, error ) {
 	   				    var err = status + ", " + error;
@@ -255,7 +263,8 @@
 					    url: $recipesUrl,
 					    method: "POST",
 					    contentType: "application/json; charset=UTF-8",
-					    data: $json
+					    data: $json,
+						headers: { "Authorization": "Bearer " + $token }
 				})
 				.fail( function( xhr, status, error ) {
 	   				    var err = status + ", " + error;
@@ -305,6 +314,7 @@
 				$.ajax({
 					type: "DELETE",
 					url: $url + $ingredient.resourceId,
+					headers: { "Authorization": "Bearer " + $token },
 					success: function() { $( "body" ).dequeue(); }
 				});
 			} else {
@@ -315,6 +325,7 @@
 						url: $url,
 						data: JSON.stringify( $ingredient ),
 						contentType: "application/json; charset=UTF-8",
+						headers: { "Authorization": "Bearer " + $token },
 						success: function() { $( "body" ).dequeue(); }
 					});
 				} else {
@@ -324,6 +335,7 @@
 						url: $url + $ingredient.resourceId,
 						data: JSON.stringify( $ingredient ),
 						contentType: "application/json; charset=UTF-8",
+						headers: { "Authorization": "Bearer " + $token },
 						success: function() { $( "body" ).dequeue(); }
 					});
 				}
@@ -354,7 +366,8 @@
 		}
 		
 		function start() {
-			buildRecipeById( getRequestParams( "id" ) );
+			var resourceId = $( "input[name='uuid']" ).val(); 
+			buildRecipeById( resourceId );
 		}
 		
 		function buildRecipeById( resourceId ) {

@@ -17,6 +17,7 @@
 <title>Liste</title>
 </head>
 <body>
+	<c:url var="editUrl" value="/edit.html"/>
 	<div class="w3-container">
 		<h1>Web-Application "spring-jpa-rest"</h1>
 		<div class="w3-row-padding">
@@ -28,7 +29,6 @@
 					<a id="prevPage" class="w3-button">&laquo;</a>
 					<a id="nextPage" class="w3-button">&raquo;</a>
 				</div> 
-				<c:url var="editUrl" value="/edit.html"/>
 				<p><a href="${ editUrl }" class="w3-button w3-circle w3-red">+</a></p>
 				<p><button id="loginData" onclick="dialogLogin.show()" class="w3-button w3-red">Login Daten</button>
 			</div>
@@ -49,7 +49,14 @@
 				    <p id="tags" class="w3-tiny">Stichworte:&nbsp;</p>
 				    <p id="resourceId"></p>
 				    <hr>
-				    <p><a id="editLink" class="w3-button w3-red">Editieren</a>&nbsp;<a id="delete" onclick="dialogDelete.show();" class="w3-button w3-red">Löschen</a></p>
+			    	<form id="editSubmit" action="${ editUrl }">
+					    <p>
+				    		<button id="editLink" class="w3-button w3-red" type="submit">Editieren</button>&nbsp;
+				    		<button id="delete" class="w3-button w3-red">Löschen</button>
+				    		<input name="recipeId" type="hidden" />
+				    		<input name="token" type="hidden" />
+					    </p>
+			    	</form>
 			    </div>
 			</div>
 		</div>
@@ -99,23 +106,26 @@
 			<form class="w3-container" action="javascript:dialogLogin.confirm();">
 				<div class="w3-section">
 					<label><b>Username</b></label>
-					<input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Username" name="usrname" required>
+					<input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Username" name="username" required>
 					<label><b>Password</b></label>
-					<input class="w3-input w3-border" type="password" placeholder="Enter Password" name="psw" required>
-					<button class="w3-button w3-block w3-red w3-section w3-padding" type="submit">save</button>
+					<input class="w3-input w3-border" type="password" placeholder="Enter Password" name="password" required>
+					<button class="w3-button w3-block w3-red w3-section w3-padding" type="submit">Login</button>
 				</div>
 			</form>
 
 			<div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
 				<button onclick="dialogLogin.cancel();" type="button" class="w3-button w3-red">Cancel</button>
+				<p id="error"></p>
 			</div>
 		</div>
 	</div>
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
+		var $loginUrl = $rootUrl + "/users/login";
 		var $pageSize = 10;
 		var $pageNo = 0;
+		var $token = null;
 
 		var dialogDelete = {
 
@@ -129,9 +139,11 @@
 
 			confirm : function() {
 				$("#dialogDelete").hide();
-				cookbook.deleteRecipe().fail(function(message) {
-					dialogMessage.show(message)
-				}).then(function() {
+				cookbook.deleteRecipe()
+				.fail( function( message ) {
+					dialogMessage.show( message );
+				})
+				.then( function() {
 					location.reload;
 				});
 			}
@@ -147,9 +159,9 @@
 			cancel : function() {
 				$("#dialogMessage").hide();
 			},
+			
 			confirm : function() {
 				$("#dialogMessage").hide();
-				
 			}
 		}
 
@@ -161,6 +173,50 @@
 
 			show : function() {
 				$("#dialogLogin").show();
+			},
+			
+			confirm : function() {
+				var $user = $( "#dialogLogin input[name='username']" ).val();
+				var $password = $( "#dialogLogin input[name='password']" ).val();
+				login.getToken( $user, $password )
+				.fail( function( message ) {
+					$token = null;
+					$( "#dialogLogin #error" ).text("Anmeldung nicht erfolgreich: " + message );
+				})
+				.then( function() {
+					$( "#dialogLogin #error" ).text("");
+					$( "#dialogLogin" ).hide();
+				})
+			}
+		}
+		
+		var login = {
+		
+			getToken: function( user, password ) {
+				var deferred = $.Deferred();
+				var $loginData = {};
+				$loginData.name = user;
+				$loginData.password = password;
+				$json = JSON.stringify( $loginData );
+				$.ajax({
+					url : $loginUrl,
+					method : "POST",
+					contentType: "application/json; charset=UTF-8",
+					data: $json,
+					dataType: "json",
+					success: function( data ){
+						$token = data.token;
+				    }
+				})
+				.fail( function(xhr, status, error) {
+					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+					console.log(err);
+					deferred.reject(err);
+				})
+				.then(function() {
+					deferred.resolve();
+				});
+				return deferred.promise();
 			}
 		}
 		
@@ -193,13 +249,15 @@
 				var $recourceId = $("#recipe #resourceId").text();
 				$.ajax({
 					url : $recipesUrl + "/" + $recourceId,
-					method : "DELETE"
-				}).fail(
-						function(xhr, status, error) {
-							var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-							console.log(err);
-							deferred.reject(err);
-						}).then(function() {
+					method : "DELETE",
+					headers: { "Authorization": "Bearer " + $token }
+				})
+				.fail( function(xhr, status, error) {
+					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+					console.log(err);
+					deferred.reject(err);
+				})
+				.then(function() {
 					deferred.resolve();
 				})
 				return deferred.promise();
@@ -207,14 +265,14 @@
 
 			showRecipes : function(url) {
 				var deferred = $.Deferred();
-				var $completeUrl = url + "?sort=title&page=" + $pageNo
-						+ "&size=" + $pageSize;
-				$.getJSON($completeUrl).fail(
-						function(xhr, status, error) {
-							var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-							console.log(err);
-							deferred.reject(err);
-						}).then(function(json) {
+				var $completeUrl = url + "?sort=title&page=" + $pageNo + "&size=" + $pageSize;
+				$.getJSON($completeUrl)
+				.fail( function(xhr, status, error) {
+					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+					console.log(err);
+					deferred.reject(err);
+				})
+				.then( function(json) {
 					cookbook.handleRecipesList(json.content);
 					deferred.resolve();
 				})
@@ -273,9 +331,6 @@
 			},
 
 			buildRecipe : function(recipe) {
-				$("#editLink").attr({
-					"href" : $rootUrl + "/edit.html?id=" + recipe.uuid
-				});
 
 				// Rezept-View mit Daten abfüllen        			
 				$("#recipe #title").html(recipe.title);
@@ -283,16 +338,32 @@
 				$("#recipe #noofperson").text(recipe.noOfPerson);
 				$("#recipe #preparation").html(recipe.preparation);
 				$("#recipe #rating").html(recipe.rating);
-				$("#recipe #adding").text(
-						cookbook.formatDate(recipe.addingDate));
-				$("#recipe #update").text(
-						cookbook.formatDate(recipe.editingDate));
+				$("#recipe #adding").text( cookbook.formatDate(recipe.addingDate) );
+				$("#recipe #update").text( cookbook.formatDate(recipe.editingDate) );
 				$("#tags span").remove();
 				$.each(recipe.tags, function(idx, tag) {
-					$("#tags").append(
-							"<span class='w3-tag'>" + tag + "</span>&nbsp;");
+					$("#tags").append( "<span class='w3-tag'>" + tag + "</span>&nbsp;" );
 				});
-				$("#recipe #resourceId").text(recipe.uuid);
+				$( "#recipe #resourceId" ).text( recipe.uuid );
+				$( "#editSubmit input[name='recipeId']" ).val( recipe.uuid );
+				
+				$( "#editSubmit" ).submit( function( event ) {
+					if ( $token ) {
+						$( "#editSubmit input[name='token']" ).val( $token );
+						return true;
+					} else {
+						dialogMessage.show( "Bitte zuerst einloggen..." );
+						return false;
+					}
+				});
+				$( "#editSubmit" ).click( function() {
+					if ( $token ) {
+						$( "#editSubmit input[name='token']" ).val( $token );
+						deleteDialog.show();
+					} else {
+						dialogMessage.show( "Bitte zuerst einloggen..." );
+					}
+				})
 
 			},
 
@@ -303,12 +374,12 @@
 						return 0;
 					return a1 > b1 ? 1 : -1;
 				});
-				$("#ingredients table").remove();
-				ingredientsTable = $("<table>").attr({
+				$( "#ingredients table" ).remove();
+				ingredientsTable = $( "<table>" ).attr({
 					"class" : "w3-table w3-bordered",
 					"style" : "width: 50%;"
 				});
-				$("#ingredients").append(ingredientsTable)
+				$( "#ingredients" ).append(ingredientsTable)
 				$.each(ingredients, function(idx, ingredient) {
 					var tr = $("<tr>");
 					var tdPortion = $("<td>").attr({
@@ -319,8 +390,7 @@
 					}
 					var tdDescr = $("<td>");
 					if (ingredient.comment) {
-						tdDescr.html(ingredient.description + " "
-								+ ingredient.comment);
+						tdDescr.html(ingredient.description + " " + ingredient.comment);
 					} else {
 						tdDescr.html(ingredient.description);
 					}
@@ -357,9 +427,11 @@
 
 		$(function() {
 			cookbook.init();
-			cookbook.showRecipes($recipesUrl).fail(function(message) {
+			cookbook.showRecipes($recipesUrl)
+			.fail(function(message) {
 				dialogMessage.show(message)
-			}).then(cookbook.checkUrlParameter());
+			})
+			.then(cookbook.checkUrlParameter());
 		});
 		$(document).ajaxStart(function() {
 			$("#loading").show();
