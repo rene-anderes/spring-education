@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 
 <c:url var="resources" value="/resources"/>
+<c:url var="indexUrl" value="/"/>
 <c:set var="recipeId" value="${ param.recipeId }"/>
 <c:set var="token" value="${ param.token }"/>
 
@@ -31,8 +32,8 @@
 		<div id="warning" class="w3-panel w3-yellow w3-display-container">
 			<p id="msg"></p>
 		</div>
-		<div id="recipe">
-			<form action="javascript:save();" class="w3-container" id="recipeForm">
+		<div id="recipe-edit">
+			<form class="w3-container" id="recipeForm">
 				<input type="hidden" id="uuid" name="uuid" value="${ recipeId }">
 				<input type="hidden" id="token" name="token" value="${ token }">
 				<div class="w3-panel">
@@ -80,9 +81,14 @@
 					<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
 					<div class="w3-col s9"></div>
 				</div> 
-				<hr>
-				<p><a id="back">Cancel / zurück zur Rezeptliste</a></p>
 			</form> 
+		</div>
+		<div>
+			<hr>
+			<form action="${ indexUrl }">
+				<p><button class="w3-button w3-red" id="back" type="submit">Rezeptliste</button>
+				<input type="hidden" name="token" value="${ token }">
+			</form>
 		</div>
 	</div>
 	
@@ -91,317 +97,325 @@
 		var $recipesUrl = $rootUrl + "/recipes";
 		var $token = null;
 		
-		function getRecipe( url ) {
-			var $ingredientsUrl;
-			$.getJSON( url )
-				.done( function( recipe ) { 
-					buildRecipe( recipe );
-					$.each(recipe.links, function( idx, link ) {
-						if (link.rel == "ingredients") {
-							$ingredientsUrl = link.href;
-						}
-					});
-				})
-				.fail( function( xhr, status, error ) {
-	  				var err = status + ", " + error;
-	 				console.log( "Request Failed: " + err );
- 				})
- 				.then( function() {
- 					getIngredients( $ingredientsUrl );
- 				})
-		}
+		var recipeEdit = {
+			getRecipe: function( url ) {
+				var $ingredientsUrl;
+				$.getJSON( url )
+					.done( function( recipe ) { 
+						recipeEdit.buildRecipe( recipe );
+						$.each(recipe.links, function( idx, link ) {
+							if (link.rel == "ingredients") {
+								$ingredientsUrl = link.href;
+							}
+						});
+					})
+					.fail( function( xhr, status, error ) {
+		  				var err = status + ", " + error;
+		 				console.log( "Request Failed: " + err );
+	 				})
+	 				.then( function() {
+	 					recipeEdit.getIngredients( $ingredientsUrl );
+	 				})
+			},
 		
-		function getIngredients( url ) {
-			$.getJSON( url )
-				.done( function( ingredients ) {
-					$( "#ingredients li" ).remove();
-					$.each( ingredients, function( idx, ingredient ) {
-						buildIngredient( ingredient );	
-		        	});
-				})
-				.fail( function( xhr, status, error ) {
-   				    var err = status + ", " + error;
-  					console.log( "Request Failed: " + err );
-  				})
-		}
-		
-		function buildIngredient( ingredient ) {
-			
-			li = $( "<li class='ingredient'>");
-			li.attr({
-				"id": ingredient.resourceId
-			});
-			li.appendTo( $("#ingredients" ));
-			
-			rowDiv = $("<div class='w3-row-padding'>");
-			rowDiv.appendTo( li );
-			
-			/* ---------- Quantity */
-			colQuantity = $("<div class='w3-col s3'>");
-			colQuantity.appendTo( rowDiv );
-			inputQuantity = $("<input class='w3-input' type='text' min='1' max='255' name='portion'>");
-			if ( ingredient.portion ) {
-				inputQuantity.val( ingredient.portion );
-			}
-			inputQuantity.appendTo( colQuantity );
-			labelQuantity = $("<label class='w3-text-gray'>");
-			labelQuantity.text( "Quantity" );
-			labelQuantity.appendTo( colQuantity );
-			
-			/* ---------- Description */
-			colDescription = $("<div class='w3-col s4'>");
-			colDescription.appendTo( rowDiv );
-			inputDescription = $("<input class='w3-input' type='text' min='1' max='255' required name='description'>");
-			if ( ingredient.description ) {
-				inputDescription.val( ingredient.description );
-			}
-			inputDescription.appendTo( colDescription );
-			labelDescription = $("<label class='w3-text-gray'>");
-			labelDescription.text( "Description" );
-			labelDescription.appendTo( colDescription );
-			
-			/* ---------- Annotation */
-			colAnnotation = $("<div class='w3-col s4'>");
-			colAnnotation.appendTo( rowDiv );
-			inputAnnotation = $("<input class='w3-input' type='text' min='1' max='255' name='comment'>");
-			if ( ingredient.comment ) {
-				inputAnnotation.val( ingredient.comment );
-			}
-			inputAnnotation.appendTo( colAnnotation );
-			labelAnnotation = $("<label class='w3-text-gray'>");
-			labelAnnotation.text( "Annotation" );
-			labelAnnotation.appendTo( colAnnotation );
-			
-			/* ---------- Remove-Button */
-			colRemove = $("<div class='w3-col s1'>");
-			colRemove.appendTo( rowDiv );
-			spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-light-gray'>&times;</span>")
-			spanRemove.appendTo( colRemove );
-			spanRemove.click( function() {
-				if ( ingredient.resourceId ) {
-					$( ".ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
-				} else {
-					$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
-						$( this ).closest( $( ".ingredient" ) ).remove();
-					});
-				}	
-			})
-		}
-		
-		function buildRecipe( recipe ) {
-			$( "#recipe #uuid").val( recipe.uuid );
-			$( "#recipe #title" ).val( recipe.title );
-			$( "#recipe #preamble" ).val( recipe.preamble );
-			$( "#recipe #noOfPerson" ).val( recipe.noOfPerson );
-			$( "#recipe #preparation" ).val( recipe.preparation );
-			$.each( recipe.tags, function( idx, tag ) {
-				$( "#tags" ).tagEditor( "addTag", tag, false );
-        	});
-        	$( "input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
-		}
-		
-		function getRequestParams( k ){
-			var p = {};
-			location.search.replace( /[?&]+([^=&]+)=([^&]*)/gi, function( s,k,v )  { p[k] = v } )
-			return k ? p[k] : p;
-		}
-	
-		function addIngredient() {
-			ingredient = {};
-			buildIngredient( ingredient )
-		}
-		
-		function save() {
-			updateRecipe().then( function() {
-				$( "#status" ).fadeIn( "fast");
-  				$( "#status" ).text( "Rezept gespeichert." );
-  				setTimeout( function() {
-  					$( "#status" ).fadeOut( "slow" );
-  				}, 1000);
-			})
-		}
-		
-		function updateRecipe() {
-			var deferred = $.Deferred();
-			$recipe = {};
-			$recipe.uuid = $( "input[name='uuid']" ).val();
-			$recipe.title = $( "input[name='title']" ).val();
-			$recipe.preamble = CKEDITOR.instances['preamble'].getData();
-			$recipe.noOfPerson = $( "input[name='noOfPerson']" ).val();
-			$recipe.preparation = CKEDITOR.instances['preparation'].getData();
-			$recipe.rating = $( "input[name='rating']:checked" ).val();
-			$tags = $( "textarea[name='tags']" ).val();
-			$recipe.tags = $tags.split(',');
-			$token =  $( "input[name='token']" ).val();
-			
-			$json = JSON.stringify($recipe);
-			console.log( "Recipe : " + $json );
-			
-			if ( $recipe.uuid ) {
-				// bestehendes Rezept
-				$.ajax({
-					    url: $recipesUrl + "/" + $recipe.uuid,
-					    method: "PUT",
-					    contentType: "application/json; charset=UTF-8",
-					    data: $json,
-						headers: { "Authorization": "Bearer " + $token }
-				})
-				.fail( function( xhr, status, error ) {
+			getIngredients: function( url ) {
+				$.getJSON( url )
+					.done( function( ingredients ) {
+						$( "#ingredients li" ).remove();
+						$.each( ingredients, function( idx, ingredient ) {
+							recipeEdit.buildIngredient( ingredient );	
+			        	});
+					})
+					.fail( function( xhr, status, error ) {
 	   				    var err = status + ", " + error;
 	  					console.log( "Request Failed: " + err );
-	  			})
-	  			.then( function() {
-	  				updateIngredients( $recipe.uuid ).then( function() {
-	  					buildRecipeById( $recipe.uuid ); // Daten in der View aktualisieren
-	  					deferred.resolve(); 
-	  				} );
-	  				
-	  			})
-  			} else {
-  				// neues Rezept
-  				$.ajax({
-					    url: $recipesUrl,
-					    method: "POST",
-					    contentType: "application/json; charset=UTF-8",
-					    data: $json,
-						headers: { "Authorization": "Bearer " + $token }
-				})
-				.fail( function( xhr, status, error ) {
-	   				    var err = status + ", " + error;
-	  					console.log( "Request Failed: " + err );
-	  			})
-	  			.then( function( data, status, xhr ) {
-	  				$location = xhr.getResponseHeader('Location');
-	  				$uuid = $location.substr( $location.lastIndexOf("/") + 1 );
-	  				updateIngredients( $uuid ).then( function() {
-	  					buildRecipeById( $uuid ); // Daten in der View aktualisieren
-	  					deferred.resolve(); 
-	  				} );
-	  			})
-  			}
-			
-			return deferred.promise();
-		}
+	  				})
+			},
 		
-		function updateIngredients( recipeId ) {
-			var deferred = $.Deferred();
-			$( ".ingredient" ).each( function( index, li ) {
-				$( "body" ).queue( function() {
-					$ingredient = {};
-					$ingredient.resourceId = $( li ).attr( "id" );
-					$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
-					if ( $ingredient.portion == undefined ) {
-						$ingredient.portion = null;
-					}
-					$ingredient.description = $( li ).find( "input[name='description']" ).val();
-					$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
-					if ( $ingredient.comment == undefined ) {
-						$ingredient.comment = null;
-					}
+		
+			buildIngredient: function( ingredient ) {
 				
-					updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
-				})
-			});
-			$( "body" ).promise().done( deferred.resolve );
-			return deferred.promise();
-		}
-		
-		function updateIngredient( isHidden, ingredient, recipeId ) {
-			$url = $recipesUrl + "/" + recipeId + "/ingredients/";
-			
-			if ( isHidden ) {
-				console.log( "Ingredient for delete : " + JSON.stringify( $ingredient ) );
-				$.ajax({
-					type: "DELETE",
-					url: $url + $ingredient.resourceId,
-					headers: { "Authorization": "Bearer " + $token },
-					success: function() { $( "body" ).dequeue(); }
+				li = $( "<li class='ingredient'>" );
+				li.attr({
+					"id": ingredient.resourceId
 				});
-			} else {
-				if ( $ingredient.resourceId == undefined ) {
-					console.log( "new Ingredient : " + JSON.stringify( $ingredient ) );
+				li.appendTo( $("#ingredients" ) );
+				
+				rowDiv = $( "<div class='w3-row-padding'>" );
+				rowDiv.appendTo( li );
+				
+				/* ---------- Quantity */
+				colQuantity = $( "<div class='w3-col s3'>" );
+				colQuantity.appendTo( rowDiv );
+				inputQuantity = $( "<input class='w3-input' type='text' min='1' max='255' name='portion'>" );
+				if ( ingredient.portion ) {
+					inputQuantity.val( ingredient.portion );
+				}
+				inputQuantity.appendTo( colQuantity );
+				labelQuantity = $("<label class='w3-text-gray'>");
+				labelQuantity.text( "Quantity" );
+				labelQuantity.appendTo( colQuantity );
+				
+				/* ---------- Description */
+				colDescription = $( "<div class='w3-col s4'>" );
+				colDescription.appendTo( rowDiv );
+				inputDescription = $( "<input class='w3-input' type='text' min='1' max='255' required name='description'>" );
+				if ( ingredient.description ) {
+					inputDescription.val( ingredient.description );
+				}
+				inputDescription.appendTo( colDescription );
+				labelDescription = $( "<label class='w3-text-gray'>" );
+				labelDescription.text( "Description" );
+				labelDescription.appendTo( colDescription );
+				
+				/* ---------- Annotation */
+				colAnnotation = $( "<div class='w3-col s4'>" );
+				colAnnotation.appendTo( rowDiv );
+				inputAnnotation = $( "<input class='w3-input' type='text' min='1' max='255' name='comment'>" );
+				if ( ingredient.comment ) {
+					inputAnnotation.val( ingredient.comment );
+				}
+				inputAnnotation.appendTo( colAnnotation );
+				labelAnnotation = $( "<label class='w3-text-gray'>" );
+				labelAnnotation.text( "Annotation" );
+				labelAnnotation.appendTo( colAnnotation );
+				
+				/* ---------- Remove-Button */
+				colRemove = $("<div class='w3-col s1'>");
+				colRemove.appendTo( rowDiv );
+				spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-light-gray'>&times;</span>")
+				spanRemove.appendTo( colRemove );
+				spanRemove.click( function() {
+					if ( ingredient.resourceId ) {
+						$( ".ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
+					} else {
+						$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
+							$( this ).closest( $( ".ingredient" ) ).remove();
+						});
+					}	
+				})
+			},
+		
+			buildRecipe: function( recipe ) {
+				$( "#recipe-edit #uuid").val( recipe.uuid );
+				$( "#recipe-edit #title" ).val( recipe.title );
+				$( "#recipe-edit #preamble" ).val( recipe.preamble );
+				$( "#recipe-edit #noOfPerson" ).val( recipe.noOfPerson );
+				$( "#recipe-edit #preparation" ).val( recipe.preparation );
+				$.each( recipe.tags, function( idx, tag ) {
+					$( "#tags" ).tagEditor( "addTag", tag, false );
+	        	});
+	        	$( "input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
+	        	$( "#recipeForm" ).submit( function( event ) {
+	        		recipeEdit.save();
+	        		return false;
+	        	})
+			},
+		
+			getRequestParams: function( k ){
+				var p = {};
+				location.search.replace( /[?&]+([^=&]+)=([^&]*)/gi, function( s,k,v )  { p[k] = v } )
+				return k ? p[k] : p;
+			},
+	
+			addIngredient: function() {
+				ingredient = {};
+				recipeEdit.buildIngredient( ingredient )
+			},
+		
+			save: function() {
+				recipeEdit.updateRecipe().then( function() {
+					$( "#status" ).fadeIn( "fast");
+	  				$( "#status" ).text( "Rezept gespeichert." );
+	  				setTimeout( function() {
+	  					$( "#status" ).fadeOut( "slow" );
+	  				}, 1000);
+				})
+			},
+		
+			updateRecipe: function() {
+				var deferred = $.Deferred();
+				$recipe = {};
+				$recipe.uuid = $( "input[name='uuid']" ).val();
+				$recipe.title = $( "input[name='title']" ).val();
+				$recipe.preamble = CKEDITOR.instances['preamble'].getData();
+				$recipe.noOfPerson = $( "input[name='noOfPerson']" ).val();
+				$recipe.preparation = CKEDITOR.instances['preparation'].getData();
+				$recipe.rating = $( "input[name='rating']:checked" ).val();
+				$tags = $( "textarea[name='tags']" ).val();
+				$recipe.tags = $tags.split(',');
+				$token =  $( "input[name='token']" ).val();
+				
+				$json = JSON.stringify($recipe);
+				console.log( "Recipe : " + $json );
+				
+				if ( $recipe.uuid ) {
+					// bestehendes Rezept
 					$.ajax({
-						type: "POST",
-						url: $url,
-						data: JSON.stringify( $ingredient ),
-						contentType: "application/json; charset=UTF-8",
+						    url: $recipesUrl + "/" + $recipe.uuid,
+						    method: "PUT",
+						    contentType: "application/json; charset=UTF-8",
+						    data: $json,
+							headers: { "Authorization": "Bearer " + $token }
+					})
+					.fail( function( xhr, status, error ) {
+		   				    var err = status + ", " + error;
+		  					console.log( "Request Failed: " + err );
+		  			})
+		  			.then( function() {
+		  				recipeEdit.updateIngredients( $recipe.uuid ).then( function() {
+		  					recipeEdit.buildRecipeById( $recipe.uuid ); // Daten in der View aktualisieren
+		  					deferred.resolve(); 
+		  				} );
+		  				
+		  			})
+	  			} else {
+	  				// neues Rezept
+	  				$.ajax({
+						    url: $recipesUrl,
+						    method: "POST",
+						    contentType: "application/json; charset=UTF-8",
+						    data: $json,
+							headers: { "Authorization": "Bearer " + $token }
+					})
+					.fail( function( xhr, status, error ) {
+		   				    var err = status + ", " + error;
+		  					console.log( "Request Failed: " + err );
+		  			})
+		  			.then( function( data, status, xhr ) {
+		  				$location = xhr.getResponseHeader('Location');
+		  				$uuid = $location.substr( $location.lastIndexOf("/") + 1 );
+		  				recipeEdit.updateIngredients( $uuid ).then( function() {
+		  					recipeEdit.buildRecipeById( $uuid ); // Daten in der View aktualisieren
+		  					deferred.resolve(); 
+		  				} );
+		  			})
+	  			}
+				
+				return deferred.promise();
+			},
+		
+			updateIngredients: function( recipeId ) {
+				var deferred = $.Deferred();
+				$( ".ingredient" ).each( function( index, li ) {
+					$( "body" ).queue( function() {
+						$ingredient = {};
+						$ingredient.resourceId = $( li ).attr( "id" );
+						$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
+						if ( $ingredient.portion == undefined ) {
+							$ingredient.portion = null;
+						}
+						$ingredient.description = $( li ).find( "input[name='description']" ).val();
+						$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
+						if ( $ingredient.comment == undefined ) {
+							$ingredient.comment = null;
+						}
+					
+						recipeEdit.updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
+					})
+				});
+				$( "body" ).promise().done( deferred.resolve );
+				return deferred.promise();
+			},
+		
+			updateIngredient: function( isHidden, ingredient, recipeId ) {
+				$url = $recipesUrl + "/" + recipeId + "/ingredients/";
+				
+				if ( isHidden ) {
+					console.log( "Ingredient for delete : " + JSON.stringify( $ingredient ) );
+					$.ajax({
+						type: "DELETE",
+						url: $url + $ingredient.resourceId,
 						headers: { "Authorization": "Bearer " + $token },
 						success: function() { $( "body" ).dequeue(); }
 					});
 				} else {
-					console.log( "exists Ingredient : " + JSON.stringify( $ingredient ) );
-					$.ajax({
-						type: "PUT",
-						url: $url + $ingredient.resourceId,
-						data: JSON.stringify( $ingredient ),
-						contentType: "application/json; charset=UTF-8",
-						headers: { "Authorization": "Bearer " + $token },
-						success: function() { $( "body" ).dequeue(); }
-					});
+					if ( $ingredient.resourceId == undefined ) {
+						console.log( "new Ingredient : " + JSON.stringify( $ingredient ) );
+						$.ajax({
+							type: "POST",
+							url: $url,
+							data: JSON.stringify( $ingredient ),
+							contentType: "application/json; charset=UTF-8",
+							headers: { "Authorization": "Bearer " + $token },
+							success: function() { $( "body" ).dequeue(); }
+						});
+					} else {
+						console.log( "exists Ingredient : " + JSON.stringify( $ingredient ) );
+						$.ajax({
+							type: "PUT",
+							url: $url + $ingredient.resourceId,
+							data: JSON.stringify( $ingredient ),
+							contentType: "application/json; charset=UTF-8",
+							headers: { "Authorization": "Bearer " + $token },
+							success: function() { $( "body" ).dequeue(); }
+						});
+					}
 				}
-			}
-		}
+			},
 		
-		function init() {
-			var deferred = $.Deferred();
-			$.getJSON( $recipesUrl + "/" + "tags" )
-				.done( function( tags ) { 
-					$allTags = tags;
-					$( "#tags" ).tagEditor( { 
-						autocomplete: {
-				        	source: $allTags,
-				        	delay: 0,
-			        		position: { collision: "flip" }
-				    	},
-				    	forceLowercase: true
-				    } );
-				})
-				.fail( function( xhr, status, error ) {
-	  				var err = status + ", " + error;
-	 				console.log( "Request Failed: " + err );
-	 				deferred.resolve;
- 				})
- 				.then( deferred.resolve );
- 			return deferred.promise();
-		}
+			init: function() {
+				var deferred = $.Deferred();
+				$.getJSON( $recipesUrl + "/" + "tags" )
+					.done( function( tags ) { 
+						$allTags = tags;
+						console.log( "Tags: " + $allTags )
+						$( "#tags" ).tagEditor( { 
+							autocomplete: {
+					        	source: $allTags,
+					        	delay: 0,
+				        		position: { collision: "flip" }
+					    	},
+					    	forceLowercase: true
+					    } );
+					})
+					.fail( function( xhr, status, error ) {
+		  				var err = status + ", " + error;
+		 				console.log( "Request Failed: " + err );
+		 				deferred.resolve;
+	 				})
+	 				.then( deferred.resolve );
+	 			return deferred.promise();
+			},
 		
-		function start() {
-			var resourceId = $( "input[name='uuid']" ).val(); 
-			buildRecipeById( resourceId );
-		}
-		
-		function buildRecipeById( resourceId ) {
-			if ( resourceId ) {
-				console.log( "Rezept mit id '" + resourceId + "' bearbeiten....");
-				$url = $recipesUrl + "/" + resourceId;
-				getRecipe( $url );
-				$( "#back" ).attr({
-					"href": "list.html?id=" + resourceId
-				});
-			} else {
-				console.log( "Neues Rezept erstellen....");
-				$recipe = {};
-				$recipe.tags = [];
-				buildRecipe( $recipe );
-				addIngredient();
-				$( "#back" ).attr({
-					"href": "list.html"
-				}); 
+			start: function() {
+				var resourceId = $( "input[name='uuid']" ).val(); 
+				recipeEdit.buildRecipeById( resourceId );
+			},
+			
+			buildRecipeById: function( resourceId ) {
+				if ( resourceId ) {
+					console.log( "Rezept mit id '" + resourceId + "' bearbeiten....");
+					$url = $recipesUrl + "/" + resourceId;
+					recipeEdit.getRecipe( $url );
+					$( "#back" ).attr({
+						"href": "list.html?id=" + resourceId
+					});
+				} else {
+					console.log( "Neues Rezept erstellen....");
+					$recipe = {};
+					$recipe.tags = [];
+					recipeEdit.buildRecipe( $recipe );
+					recipeEdit.addIngredient();
+					$( "#back" ).attr({
+						"href": "list.html"
+					}); 
+				}
 			}
 		}
 				
 		$( function() {
 			$( "#msg" ).hide();
 			$( "#status" ).hide();
-			initckEditor();
-			init().then( function() { start(); } );
+			initCkEditor();
+			recipeEdit.init().then( function() { recipeEdit.start(); } );
 		});
 		$( document ).ajaxError( function( event, request, settings ) {
 			$( "#msg" ).show();
   			$( "#msg" ).text( "Error requesting page " + settings.url  );
 		});
 		
-		function initckEditor() {
+		function initCkEditor() {
 			// Toolbarkonfigurator: http://ckeditor.com/latest/samples/toolbarconfigurator/index.html
 			CKEDITOR.replace( "preamble", {
 			    contentsCss: "resources/ckEditorContents.css",

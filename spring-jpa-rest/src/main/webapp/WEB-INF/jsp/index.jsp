@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+
 <c:url var="resources" value="/resources"/>
+<c:url var="editUrl" value="/edit.html"/>
+<c:set var="token" value="${ param.token }"/>
 
 <!DOCTYPE html>
 <html>
@@ -17,7 +20,6 @@
 <title>Liste</title>
 </head>
 <body>
-	<c:url var="editUrl" value="/edit.html"/>
 	<div class="w3-container">
 		<h1>Web-Application "spring-jpa-rest"</h1>
 		<div class="w3-row-padding">
@@ -29,8 +31,8 @@
 					<a id="prevPage" class="w3-button">&laquo;</a>
 					<a id="nextPage" class="w3-button">&raquo;</a>
 				</div> 
-				<p><a href="${ editUrl }" class="w3-button w3-circle w3-red">+</a></p>
-				<p><button id="loginData" onclick="dialogLogin.show()" class="w3-button w3-red">Login Daten</button>
+				<p><a href="${ editUrl }" class="w3-button w3-circle w3-red" title="neues Rezept erfassen">+</a></p>
+				<p><button id="loginData" onclick="dialogLogin.show()" class="w3-button w3-red">Login</button>
 			</div>
 			<div class="w3-col s6">
 				<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
@@ -54,7 +56,7 @@
 				    		<button id="editLink" class="w3-button w3-red" type="submit">Editieren</button>&nbsp;
 				    		<button id="delete" class="w3-button w3-red">Löschen</button>
 				    		<input name="recipeId" type="hidden" />
-				    		<input name="token" type="hidden" />
+				    		<input name="token" type="hidden" value="${ token }"/>
 					    </p>
 			    	</form>
 			    </div>
@@ -100,7 +102,7 @@
 
 			<div class="w3-center">
 				<br><span onclick="dialogLogin.cancel();" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Dialog">&times;</span>
-				<img src="img_avatar4.png" alt="Avatar" style="width: 30%" class="w3-circle w3-margin-top">
+				<img src="${ resources }/img_avatar.png" alt="Avatar" style="width: 30%" class="w3-circle w3-margin-top">
 			</div>
 
 			<form class="w3-container" action="javascript:dialogLogin.confirm();">
@@ -179,13 +181,15 @@
 				var $user = $( "#dialogLogin input[name='username']" ).val();
 				var $password = $( "#dialogLogin input[name='password']" ).val();
 				login.getToken( $user, $password )
+				.done( function( token ) {
+					console.log( "Login Token: " + token );
+					$token = token;
+					$( "#dialogLogin #error" ).text("");
+					$( "#dialogLogin" ).hide();
+				})
 				.fail( function( message ) {
 					$token = null;
 					$( "#dialogLogin #error" ).text("Anmeldung nicht erfolgreich: " + message );
-				})
-				.then( function() {
-					$( "#dialogLogin #error" ).text("");
-					$( "#dialogLogin" ).hide();
 				})
 			}
 		}
@@ -203,18 +207,15 @@
 					method : "POST",
 					contentType: "application/json; charset=UTF-8",
 					data: $json,
-					dataType: "json",
-					success: function( data ){
-						$token = data.token;
-				    }
+					dataType: "json"
 				})
-				.fail( function(xhr, status, error) {
+				.done( function( json ) {
+					deferred.resolve( json.token );
+				})
+				.fail( function( xhr, status, error ) {
 					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-					console.log(err);
-					deferred.reject(err);
-				})
-				.then(function() {
-					deferred.resolve();
+					console.log( err );
+					deferred.reject( err );
 				});
 				return deferred.promise();
 			}
@@ -242,20 +243,23 @@
 						cookbook.showRecipes($recipesUrl);
 					}
 				});
+				if ( $( "#editSubmit input[name='token']" ).val() ) {
+					$token = $( "#editSubmit input[name='token']" ).val();
+				}
 			},
 
 			deleteRecipe : function() {
 				var deferred = $.Deferred();
-				var $recourceId = $("#recipe #resourceId").text();
+				var $recourceId = $( "#recipe #resourceId" ).text();
 				$.ajax({
 					url : $recipesUrl + "/" + $recourceId,
 					method : "DELETE",
 					headers: { "Authorization": "Bearer " + $token }
 				})
-				.fail( function(xhr, status, error) {
+				.fail( function( xhr, status, error ) {
 					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-					console.log(err);
-					deferred.reject(err);
+					console.log( err );
+					deferred.reject( err );
 				})
 				.then(function() {
 					deferred.resolve();
@@ -272,7 +276,7 @@
 					console.log(err);
 					deferred.reject(err);
 				})
-				.then( function(json) {
+				.then( function( json ) {
 					cookbook.handleRecipesList(json.content);
 					deferred.resolve();
 				})

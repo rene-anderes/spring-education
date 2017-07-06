@@ -13,9 +13,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -224,7 +224,8 @@ public class RecipeController {
     @RequestMapping(method = GET, value = "tags", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<Collection<String>> showAllTags() {
         final List<String> tags = repository.findAllTag();
-        return ResponseEntity.ok().body(new HashSet<String>(tags));
+        final Set<String> filteredTags = tags.stream().filter(t -> t != null).collect(Collectors.toSet());
+        return ResponseEntity.ok().body(filteredTags);
     }
         
 }
