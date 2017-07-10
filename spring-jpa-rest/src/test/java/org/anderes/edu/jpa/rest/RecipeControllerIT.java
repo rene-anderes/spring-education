@@ -207,7 +207,7 @@ public class RecipeControllerIT {
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
                         .andExpect(jsonPath("$.*", hasSize(5)))
                         .andExpect(jsonPath("$.resourceId", is("c0e5582e-252f-4e94-8a49-e12b4b047112")))
-                        .andExpect(jsonPath("$.portion", is("250g")))
+                        .andExpect(jsonPath("$.description", is("Spaghetti")))
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -251,6 +251,19 @@ public class RecipeControllerIT {
     public void shouldBeUpdateIngredient() throws Exception {
         
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", "250g", "Spaghetti", "Bio");
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/" + ingredient.getResourceId())
+                        .header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(ingredient)))
+                        .andExpect(status().isOk())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeUpdateIngredientWithNullValue() throws Exception {
+        
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", null, "Spaghetti", null);
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/" + ingredient.getResourceId())
                         .header(tokenHeader, token)

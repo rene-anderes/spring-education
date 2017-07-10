@@ -21,8 +21,8 @@
 	
 	<link rel="stylesheet" href="${ resources }/jquery-ui.min.css">
 	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="${ resources }/w3.css">
+	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
 	<title>Edit</title>
 </head>
 <body>
@@ -121,7 +121,7 @@
 			getIngredients: function( url ) {
 				$.getJSON( url )
 					.done( function( ingredients ) {
-						$( "#ingredients li" ).remove();
+						$( "#recipe-edit #ingredients li" ).remove();
 						$.each( ingredients, function( idx, ingredient ) {
 							recipeEdit.buildIngredient( ingredient );	
 			        	});
@@ -139,7 +139,7 @@
 				li.attr({
 					"id": ingredient.resourceId
 				});
-				li.appendTo( $("#ingredients" ) );
+				li.appendTo( $("#recipe-edit #ingredients" ) );
 				
 				rowDiv = $( "<div class='w3-row-padding'>" );
 				rowDiv.appendTo( li );
@@ -187,10 +187,10 @@
 				spanRemove.appendTo( colRemove );
 				spanRemove.click( function() {
 					if ( ingredient.resourceId ) {
-						$( ".ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
+						$( "#recipe-edit .ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
 					} else {
-						$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
-							$( this ).closest( $( ".ingredient" ) ).remove();
+						$( this ).closest( $( "#recipe-edit .ingredient" ) ).fadeOut( "fast", function() {
+							$( this ).closest( $( "#recipe-edit .ingredient" ) ).remove();
 						});
 					}	
 				})
@@ -203,10 +203,10 @@
 				$( "#recipe-edit #noOfPerson" ).val( recipe.noOfPerson );
 				$( "#recipe-edit #preparation" ).val( recipe.preparation );
 				$.each( recipe.tags, function( idx, tag ) {
-					$( "#tags" ).tagEditor( "addTag", tag, false );
+					$( "#recipe-edit #tags" ).tagEditor( "addTag", tag, false );
 	        	});
-	        	$( "input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
-	        	$( "#recipeForm" ).submit( function( event ) {
+	        	$( "#recipe-edit input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
+	        	$( "#recipe-edit #recipeForm" ).submit( function( event ) {
 	        		recipeEdit.save();
 	        		return false;
 	        	})
@@ -225,10 +225,10 @@
 		
 			save: function() {
 				recipeEdit.updateRecipe().then( function() {
-					$( "#status" ).fadeIn( "fast");
-	  				$( "#status" ).text( "Rezept gespeichert." );
+					$( "#recipe-edit #status" ).fadeIn( "fast");
+	  				$( "#recipe-edit #status" ).text( "Rezept gespeichert." );
 	  				setTimeout( function() {
-	  					$( "#status" ).fadeOut( "slow" );
+	  					$( "#recipe-edit #status" ).fadeOut( "slow" );
 	  				}, 1000);
 				})
 			},
@@ -236,15 +236,21 @@
 			updateRecipe: function() {
 				var deferred = $.Deferred();
 				$recipe = {};
-				$recipe.uuid = $( "input[name='uuid']" ).val();
-				$recipe.title = $( "input[name='title']" ).val();
+				$recipe.uuid = $( "#recipe-edit input[name='uuid']" ).val();
+				if ( !$recipe.uuid ) {
+					$recipe.uuid = null;
+				}
+				$recipe.title = $( "#recipe-edit input[name='title']" ).val();
 				$recipe.preamble = CKEDITOR.instances['preamble'].getData();
-				$recipe.noOfPerson = $( "input[name='noOfPerson']" ).val();
+				if ( !$recipe.preamble ) {
+					$recipe.preamble = null;
+				}
+				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val();
 				$recipe.preparation = CKEDITOR.instances['preparation'].getData();
-				$recipe.rating = $( "input[name='rating']:checked" ).val();
-				$tags = $( "textarea[name='tags']" ).val();
+				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val();
+				$tags = $( "#recipe-edit textarea[name='tags']" ).val();
 				$recipe.tags = $tags.split(',');
-				$token =  $( "input[name='token']" ).val();
+				$token =  $( "#recipe-edit input[name='token']" ).val();
 				
 				$json = JSON.stringify($recipe);
 				console.log( "Recipe : " + $json );
@@ -297,17 +303,17 @@
 		
 			updateIngredients: function( recipeId ) {
 				var deferred = $.Deferred();
-				$( ".ingredient" ).each( function( index, li ) {
+				$( "#recipe-edit .ingredient" ).each( function( index, li ) {
 					$( "body" ).queue( function() {
 						$ingredient = {};
 						$ingredient.resourceId = $( li ).attr( "id" );
 						$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
-						if ( $ingredient.portion == undefined ) {
+						if ( !$ingredient.portion ) {
 							$ingredient.portion = null;
 						}
 						$ingredient.description = $( li ).find( "input[name='description']" ).val();
 						$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
-						if ( $ingredient.comment == undefined ) {
+						if ( !$ingredient.comment ) {
 							$ingredient.comment = null;
 						}
 					
@@ -356,11 +362,13 @@
 		
 			init: function() {
 				var deferred = $.Deferred();
+				$( "#msg" ).hide();
+				$( "#status" ).hide();
 				$.getJSON( $recipesUrl + "/" + "tags" )
 					.done( function( tags ) { 
 						$allTags = tags;
 						console.log( "Tags: " + $allTags )
-						$( "#tags" ).tagEditor( { 
+						$( "#recipe-edit #tags" ).tagEditor( { 
 							autocomplete: {
 					        	source: $allTags,
 					        	delay: 0,
@@ -379,7 +387,7 @@
 			},
 		
 			start: function() {
-				var resourceId = $( "input[name='uuid']" ).val(); 
+				var resourceId = $( "#recipe-edit input[name='uuid']" ).val(); 
 				recipeEdit.buildRecipeById( resourceId );
 			},
 			
@@ -405,14 +413,12 @@
 		}
 				
 		$( function() {
-			$( "#msg" ).hide();
-			$( "#status" ).hide();
 			initCkEditor();
 			recipeEdit.init().then( function() { recipeEdit.start(); } );
 		});
 		$( document ).ajaxError( function( event, request, settings ) {
 			$( "#msg" ).show();
-  			$( "#msg" ).text( "Error requesting page " + settings.url  );
+  			$( "#msg" ).text( "Error requesting url '" + settings.url + "'" );
 		});
 		
 		function initCkEditor() {
