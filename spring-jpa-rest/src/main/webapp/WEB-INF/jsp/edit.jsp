@@ -189,8 +189,8 @@
 					if ( ingredient.resourceId ) {
 						$( "#recipe-edit .ingredient#" + ingredient.resourceId ).fadeOut( "fast" );
 					} else {
-						$( this ).closest( $( "#recipe-edit .ingredient" ) ).fadeOut( "fast", function() {
-							$( this ).closest( $( "#recipe-edit .ingredient" ) ).remove();
+						$( this ).closest( $( ".ingredient" ) ).fadeOut( "fast", function() {
+							$( this ).closest( $( ".ingredient" ) ).remove();
 						});
 					}	
 				})
