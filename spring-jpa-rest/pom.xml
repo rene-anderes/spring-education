@@ -11,6 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
         <spring.version>4.3.9.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <db.derby.version>10.13.1.1</db.derby.version>
@@ -239,12 +240,6 @@
             <artifactId>mockito-core</artifactId>
             <version>2.7.22</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -259,6 +254,7 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
+        
         <!-- JSON Path for Spring -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -272,6 +268,7 @@
             <groupId>com.github.rene-anderes</groupId>
             <artifactId>dbUnitBurner</artifactId>
             <version>1.4.0</version>
+            <scope>test</scope>
         </dependency>
         <!-- / dbUnitBruner -->
         <!-- Spring Security Test -->
@@ -279,6 +276,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <version>${spring.security.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- / Spring Security Test -->
         

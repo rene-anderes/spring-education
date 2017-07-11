@@ -71,7 +71,9 @@ public class RecipeControllerIT {
     @Before
     public void setUp() {
         assertThat("Bitte Spring-Konfiguration überprüfen.", tokenHeader, is(not("${jwt.header}")));
-        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                        .apply(springSecurity())                       
+                        .build();
         try {
             MvcResult result = mockMvc.perform(post("/users/login")
                             .content(getUserPassword().toJSONString())
