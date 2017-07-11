@@ -77,8 +77,8 @@ public class RecipeControllerIT {
                             .content(getUserPassword().toJSONString())
                             .contentType(APPLICATION_JSON_UTF8)
                             .accept(APPLICATION_JSON_UTF8))
-                        .andExpect(status().isOk())
-                        .andReturn();
+                            .andExpect(status().isOk())
+                            .andReturn();
             JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
             token += (String) parser.parse(result.getResponse().getContentAsString(), JSONObject.class).get("token");
         } catch (Exception e) {
@@ -100,10 +100,10 @@ public class RecipeControllerIT {
                         .param("size", "10"))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
-                        .andExpect(jsonPath("$.content", hasSize(3)))
-                        .andExpect(jsonPath("$.totalElements", is(3)))
-                        .andExpect(jsonPath("$.content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
-                        .andExpect(jsonPath("$.content[0].links[0].rel", is("self")))
+                        .andExpect(jsonPath("content", hasSize(3)))
+                        .andExpect(jsonPath("totalElements", is(3)))
+                        .andExpect(jsonPath("content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
+                        .andExpect(jsonPath("content[0].links[0].rel", is("self")))
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -116,9 +116,9 @@ public class RecipeControllerIT {
                         .accept(APPLICATION_JSON))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
-                        .andExpect(jsonPath("$.uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
-                        .andExpect(jsonPath("$.title", is("Arabische Spaghetti")))
-                        .andExpect(jsonPath("$.addingDate", is(1390428200000L)))
+                        .andExpect(jsonPath("uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
+                        .andExpect(jsonPath("title", is("Arabische Spaghetti")))
+                        .andExpect(jsonPath("addingDate", is(1390428200000L)))
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
@@ -181,7 +181,7 @@ public class RecipeControllerIT {
                         .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.totalElements", is(2)))
+                        .andExpect(jsonPath("totalElements", is(2)))
                         .andReturn();
     }
 
@@ -206,8 +206,8 @@ public class RecipeControllerIT {
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
                         .andExpect(jsonPath("$.*", hasSize(5)))
-                        .andExpect(jsonPath("$.resourceId", is("c0e5582e-252f-4e94-8a49-e12b4b047112")))
-                        .andExpect(jsonPath("$.description", is("Spaghetti")))
+                        .andExpect(jsonPath("resourceId", is("c0e5582e-252f-4e94-8a49-e12b4b047112")))
+                        .andExpect(jsonPath("description", is("Spaghetti")))
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
