@@ -121,7 +121,7 @@
 							</div>
 							<hr>
 							<div class="w3-panel w3-row-padding">
-								<div class="w3-col s2"><button class="w3-button w3-red" id="save">Speichern</button></div>
+								<div class="w3-col s2"><button class="w3-button w3-red" type="submit" id="save">Speichern</button></div>
 								<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
 								<div class="w3-col s8"></div>
 							</div> 
@@ -506,12 +506,20 @@
 				token = tokenProvider;
 				hide();
 				$( "#recipe-edit #addIngredient").click( function() { addIngredient(); })
-				recipeEdit.initCkEditor();
+				initCkEditor();
+				/*
 				$( "#recipe-edit #recipeForm #save" ).click( function( event ) {
 	        		event.preventDefault();
 	        		console.log( "save Recipe" );
 	        		save();
-	        	})
+	        	});
+	        	*/
+	        	$( "#recipe-edit #recipeForm" ).submit( function( event ) {
+	        		event.preventDefault();
+	        		console.log( "save Recipe" );
+	        		save();
+	        		return false;
+	        	});
 			};
 			
 			var hide = function() {
@@ -546,13 +554,19 @@
 	 			return deferred.promise();
 			};
 			
+			var newRecipe = function() {
+				$( "#msg" ).hide();
+				$( "#recipe-edit #status" ).hide();
+				initTagEditor().then( function() { $( "#recipeEdit" ).fadeIn(); } );
+			};
+			
 			var show = function( resourceId ) {
 				$( "#msg" ).hide();
 				$( "#recipe-edit #status" ).hide();
-				initTagEditor().then( processRecipe( resourceId ).then( function() { $( "#recipeEdit" ).fadeIn(); } ) )
-					.fail( function( message ) {
-						dialogMessage.show( message )
-					});;
+				initTagEditor().then( processRecipe( resourceId )
+					.then( function() { $( "#recipeEdit" ).fadeIn(); } ) )
+					.fail( function( message ) { dialogMessage.show( message )
+				});
 			};
 			
 			var processRecipe = function( resourceId ) {
@@ -698,16 +712,15 @@
 				if ( !$recipe.uuid ) {
 					$recipe.uuid = null;
 				}
-				$recipe.title = $( "#recipe-edit input[name='title']" ).val();
+				$recipe.title = $( "#recipe-edit input[name='title']" ).val().trim();
 				$recipe.preamble = CKEDITOR.instances['editPreamble'].getData();
 				if ( !$recipe.preamble ) {
 					$recipe.preamble = null;
 				}
-				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val();
+				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val().trim();
 				$recipe.preparation = CKEDITOR.instances['editPreparation'].getData();
-				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val();
-				$tags = $( "#recipe-edit textarea[name='tags']" ).val();
-				$recipe.tags = $tags.split(',');
+				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val().trim();
+				$recipe.tags = $( "#recipe-edit #tags" ).tagEditor('getTags')[0].tags;
 				
 				$json = JSON.stringify($recipe);
 				console.log( "Recipe : " + $json );
@@ -885,7 +898,7 @@
 				show: show,
 				hide: hide, 
 				init: init,
-				initCkEditor: initCkEditor
+				newRecipe: newRecipe
 			}
 		
 		})();
@@ -909,7 +922,7 @@
 				$( "#editAndDelete" ).hide();
 				$( "#addRecipe").hide();
 				$( "#addRecipe").click( function() {
-					console.log( "Neues rezept erfassen..." )
+					newRecipe();
 				});
 				$( "#editAndDelete #edit" ).click( function() {
 					editRecipe();
@@ -937,6 +950,11 @@
 				recipe.hide();
 				recipeEdit.show( recipe.getResourceId() );
 			};
+			
+			var newRecipe = function() {
+				recipe.hide();
+				recipeEdit.newRecipe();
+			}
 			
 			var deleteRecipe = function() {
 				var deferred = $.Deferred();

@@ -63,7 +63,7 @@ public class RecipeController {
     }
 
     @RequestMapping(method = GET, value = "{id}", produces = { APPLICATION_JSON_VALUE })
-    public HttpEntity<RecipeResource> showOneRecipe(@PathVariable("id") String recipeId) {
+    public ResponseEntity<RecipeResource> showOneRecipe(@PathVariable("id") String recipeId) {
         final Recipe findRecipe = repository.findOne(recipeId);
         if (findRecipe == null) {
             return ResponseEntity.notFound().build();
@@ -78,7 +78,7 @@ public class RecipeController {
                         .withRel("ingredients");
         
         recipeResource.add(linkRel);
-        return new HttpEntity<RecipeResource>(recipeResource);
+        return ResponseEntity.ok(recipeResource);
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")

@@ -147,6 +147,17 @@ public class RecipeControllerIT {
     }
     
     @Test
+    public void shouldBeNOTSaveNewRecipePOST() throws Exception {
+        final RecipeResource recipeToSave = createInvalidRecipeWithoutUUID();
+        mockMvc.perform(post("/recipes")
+                        .header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(recipeToSave)))
+                        .andExpect(status().isBadRequest())
+                        .andReturn();
+    }
+    
+    @Test
     public void shouldBeSaveNewRecipePUT() throws Exception {
         final RecipeResource recipeToSave = createRecipeWithUUID();
         mockMvc.perform(put("/recipes/" + recipeToSave.getUuid() + "?updateDate=false")
@@ -330,6 +341,14 @@ public class RecipeControllerIT {
         return recipe;
     }
 
+    private RecipeResource createInvalidRecipeWithoutUUID() {
+        final RecipeResource recipe = new RecipeResource();
+        recipe/*.setTitle("Omeletten-Gemüse-Gratin")*/.setPreamble("Omeletten hausgemacht")
+            .setAddingDate(december(24, 2014)).setEditingDate(december(29, 2014)).setNoOfPerson("2")
+            .setPreparation("Mehl, Eier, Salz (ca. 1/4 TL) und die Herbes de Provence in eine Schüssel geben und glatt rühren.").setRating(4).addTag("vegi").addTag("new");
+        return recipe;
+    }
+    
     private Long december(int day, int year) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, Calendar.DECEMBER, day);

@@ -50,6 +50,25 @@ public class DtoMapperTest {
         assertThat(LocalDateTime.now().minusMinutes(1l).isBefore(recipe.getAddingDate()), is(true));
         assertThat(LocalDateTime.now().minusMinutes(1l).isBefore(recipe.getLastUpdate()), is(true));
     }
+    
+    @Test
+    public void shouldBeMapToRecipeWithSpecialTags() {
+        // given
+        RecipeResource resource = new RecipeResource(UUID.randomUUID().toString());
+        resource.setTitle("Arabische Spaghetti").setPreamble("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird...")
+            .setNoOfPerson("2").setPreparation("Pouletfleisch in schmale Streifen schneiden und kurz anbraten")
+            .setRating(4).addTag("pasta").addTag("").addTag("  ").setAddingDate(december(2000, 29)).setEditingDate(december(2001, 29));
+        final Recipe recipe = new Recipe(resource.getUuid());
+        
+        // when
+        DtoMapper.map(resource, recipe);
+        
+        // then
+        assertThat(recipe.getUuid(), is(resource.getUuid()));
+        assertThat(recipe.getTitle(), is("Arabische Spaghetti"));
+        assertThat(recipe.getTags().size(), is(1));
+        assertThat(recipe.getTags(), hasItems("pasta"));
+    }
 
     @Test
     public void shouldBeMapRecipeResource() {
