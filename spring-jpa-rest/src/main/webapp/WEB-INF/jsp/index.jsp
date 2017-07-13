@@ -20,6 +20,7 @@
 	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
+
 <title>Liste</title>
 </head>
 <body>
@@ -36,8 +37,8 @@
 						<a id="nextPage" class="w3-button">&raquo;</a>
 					</div>
 				</div>
-				<div id="addAndLogon">
-					<p><a href="${ editUrl }" class="w3-button w3-circle w3-red" title="neues Rezept erfassen">+</a></p>
+				<div>
+					<p><a id="addRecipe" class="w3-button w3-circle w3-red" title="neues Rezept erfassen">+</a></p>
 					<p><button onclick="dialogLogin.show()" class="w3-button w3-red">Login</button>
 				</div>
 			</div>
@@ -120,9 +121,9 @@
 							</div>
 							<hr>
 							<div class="w3-panel w3-row-padding">
-								<div class="w3-col s1"><button class="w3-button w3-red" type="submit">Speichern</button></div>
+								<div class="w3-col s2"><button class="w3-button w3-red" id="save">Speichern</button></div>
 								<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
-								<div class="w3-col s9"></div>
+								<div class="w3-col s8"></div>
 							</div> 
 						</form> 
 					</div>
@@ -173,7 +174,7 @@
 
 			<div class="w3-center">
 				<br><span onclick="dialogLogin.cancel();" class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Dialog">&times;</span>
-				<img src="${ resources }/img_avatar.png" alt="Avatar" style="width: 30%" class="w3-circle w3-margin-top">
+				<img src="${ resources }/images/img_avatar.png" alt="Avatar" style="width: 30%" class="w3-circle w3-margin-top">
 			</div>
 
 			<form class="w3-container" action="javascript:dialogLogin.confirm();">
@@ -263,6 +264,7 @@
 		var user = (function() {
 			
 			var token;
+			var changeCallback;
 			
 			var login = function( user, password ) {
 				var deferred = $.Deferred();
@@ -279,12 +281,14 @@
 				})
 				.done( function( json ) {
 					token = json.token;
+					changeCallback( token );
 					deferred.resolve( token );
 				})
 				.fail( function( xhr, status, error ) {
 					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
 					console.log( err );
 					token = null;
+					changeCallback( token );
 					deferred.reject( err );
 				});
 				return deferred.promise();
@@ -294,9 +298,14 @@
 				return token;
 			};
 			
+			var change = function( callback ) {
+				changeCallback = callback;				
+			};
+			
 			return {
 				getToken: getToken,
-				login: login
+				login: login,
+				change: change
 			}
 		})();
 		
@@ -306,9 +315,9 @@
 			var pageNo = 0;
 			var showRecipeCallback;
 			
-			var init = function( recipesUrl, callback ) {
+			var init = function( recipesUrl, recipeHandler ) {
 				url = recipesUrl;
-				showRecipeCallback = callback;
+				showRecipeCallback = recipeHandler;
 				$( "#recipes" ).hide();
 				$( "#nextPage" ).on( "click", function( e ) {
 					e.preventDefault();
@@ -382,23 +391,26 @@
 			};
 			
 			var show = function( url ) {
+				var deferred = $.Deferred();
 				$.getJSON( url )
-					.done(function(recipe) {
-						buildRecipe(recipe);
-						$.each(recipe.links, function(idx, link) {
-							if (link.rel == "ingredients") {
-								getIngredients(link.href);
+					.done( function(recipe) {
+						buildRecipe( recipe );
+						$.each( recipe.links, function(idx, link) {
+							if ( link.rel == "ingredients" ) {
+								getIngredients( link.href );
 							}
 						});
 						$( "#choice" ).hide();
 						$( "#recipe" ).fadeIn();
 						$( "#recipe #resourceId" ).hide();
+						deferred.resolve();
 					})
 					.fail(function(xhr, status, error) {
-						var err = status + ", " + error;
-						console.log("Request Failed: " + err);
+						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log(err);
+						deferred.reject( err );
 					})
-
+				return deferred.promise();
 			};
 			
 			var hide = function() {
@@ -423,12 +435,13 @@
 			};
 
 			var getIngredients = function( url ) {
-				$.getJSON(url).done(function(ingredients) {
-					buildIngredients(ingredients);
-				}).fail(function(xhr, status, error) {
-					var err = status + ", " + error;
-					console.log("Request Failed: " + err);
-				})
+				$.getJSON( url )
+					.done(function(ingredients) {
+						buildIngredients(ingredients);
+					}).fail(function(xhr, status, error) {
+						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log(err);
+					})
 			};
 
 			var buildIngredients = function( ingredients ) {
@@ -486,12 +499,19 @@
 		var recipeEdit = (function() {
 			
 			var recipesUrl;
+			var token;
 			
-			var init = function( url ) {
+			var init = function( url, tokenProvider ) {
 				recipesUrl = url;
+				token = tokenProvider;
 				hide();
 				$( "#recipe-edit #addIngredient").click( function() { addIngredient(); })
 				recipeEdit.initCkEditor();
+				$( "#recipe-edit #recipeForm #save" ).click( function( event ) {
+	        		event.preventDefault();
+	        		console.log( "save Recipe" );
+	        		save();
+	        	})
 			};
 			
 			var hide = function() {
@@ -518,9 +538,9 @@
 					    } );
 					})
 					.fail( function( xhr, status, error ) {
-		  				var err = status + ", " + error;
-		 				console.log( "Request Failed: " + err );
-		 				deferred.resolve;
+		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log(err);
+		 				deferred.reject( err );
 	 				})
 	 				.then( deferred.resolve );
 	 			return deferred.promise();
@@ -529,7 +549,10 @@
 			var show = function( resourceId ) {
 				$( "#msg" ).hide();
 				$( "#recipe-edit #status" ).hide();
-				initTagEditor().then( processRecipe( resourceId ).then( function() { $( "#recipeEdit" ).fadeIn(); } ) );
+				initTagEditor().then( processRecipe( resourceId ).then( function() { $( "#recipeEdit" ).fadeIn(); } ) )
+					.fail( function( message ) {
+						dialogMessage.show( message )
+					});;
 			};
 			
 			var processRecipe = function( resourceId ) {
@@ -548,9 +571,9 @@
 						buildRecipe( recipe );
 					})
 					.fail( function( xhr, status, error ) {
-		  				var err = status + ", " + error;
-		 				console.log( "Request Failed: " + err );
-		 				deferred.resolve();
+		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log( err );
+		 				deferred.reject( err );
 	 				})
 	 				.then( function() {
 	 					getIngredients( $ingredientsUrl );
@@ -575,8 +598,8 @@
 			        	});
 					})
 					.fail( function( xhr, status, error ) {
-	   				    var err = status + ", " + error;
-	  					console.log( "Request Failed: " + err );
+	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log( err );
 	  				})
 			};
 		
@@ -646,14 +669,10 @@
 			var buildRecipe = function( recipe ) {
 				$( "#recipe-edit #uuid").val( recipe.uuid );
 				$( "#recipe-edit #title" ).val( recipe.title );
-				$( "#recipe-edit #editPreamble" ).val( recipe.preamble );
+				CKEDITOR.instances['editPreamble'].setData( recipe.preamble );
 				$( "#recipe-edit #noOfPerson" ).val( recipe.noOfPerson );
-				$( "#recipe-edit #editPreparation" ).val( recipe.preparation );
+				CKEDITOR.instances['editPreparation'].setData( recipe.preparation );
 	        	$( "#recipe-edit input[name='rating'][value='" + recipe.rating + "']" ).prop( "checked", true );
-	        	$( "#recipe-edit #recipeForm" ).submit( function( event ) {
-	        		save();
-	        		return false;
-	        	})
 			};
 			
 			
@@ -663,7 +682,7 @@
 			};
 		
 			var save = function() {
-				recipeEdit.updateRecipe().then( function() {
+				updateRecipe().then( function() {
 					$( "#recipe-edit #status" ).fadeIn( "fast");
 	  				$( "#recipe-edit #status" ).text( "Rezept gespeichert." );
 	  				setTimeout( function() {
@@ -680,16 +699,15 @@
 					$recipe.uuid = null;
 				}
 				$recipe.title = $( "#recipe-edit input[name='title']" ).val();
-				$recipe.preamble = CKEDITOR.instances['preamble'].getData();
+				$recipe.preamble = CKEDITOR.instances['editPreamble'].getData();
 				if ( !$recipe.preamble ) {
 					$recipe.preamble = null;
 				}
 				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val();
-				$recipe.preparation = CKEDITOR.instances['preparation'].getData();
+				$recipe.preparation = CKEDITOR.instances['editPreparation'].getData();
 				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val();
 				$tags = $( "#recipe-edit textarea[name='tags']" ).val();
 				$recipe.tags = $tags.split(',');
-				$token =  $( "#recipe-edit input[name='token']" ).val();
 				
 				$json = JSON.stringify($recipe);
 				console.log( "Recipe : " + $json );
@@ -701,17 +719,24 @@
 						    method: "PUT",
 						    contentType: "application/json; charset=UTF-8",
 						    data: $json,
-							headers: { "Authorization": "Bearer " + $token }
+							headers: { "Authorization": "Bearer " + token() }
 					})
 					.fail( function( xhr, status, error ) {
-		   				    var err = status + ", " + error;
-		  					console.log( "Request Failed: " + err );
+		   				    var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+							console.log( err );
+		  					deferred.reject( err );
 		  			})
 		  			.then( function() {
-		  				updateIngredients( $recipe.uuid ).then( function() {
-		  					buildRecipeById( $recipe.uuid ); // Daten in der View aktualisieren
-		  					deferred.resolve(); 
-		  				} );
+		  				updateIngredients( $recipe.uuid )
+			  				.then( function() {
+			  					show( $recipe.uuid ); // Daten in der View aktualisieren
+			  					deferred.resolve(); 
+			  				})
+			  				.fail( function( xhr, status, error ) {
+		   				    	var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+								console.log( err );
+		  						deferred.reject( err );
+		  					});
 		  				
 		  			})
 	  			} else {
@@ -721,19 +746,26 @@
 						    method: "POST",
 						    contentType: "application/json; charset=UTF-8",
 						    data: $json,
-							headers: { "Authorization": "Bearer " + $token }
+							headers: { "Authorization": "Bearer " + token() }
 					})
 					.fail( function( xhr, status, error ) {
-		   				    var err = status + ", " + error;
-		  					console.log( "Request Failed: " + err );
+		   				    var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+							console.log( err );
+							deferred.reject( err );
 		  			})
 		  			.then( function( data, status, xhr ) {
 		  				$location = xhr.getResponseHeader('Location');
 		  				$uuid = $location.substr( $location.lastIndexOf("/") + 1 );
-		  				updateIngredients( $uuid ).then( function() {
-		  					buildRecipeById( $uuid ); // Daten in der View aktualisieren
-		  					deferred.resolve(); 
-		  				} );
+		  				updateIngredients( $uuid )
+			  				.then( function() {
+			  					show( $uuid ); // Daten in der View aktualisieren
+			  					deferred.resolve(); 
+			  				})
+		  					.fail( function( xhr, status, error ) {
+		   				    	var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+								console.log( err );
+		  						deferred.reject( err );
+		  					});
 		  			})
 	  			}
 				
@@ -771,7 +803,7 @@
 					$.ajax({
 						type: "DELETE",
 						url: $url + ingredient.resourceId,
-						headers: { "Authorization": "Bearer " + $token },
+						headers: { "Authorization": "Bearer " + token() },
 						success: function() { $( "body" ).dequeue(); }
 					});
 				} else {
@@ -782,7 +814,7 @@
 							url: $url,
 							data: JSON.stringify( ingredient ),
 							contentType: "application/json; charset=UTF-8",
-							headers: { "Authorization": "Bearer " + $token },
+							headers: { "Authorization": "Bearer " + token() },
 							success: function() { $( "body" ).dequeue(); }
 						});
 					} else {
@@ -792,7 +824,7 @@
 							url: $url + ingredient.resourceId,
 							data: JSON.stringify( $ingredient ),
 							contentType: "application/json; charset=UTF-8",
-							headers: { "Authorization": "Bearer " + $token },
+							headers: { "Authorization": "Bearer " + token() },
 							success: function() { $( "body" ).dequeue(); }
 						});
 					}
@@ -862,29 +894,43 @@
 
 			var init = function() {
 				recipes.init( $recipesUrl, showRecipe );
-				recipeEdit.init( $recipesUrl );
+				recipeEdit.init( $recipesUrl, tokenProvider );
 				recipe.init();
-				recipes.show()
-					.fail( function( message ) {
-						dialogMessage.show( message )
-					});
-				
+				recipes.show().fail( erroHandler );
+				user.change( function( token ) {
+					if ( token ) {
+						$( "#editAndDelete" ).show();
+						$( "#addRecipe").show();
+					} else {
+						$( "#editAndDelete" ).hide();
+						$( "#addRecipe").hide();
+					}
+				});
+				$( "#editAndDelete" ).hide();
+				$( "#addRecipe").hide();
+				$( "#addRecipe").click( function() {
+					console.log( "Neues rezept erfassen..." )
+				});
 				$( "#editAndDelete #edit" ).click( function() {
 					editRecipe();
-				})
+				});
 				
 				$( "#editAndDelete #delete" ).click( function() {
-					if ( user.getToken() ) {
-						deleteDialog.show();
-					} else {
-						dialogMessage.show( "Bitte zuerst einloggen..." );
-					}
+					dialogDelete.show();
 				});
 			};
 			
 			var showRecipe = function( url ) {
 				recipeEdit.hide();
-				recipe.show( url );
+				recipe.show( url ).fail( erroHandler );
+			};
+
+			var erroHandler = function( message ) {
+				dialogMessage.show( "Error\n" + message );
+			};
+			
+			var tokenProvider = function() {
+				return user.getToken();
 			};
 
 			var editRecipe = function() {
