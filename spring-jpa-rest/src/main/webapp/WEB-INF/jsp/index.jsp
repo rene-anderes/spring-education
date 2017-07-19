@@ -24,115 +24,131 @@
 <title>Liste</title>
 </head>
 <body>
-	<div class="w3-container">
-		<h1>Web-Application "spring-jpa-rest"</h1>
-		<div class="w3-row-padding">
-			<div class="w3-col s6">
-				<p>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></p>
-				<div id="recipes">
-					<ul class="w3-ul" style="width:75%" id="list"></ul>
-					<hr>
-					 <div class="w3-bar">
-						<a id="prevPage" class="w3-button">&laquo;</a>
-						<a id="nextPage" class="w3-button">&raquo;</a>
-					</div>
-				</div>
-				<div>
+	<!-- Sidebar -->
+	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-right" style="display:none;right:0;" id="mySidebar">
+	  <button class="w3-bar-item w3-button" onclick="w3_close()">Close &times;</button>
+	  <button onclick="dialogLogin.show()" class="w3-button w3-bar-item w3-red">Login</button>
+	</div>
+	<script>
+		function w3_open() {
+		  document.getElementById("mySidebar").style.display = "block";
+		}
+		function w3_close() {
+		  document.getElementById("mySidebar").style.display = "none";
+		}
+	</script>
+	
+	<!-- Page Content -->
+	<header class="w3-container w3-teal">
+	 	<button class="w3-button w3-teal w3-xxlarge w3-right" onclick="w3_open()">&#9776;</button>
+  		<h1>Web-Application "Cookbook"</h1>
+	</header> 
+	
+	<div class="w3-row">
+		<div class="w3-half w3-container">
+			<h5>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h5>
+			<div id="recipes">
+				<ul class="w3-ul" id="list"></ul>
+				<div class="w3-right">
 					<p><a id="addRecipe" class="w3-button w3-circle w3-red" title="neues Rezept erfassen">+</a></p>
-					<p><button onclick="dialogLogin.show()" class="w3-button w3-red">Login</button>
 				</div>
-			</div>
-			<div class="w3-col s6">
-				<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
-				
-				<!-- ************************** einzelnes Rezept anzeigen ********************* -->
-				<div id="recipe">
-				    <h1 id="title"></h1>
-				    <p id="preamble"></p>
-				    <h3>Zutaten für <span id="noofperson"></span> Personen</h3>
-				    <p id="ingredients"></p>
-				    <h3>Zubereitung</h3>
-				    <p id="preparation"></p>
-				    <p>Rating <span class="w3-badge" id="rating"></span></p>
-				    <p class="w3-tiny">
-				    	Erfasst: <span id="adding"></span><br>
-				    	Aktualisiert: <span id="update"></span><br>
-				    </p>
-				    <p id="tags" class="w3-tiny">Stichworte:&nbsp;</p>
-				    <p id="resourceId"></p>
-				    <div id="editAndDelete">
-					    <hr>
-				    	<form>
-						    <p>
-					    		<button id="edit" class="w3-button w3-red" type="submit">Editieren</button>&nbsp;
-					    		<button id="delete" class="w3-button w3-red">Löschen</button>
-						    </p>
-				    	</form>
-			    	</div>
-			    </div>
-			    
-			    <!-- ************************** Rezept Editieren ****************************** -->
-			    <div id="recipeEdit">
-			    	<div id="warning" class="w3-panel w3-yellow w3-display-container">
-						<p id="msg"></p>
-					</div>
-						<div id="recipe-edit">
-						<form class="w3-container" id="recipeForm">
-							<input type="hidden" id="uuid" name="uuid" value="${ recipeId }">
-							<input type="hidden" id="token" name="token" value="${ token }">
-							<div class="w3-panel">
-								<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
-								<label class="w3-text-gray">Title</label>
-							</div>
-							<div class="w3-panel">
-								<textarea name="preamble" id="editPreamble"></textarea>
-								<label class="w3-text-gray">Preamble</label>
-							</div>
-							<div class="w3-panel">
-								<label class="w3-text-gray">Zutaten für</label>
-								<input class="w3-input" style="width:25%" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
-								<label class="w3-text-gray">Personen</label>
-							</div>
-							<div class="w3-panel">
-								<ul class="w3-ul w3-light-gray" id="ingredients">
-									<li><h3>Zutaten</h3></li>
-								</ul>
-							</div>
-							<div class="w3-panel">
-								<button class="w3-button w3-circle w3-red" id="addIngredient" title="Zutat hinzufügen">+</button>
-							</div>
-							<div class="w3-panel">
-								<textarea name="preparation" id="editPreparation"></textarea>
-								<label class="w3-text-gray">Preparation</label>
-							</div>
-							<div class="w3-panel">
-								<textarea name="tags" id="tags"></textarea>
-								<label class="w3-text-gray">Tags</label>
-							</div>
-							<div class="w3-panel">
-								<div class="w3-row-padding">
-									<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-green">1</span></label>
-									<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-green">2</span></label>
-									<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-green">3</span></label>
-									<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-green">4</span></label>
-									<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-green">5</span></label>
-								</div>
-								<p class="w3-text-gray">Rating</p>
-							</div>
-							<hr>
-							<div class="w3-panel w3-row-padding">
-								<div class="w3-col s2"><button class="w3-button w3-red" type="submit" id="save">Speichern</button></div>
-								<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
-								<div class="w3-col s8"></div>
-							</div> 
-						</form> 
-					</div>
-			    </div>
-			    
+				<div class="w3-bar w3-center">
+					<a id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
+					<a id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
+				</div>
 			</div>
 		</div>
-		
+		<div class="w3-half w3-container">
+			<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
+			
+			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
+			<div id="recipe">
+			    <h1 id="title"></h1>
+			    <p id="preamble"></p>
+			    <h3>Zutaten für <span id="noofperson"></span> Personen</h3>
+			    <p id="ingredients"></p>
+			    <h3>Zubereitung</h3>
+			    <p id="preparation"></p>
+			    <p>Rating <span class="w3-badge" id="rating"></span></p>
+			    <p class="w3-tiny">
+			    	Erfasst: <span id="adding"></span><br>
+			    	Aktualisiert: <span id="update"></span><br>
+			    </p>
+			    <p id="tags" class="w3-tiny">Stichworte:&nbsp;</p>
+			    <p id="resourceId"></p>
+			    <div id="editAndDelete">
+				    <hr>
+			    	<form>
+					    <p>
+				    		<button id="edit" class="w3-button w3-red" type="submit">Editieren</button>&nbsp;
+				    		<button id="delete" class="w3-button w3-red">Löschen</button>
+					    </p>
+			    	</form>
+		    	</div>
+		    </div>
+		    
+		    <!-- ************************** Rezept Editieren ****************************** -->
+		    <div id="recipeEdit">
+		    	<div id="recipe-edit">
+					<form class="w3-container" id="recipeForm">
+						<input type="hidden" id="uuid" name="uuid" value="${ recipeId }">
+						<input type="hidden" id="token" name="token" value="${ token }">
+						<div class="w3-panel">
+							<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
+							<label class="w3-text-gray">Title</label>
+						</div>
+						<div class="w3-panel">
+							<textarea name="preamble" id="editPreamble"></textarea>
+							<label class="w3-text-gray">Preamble</label>
+						</div>
+						<div class="w3-panel">
+							<label class="w3-text-gray">Zutaten für</label>
+							<input class="w3-input" style="width:25%" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
+							<label class="w3-text-gray">Personen</label>
+						</div>
+						<div class="w3-panel">
+							<ul class="w3-ul w3-light-gray" id="ingredients">
+								<li><h3>Zutaten</h3></li>
+							</ul>
+						</div>
+						<div class="w3-panel">
+							<button class="w3-button w3-circle w3-red" id="addIngredient" title="Zutat hinzufügen">+</button>
+						</div>
+						<div class="w3-panel">
+							<textarea name="preparation" id="editPreparation"></textarea>
+							<label class="w3-text-gray">Preparation</label>
+						</div>
+						<div class="w3-panel">
+							<textarea name="tags" id="tags"></textarea>
+							<label class="w3-text-gray">Tags</label>
+						</div>
+						<div class="w3-panel">
+							<div class="w3-row-padding">
+								<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-green">1</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-green">2</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-green">3</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-green">4</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-green">5</span></label>
+							</div>
+							<p class="w3-text-gray">Rating</p>
+						</div>
+						<hr>
+						<div class="w3-panel w3-row-padding">
+							<div class="w3-col s2"><button class="w3-button w3-red" type="submit" id="save">Speichern</button></div>
+							<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
+							<div class="w3-col s8"></div>
+						</div> 
+					</form> 
+				</div>
+		    </div>
+		    
+		</div>
 	</div>
+	<p>&nbsp;</p>
+	<footer class="w3-container w3-teal">
+		<h5>Cookbook</h5>
+		<p>by René Anderes</p>
+	</footer> 	
 	
 	<div id="dialogDelete" class="w3-modal">
 		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
@@ -507,13 +523,6 @@
 				hide();
 				$( "#recipe-edit #addIngredient").click( function() { addIngredient(); })
 				initCkEditor();
-				/*
-				$( "#recipe-edit #recipeForm #save" ).click( function( event ) {
-	        		event.preventDefault();
-	        		console.log( "save Recipe" );
-	        		save();
-	        	});
-	        	*/
 	        	$( "#recipe-edit #recipeForm" ).submit( function( event ) {
 	        		event.preventDefault();
 	        		console.log( "save Recipe" );
@@ -544,24 +553,26 @@
 					    	},
 					    	forceLowercase: true
 					    } );
+		 				deferred.resolve();
 					})
 					.fail( function( xhr, status, error ) {
 		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
 						console.log(err);
 		 				deferred.reject( err );
 	 				})
-	 				.then( deferred.resolve );
 	 			return deferred.promise();
 			};
 			
 			var newRecipe = function() {
-				$( "#msg" ).hide();
 				$( "#recipe-edit #status" ).hide();
-				initTagEditor().then( function() { $( "#recipeEdit" ).fadeIn(); } );
+				$( "#choice" ).hide();
+				initTagEditor().then( function() {
+						resetForm(); 
+						$( "#recipeEdit" ).fadeIn(); 
+					} );
 			};
 			
 			var show = function( resourceId ) {
-				$( "#msg" ).hide();
 				$( "#recipe-edit #status" ).hide();
 				initTagEditor().then( processRecipe( resourceId )
 					.then( function() { $( "#recipeEdit" ).fadeIn(); } ) )
@@ -569,13 +580,23 @@
 				});
 			};
 			
+			var resetForm = function() {
+				$( "#recipe-edit #uuid").val( null );
+				$( "#recipe-edit #title" ).val( null );
+				CKEDITOR.instances['editPreamble'].setData( "" );
+				$( "#recipe-edit #noOfPerson" ).val( null );
+				CKEDITOR.instances['editPreparation'].setData( "" );
+	        	$( "#recipe-edit input[name='rating'][value='5']" ).prop( "checked", true );
+				$( "#recipe-edit #ingredients li" ).remove();
+			}
+			
 			var processRecipe = function( resourceId ) {
+				resetForm();
 				var deferred = $.Deferred();
 				var $ingredientsUrl;
-				var $recipeObject;
 				var $recipeUrl = recipesUrl + "/" + resourceId;
 				$.getJSON( $recipeUrl )
-					.done( function( recipe ) { 
+					.then( function( recipe ) { 
 						$.each(recipe.links, function( idx, link ) {
 							if (link.rel == "ingredients") {
 								$ingredientsUrl = link.href;
@@ -583,16 +604,17 @@
 						});
 						$recipeObject = recipe;
 						buildRecipe( recipe );
+						return recipe.tags;
 					})
+	 				.then( function( tags ) {
+	 					getIngredients( $ingredientsUrl );
+	 					buildTagEditor( tags )
+						deferred.resolve();
+	 				})
 					.fail( function( xhr, status, error ) {
 		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
 						console.log( err );
 		 				deferred.reject( err );
-	 				})
-	 				.then( function() {
-	 					getIngredients( $ingredientsUrl );
-	 					buildTagEditor( $recipeObject.tags )
-						deferred.resolve();
 	 				})
 	 			return deferred.promise();
 			};
