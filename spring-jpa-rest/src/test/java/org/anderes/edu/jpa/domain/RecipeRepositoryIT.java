@@ -107,7 +107,7 @@ public class RecipeRepositoryIT {
     @Test
     @ShouldMatchDataSet(value = { "/data/expected-afterRecipeUpdate.json" },
             excludeColumns = { "INGREDIENT.UUID" },
-            orderBy = { "RECIPE.UUID", "INGREDIENT.DESCRIPTION" }
+            orderBy = { "RECIPE.UUID", "INGREDIENT.DESCRIPTION", "INGREDIENT.ANNOTATION" }
     )
     public void shouldBeUpdateRecipe() {
         final Recipe updateRecipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");

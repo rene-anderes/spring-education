@@ -9,12 +9,15 @@ import java.util.Iterator;
 
 import javax.inject.Inject;
 
+import org.anderes.edu.security.jwt.exception.JwtTokenMalformedException;
 import org.anderes.edu.security.jwt.model.AuthenticatedUser;
 import org.anderes.edu.security.jwt.model.JwtAuthenticationToken;
 import org.anderes.edu.security.jwt.transfer.JwtUserDto;
 import org.anderes.edu.security.jwt.util.JwtTokenGenerator;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,11 +30,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class JwtAuthenticationProviderTest {
 
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
     @Inject
     private JwtAuthenticationProvider authenticationProvider;
     @Inject
     private JwtTokenGenerator jwtTokenGenerator;
-   
     private String token;
     
     @Before
@@ -58,5 +62,17 @@ public class JwtAuthenticationProviderTest {
         final Iterator<? extends GrantedAuthority> i = authenticatedUser.getAuthorities().iterator();
         assertThat(i.next().getAuthority(), is("User"));
         assertThat(i.next().getAuthority(), is("Admin"));
+    }
+    
+    @Test
+    public void invalidTokenTest() {
+        
+        // given
+        final UsernamePasswordAuthenticationToken authentication = new JwtAuthenticationToken(token + "invalid");
+        thrown.expect(JwtTokenMalformedException.class);
+        thrown.expectMessage("JWT token is not valid");
+        
+        // when
+        authenticationProvider.retrieveUser("Anderes", authentication);
     }
 }

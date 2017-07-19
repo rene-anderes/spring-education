@@ -18,8 +18,7 @@ public class JwtTokenValidator {
     private String secret;
 
     /**
-     * Tries to parse specified String as a JWT token. If successful, returns User object with username, id and role prefilled (extracted from token).
-     * If unsuccessful (token is invalid or not containing all required user properties), simply returns null.
+     * Tries to parse specified String as a JWT token.
      *
      * @param token the JWT token to parse
      * @return the User object extracted from specified token or Empty if a token is invalid.

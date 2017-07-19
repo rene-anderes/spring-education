@@ -40,12 +40,8 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
         String token = jwtAuthenticationToken.getToken();
 
         Optional<JwtUserDto> parsedUser = jwtTokenValidator.parseToken(token);
-
-        if (!parsedUser.isPresent()) {
-            throw new JwtTokenMalformedException("JWT token is not valid");
-        }
-        
-        List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(parsedUser.get().getRolesAsCommaSeparatedString());
+        final JwtUserDto user = parsedUser.orElseThrow(() -> new JwtTokenMalformedException("JWT token is not valid"));
+        List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRolesAsCommaSeparatedString());
         
         return new AuthenticatedUser(parsedUser.get().getId(), parsedUser.get().getUsername(), token, authorityList);
     }
