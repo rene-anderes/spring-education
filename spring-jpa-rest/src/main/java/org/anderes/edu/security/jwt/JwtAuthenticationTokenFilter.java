@@ -1,6 +1,7 @@
 package org.anderes.edu.security.jwt;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -32,17 +33,16 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
        
-        String header = request.getHeader(tokenHeader);
-        
-        if (header == null || !header.startsWith(BEARER)) {
+        Optional<String> header = Optional.ofNullable(request.getHeader(tokenHeader));
+        final Optional<JwtAuthenticationToken> authentication = header.filter(h -> h.startsWith(BEARER))
+                        .map(h -> {
+                            String authToken = h.substring(BEARER.length());
+                            return new JwtAuthenticationToken(authToken);
+                        });
+        Authentication authRequest = authentication.orElseGet(() -> {
             final String authToken = generator.generateTokenForAnonymous();
-            final JwtAuthenticationToken authentication = new JwtAuthenticationToken(authToken);
-            return getAuthenticationManager().authenticate(authentication);
-        }
-
-        String authToken = header.substring(BEARER.length());
-
-        JwtAuthenticationToken authRequest = new JwtAuthenticationToken(authToken);
+            return new JwtAuthenticationToken(authToken);
+        });
 
         return getAuthenticationManager().authenticate(authRequest);
     }

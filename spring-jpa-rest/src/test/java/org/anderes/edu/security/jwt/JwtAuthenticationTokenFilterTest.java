@@ -59,4 +59,21 @@ public class JwtAuthenticationTokenFilterTest {
         assertThat(authentication.getName() ,is("Anderes"));
         
     }
+    
+    @Test
+    public void attemptAnonymousTest() {
+        
+        // given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(tokenHeader)).thenReturn("");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        
+        // when
+        Authentication authentication = filter.attemptAuthentication(request, response);
+        
+        // then
+        assertThat(authentication ,is(not(nullValue())));
+        assertThat(authentication.getName() ,is("anonymousUser"));
+        
+    }
 }
