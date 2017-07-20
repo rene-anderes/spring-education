@@ -148,7 +148,7 @@ public class RecipeControllerIT {
     
     @Test
     public void shouldBeNOTSaveNewRecipePOST() throws Exception {
-        final RecipeResource recipeToSave = createInvalidRecipeWithoutUUID();
+        final RecipeResource recipeToSave = createInvalidRecipe();
         mockMvc.perform(post("/recipes")
                         .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
@@ -199,7 +199,7 @@ public class RecipeControllerIT {
     }
 
     @Test
-    public void shouldBeIngredientsFormOneRecipe() throws Exception {
+    public void shouldBeAllIngredientsByRecipeId() throws Exception {
 
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients")
                         .accept(APPLICATION_JSON))
@@ -209,6 +209,15 @@ public class RecipeControllerIT {
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeNotFindIngredientsByRecipeId() throws Exception {
+
+        mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047sss/ingredients")
+                        .accept(APPLICATION_JSON))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
     }
     
     @Test
@@ -227,14 +236,21 @@ public class RecipeControllerIT {
     }
     
     @Test
-    public void shouldBeNotFoundOneIngredient() throws Exception {
+    public void shouldBeNotFindOneIngredientWrongRecipeId() throws Exception {
 
-        final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101A")
+        mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047sss/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047112")
                         .accept(APPLICATION_JSON))
                         .andExpect(status().isNotFound())
                         .andReturn();
-        final String content = result.getResponse().getContentAsString();
-        System.out.println(content);
+    }
+    
+    @Test
+    public void shouldBeNotFoundOneIngredient() throws Exception {
+
+        mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/101A")
+                        .accept(APPLICATION_JSON))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
     }
     
     @Test
@@ -257,6 +273,28 @@ public class RecipeControllerIT {
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isCreated())
                         .andExpect(header().string("Location", containsString("http://localhost/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients/")))
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNOTSaveNewIngredientWrongData() throws Exception {
+        
+        final IngredientResource newIngredient = new IngredientResource("1g", null, "beliebig");
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients").header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(newIngredient)))
+                        .andExpect(status().isBadRequest())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNOTSaveNewIngredientWrongRecipeId() throws Exception {
+        
+        final IngredientResource newIngredient = new IngredientResource("1g", "Salz", "beliebig");
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c69sss/ingredients").header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(newIngredient)))
+                        .andExpect(status().isNotFound())
                         .andReturn();
     }
     
@@ -287,6 +325,32 @@ public class RecipeControllerIT {
     }
     
     @Test
+    public void shouldBeNotUpdateIngredientWrongRecipeId() throws Exception {
+        
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", "250g", "Spaghetti", "Bio");
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047sss/ingredients/" + ingredient.getResourceId())
+                        .header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(ingredient)))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNotUpdateIngredientWrongIngredient() throws Exception {
+        
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", null, "Spaghetti", null);
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/abcWrong")
+                        .header(tokenHeader, token)
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(ingredient)))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
+    }
+    
+    @Test
     public void shouldBeDeleteIngredient() throws Exception {
 
         mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
@@ -297,6 +361,15 @@ public class RecipeControllerIT {
         mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
                         .header(tokenHeader, token))
                         .andExpect(status().isOk())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNotDeleteIngredientWrongRecipeId() throws Exception {
+
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c69sss/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
+                        .header(tokenHeader, token))
+                        .andExpect(status().isNotFound())
                         .andReturn();
     }
     
@@ -341,7 +414,7 @@ public class RecipeControllerIT {
         return recipe;
     }
 
-    private RecipeResource createInvalidRecipeWithoutUUID() {
+    private RecipeResource createInvalidRecipe() {
         final RecipeResource recipe = new RecipeResource();
         recipe/*.setTitle("Omeletten-Gemüse-Gratin")*/.setPreamble("Omeletten hausgemacht")
             .setAddingDate(december(24, 2014)).setEditingDate(december(29, 2014)).setNoOfPerson("2")

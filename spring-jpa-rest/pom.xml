@@ -11,7 +11,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
         <spring.version>4.3.9.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <db.derby.version>10.13.1.1</db.derby.version>
