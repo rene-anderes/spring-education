@@ -216,7 +216,6 @@ public class RecipeController {
         if (ingredient.isPresent()) {
             recipe.removeIngredient(ingredient.get());
             repository.save(recipe);
-            return ResponseEntity.ok().build();
         }
         return ResponseEntity.ok().build();
     }

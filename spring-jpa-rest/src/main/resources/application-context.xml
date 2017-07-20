@@ -52,6 +52,5 @@
     </bean>
     
     <bean id="inMemoryUserRepository" class="org.anderes.edu.security.domain.InMemoryUserRepository" />
-
        
 </beans>
