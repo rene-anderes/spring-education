@@ -39,7 +39,7 @@ public class JwtAuthenticationTokenFilterTest {
     
     @Before
     public void setup() {
-        final JwtUserDto user = new JwtUserDto(42L, "Anderes", "Admin", "User");
+        final JwtUserDto user = new JwtUserDto("Anderes", "Admin", "User");
         token = jwtTokenGenerator.generateToken(user);
     }
     

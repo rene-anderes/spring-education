@@ -32,7 +32,7 @@ public class JwtTokenGeneratorValidatorTest {
     @Test
     public void checkToken() {
         // given
-        JwtUserDto user = new JwtUserDto(42L, "Anderes", "Admin", "User");
+        JwtUserDto user = new JwtUserDto("Anderes", "Admin", "User");
         
         // when
         String token = jwtTokenGenerator.generateToken(user);
@@ -46,7 +46,6 @@ public class JwtTokenGeneratorValidatorTest {
         // then
         assertThat(userFromToken, is(not(nullValue())));
         assertThat(userFromToken.isPresent(), is(true));
-        assertThat(userFromToken.get().getId(), is(42L));
         assertThat(userFromToken.get().getUsername(), is("Anderes"));
         assertThat(userFromToken.get().getRoles(), hasItems("Admin", "User"));
     }
@@ -64,7 +63,6 @@ public class JwtTokenGeneratorValidatorTest {
         // then
         assertThat(userFromToken, is(not(nullValue())));
         assertThat(userFromToken.isPresent(), is(true));
-        assertThat(userFromToken.get().getId(), is(Long.MAX_VALUE));
         assertThat(userFromToken.get().getUsername(), is("anonymousUser"));
         assertThat(userFromToken.get().getRoles(), hasItems("ROLE_ANONYMOUS"));
         

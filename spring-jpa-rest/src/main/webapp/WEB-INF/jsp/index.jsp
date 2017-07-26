@@ -21,20 +21,21 @@
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
 
-<title>Liste</title>
+<title>Cookbook chez René</title>
 </head>
 <body>
 	<!-- Sidebar -->
 	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-right" style="display:none;right:0;" id="mySidebar">
 	  <button class="w3-bar-item w3-button" onclick="w3_close()">Close &times;</button>
-	  <button onclick="dialogLogin.show()" class="w3-button w3-bar-item w3-red">Login</button>
+	  <button class="w3-button w3-bar-item w3-red" onclick="dialogLogin.show()">Login</button>
+	  <button id="addRecipe" class="w3-button w3-bar-item w3-red" title="neues Rezept erfassen">Neues Rezept</button>
 	</div>
 	<script>
 		function w3_open() {
-		  document.getElementById("mySidebar").style.display = "block";
+		  $("#mySidebar").css("display", "block");
 		}
 		function w3_close() {
-		  document.getElementById("mySidebar").style.display = "none";
+		  $("#mySidebar").hide();
 		}
 	</script>
 	
@@ -49,9 +50,6 @@
 			<h5>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h5>
 			<div id="recipes">
 				<ul class="w3-ul" id="list"></ul>
-				<div class="w3-right">
-					<p><a id="addRecipe" class="w3-button w3-circle w3-red" title="neues Rezept erfassen">+</a></p>
-				</div>
 				<div class="w3-bar w3-center">
 					<a id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
 					<a id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
@@ -212,7 +210,7 @@
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
-		var $loginUrl = $rootUrl + "/users/token";
+		var $tokenUrl = $rootUrl + "/users/token";
 
 		var dialogDelete = {
 
@@ -285,7 +283,7 @@
 			var login = function( user, password ) {
 				var deferred = $.Deferred();
 				$.ajax({
-					url : $loginUrl,
+					url : $tokenUrl,
 					method : "POST",
 					headers: { 'Authorization': "Basic " + window.btoa(user + ":" + password) }
 				})

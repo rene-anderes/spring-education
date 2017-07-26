@@ -40,7 +40,7 @@ public class JwtAuthenticationProviderTest {
     
     @Before
     public void setup() {
-        final JwtUserDto user = new JwtUserDto(42L, "Anderes", "Admin", "User");
+        final JwtUserDto user = new JwtUserDto("Anderes", "Admin", "User");
         token = jwtTokenGenerator.generateToken(user);
     }
     
@@ -55,7 +55,6 @@ public class JwtAuthenticationProviderTest {
         
         // then
         assertThat(authenticatedUser, is(not(nullValue())));
-        assertThat(authenticatedUser.getId(), is(42L));
         assertThat(authenticatedUser.getToken(), is(token));
         assertThat(authenticatedUser.getUsername(), is("Anderes"));
         assertThat(authenticatedUser.getAuthorities().size(), is(2));

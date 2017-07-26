@@ -7,37 +7,24 @@ import java.util.stream.Collectors;
 
 public class JwtUserDto {
 
-    private Long id;
-
     private String username;
 
     private Collection<String> roles = new HashSet<>();
 
     public JwtUserDto(Long id, String username, Collection<String> roles) {
         super();
-        this.id = id;
         this.username = username;
         setRoles(roles);
     }
     
-    public JwtUserDto(Long id, String username, String... roles) {
+    public JwtUserDto(String username, String... roles) {
         super();
-        this.id = id;
         this.username = username;
         setRoles(roles);
     }
 
     public JwtUserDto() {
         super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public JwtUserDto setId(Long id) {
-        this.id = id;
-        return this;
     }
 
     public String getUsername() {

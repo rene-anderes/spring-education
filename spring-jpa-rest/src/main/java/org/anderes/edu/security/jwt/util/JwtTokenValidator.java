@@ -31,9 +31,7 @@ public class JwtTokenValidator {
             Claims body = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
             user = new JwtUserDto();
-            user.setUsername(body.getSubject())
-                .setId(Long.parseLong((String) body.get("userId")))
-                .setRoles((Collection<String>) body.get("roles"));
+            user.setUsername(body.getSubject()).setRoles((Collection<String>) body.get("roles"));
 
         } catch (JwtException e) {
             e.printStackTrace();

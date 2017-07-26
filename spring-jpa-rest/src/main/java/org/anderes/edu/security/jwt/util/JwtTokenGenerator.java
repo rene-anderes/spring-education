@@ -27,7 +27,6 @@ public class JwtTokenGenerator {
      */
     public String generateToken(JwtUserDto user) {
         Claims claims = Jwts.claims().setSubject(user.getUsername());
-        claims.put("userId", user.getId() + "");
         claims.put("roles", user.getRoles());
 
         return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
@@ -38,7 +37,7 @@ public class JwtTokenGenerator {
      * @return the JWT token
      */
     public String generateTokenForAnonymous() {
-        final JwtUserDto user = new JwtUserDto(Long.MAX_VALUE, anonymousUser, anonymousRole);
+        final JwtUserDto user = new JwtUserDto(anonymousUser, anonymousRole);
         return generateToken(user);
     }
 }
