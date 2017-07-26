@@ -212,7 +212,7 @@
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
-		var $loginUrl = $rootUrl + "/users/login";
+		var $loginUrl = $rootUrl + "/users/token";
 
 		var dialogDelete = {
 
@@ -284,16 +284,10 @@
 			
 			var login = function( user, password ) {
 				var deferred = $.Deferred();
-				var $loginData = {};
-				$loginData.name = user;
-				$loginData.password = password;
-				$json = JSON.stringify( $loginData );
 				$.ajax({
 					url : $loginUrl,
 					method : "POST",
-					contentType: "application/json; charset=UTF-8",
-					data: $json,
-					dataType: "json"
+					headers: { 'Authorization': "Basic " + window.btoa(user + ":" + password) }
 				})
 				.done( function( json ) {
 					token = json.token;

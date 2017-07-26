@@ -5,39 +5,39 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.anderes.edu.security.domain.UserData;
 import org.anderes.edu.security.jwt.transfer.JwtUserDto;
 import org.anderes.edu.security.jwt.util.JwtTokenGenerator;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("users")
-public class LoginJWTController {
+public class LoginJwtController {
 
-    @Inject 
-    private UserRepository repository;
+    @Inject
+    private AuthenticationFacade authenticationFacade; 
     @Inject
     private JwtTokenGenerator jwtTokenGenerator;
-      
-    @RequestMapping(value="login", method = POST, consumes = { APPLICATION_JSON_UTF8_VALUE }, produces = { APPLICATION_JSON_UTF8_VALUE })
-    public HttpEntity<JwtToken> login(@RequestBody UserData userData) {
+    
+    @RequestMapping(value="token", method = POST, produces = { APPLICATION_JSON_UTF8_VALUE })
+    public HttpEntity<JwtToken> getToken() {
         
-        Optional<Long> optionalId = repository.checkLogin(userData.getName(), userData.getPassword());
-        if (optionalId.isPresent()) {
-            Collection<String> roles = repository.getRolesByName(userData.getName());
-            JwtUserDto user = new JwtUserDto(optionalId.get(), userData.getName(), roles);
+        Optional<Authentication> authentication = authenticationFacade.getAuthentication();
+        if (authentication.isPresent()) {
+            final Collection<String> roles = authentication.get().getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList());
+            final String userName = authentication.get().getName();
+            JwtUserDto user = new JwtUserDto(123L, userName, roles);
             final String token = jwtTokenGenerator.generateToken(user);
             return ResponseEntity.ok(new JwtToken(token));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.badRequest().build();
     }
     
     private static class JwtToken {

@@ -32,7 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -81,21 +80,18 @@ public class RecipeController {
         return ResponseEntity.ok(recipeResource);
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = DELETE, value = "{id}")
     public ResponseEntity<?> deleteRecipe(@PathVariable("id") String resourceId) {
         repository.delete(resourceId);
         return ResponseEntity.ok().build();
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
         final Recipe newRecipe = new Recipe();
         return saveNewRecipe(newResource, newRecipe, TRUE);
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = PUT, value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
     public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource,
             @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate) {
@@ -164,7 +160,6 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = PUT, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> updateIngredient(@PathVariable("id") String recipeId, 
                     @PathVariable("ingredientId") String ingredientId, @RequestBody IngredientResource resource) {
@@ -186,7 +181,6 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = POST, value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveIngredient(@PathVariable("id") String recipeId, @RequestBody IngredientResource resource) {
         
@@ -204,7 +198,6 @@ public class RecipeController {
         return ResponseEntity.created(location).build();
     }
     
-    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(method = DELETE, value = "{id}/ingredients/{ingredientId}")
     public ResponseEntity<?> deleteIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
         

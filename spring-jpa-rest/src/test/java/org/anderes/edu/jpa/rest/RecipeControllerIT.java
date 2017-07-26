@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -75,9 +76,8 @@ public class RecipeControllerIT {
                         .apply(springSecurity())                       
                         .build();
         try {
-            MvcResult result = mockMvc.perform(post("/users/login")
-                            .content(getUserPassword().toJSONString())
-                            .contentType(APPLICATION_JSON_UTF8)
+            MvcResult result = mockMvc.perform(post("/users/token")
+                            .with(httpBasic("admin", "password"))
                             .accept(APPLICATION_JSON_UTF8))
                             .andExpect(status().isOk())
                             .andReturn();
@@ -88,13 +88,6 @@ public class RecipeControllerIT {
         }
     }
 
-    private JSONObject getUserPassword() {
-        final JSONObject o = new JSONObject();
-        o.putIfAbsent("name", "user");
-        o.putIfAbsent("password", "password");
-        return o;
-    }
-    
     @Test
     public void shouldBeAllRecipes() throws Exception {
         MvcResult result = mockMvc.perform(get("/recipes")
@@ -154,6 +147,17 @@ public class RecipeControllerIT {
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(recipeToSave)))
                         .andExpect(status().isBadRequest())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNOTSaveNewRecipePOSTWrongAuthentication() throws Exception {
+        final RecipeResource recipeToSave = createRecipeWithoutUUID();
+        mockMvc.perform(post("/recipes")
+                        .header(tokenHeader, "c0e5582e-252f-4e94-8a49-e12b4b047")
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(recipeToSave)))
+                        .andExpect(status().isForbidden())
                         .andReturn();
     }
     

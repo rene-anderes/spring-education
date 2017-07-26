@@ -12,28 +12,22 @@
     <context:component-scan base-package="org.anderes.edu.security" />
     <context:property-placeholder  location="classpath:/config/application.properties"/>
 
-    <mvc:annotation-driven>
-        <mvc:message-converters>
-            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
-        </mvc:message-converters>
-    </mvc:annotation-driven>
-
+    <!-- Authentication manager. -->
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider>
+            <security:user-service id="userDetailsService">
+                <security:user name="admin" password="password" authorities="ROLE_ADMIN, ROLE_USER" />
+                <security:user name="user" password="password" authorities="ROLE_USER" />
+            </security:user-service>
+        </security:authentication-provider>
+        <security:authentication-provider ref="jwtAuthenticationProvider" /> 
+    </security:authentication-manager>
+    
     <bean id="jwtAuthenticationFilter" class="org.anderes.edu.security.jwt.JwtAuthenticationTokenFilter">
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="authenticationSuccessHandler" ref="jwtAuthenticationSuccessHandler" /> 
     </bean>
     
     <bean id="jwtAuthenticationSuccessHandler" class="org.anderes.edu.security.jwt.JwtAuthenticationSuccessHandler" />
-    
-    <bean id="stubUserRepository" class="org.anderes.edu.security.rest.StubUserRepository" />
-    
-    <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider ref="jwtAuthenticationProvider" /> 
-    </security:authentication-manager>
-
-    <security:http pattern="/recipes/**" entry-point-ref="jwtAuthenticationEntryPoint" create-session="stateless">
-        <security:csrf disabled="true"/>
-        <security:custom-filter before="FORM_LOGIN_FILTER" ref="jwtAuthenticationFilter"/>
-    </security:http>    
      
 </beans>

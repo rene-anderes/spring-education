@@ -7,23 +7,20 @@
 
     <!-- Security configuration for REST services. -->
     <!-- 'access' siehe Klasse SecurityExpressionRoot -->
-    <security:http create-session="stateless" authentication-manager-ref="authenticationManager">
-        <security:intercept-url method="GET" pattern="/recipes/**" access="permitAll" />
-        <security:intercept-url pattern="/recipes/**" access="hasRole('ROLE_USER')" />
+    <security:http pattern="/users/**" create-session="stateless" authentication-manager-ref="authenticationManagerBasic">
+        <security:intercept-url pattern="/users/**" access="hasRole('ROLE_USER')" />
         <security:http-basic />
         <security:csrf disabled="true"/>
     </security:http>
 
     <!-- Authentication manager. -->
-    <security:authentication-manager alias="authenticationManager">
+    <security:authentication-manager alias="authenticationManagerBasic">
         <security:authentication-provider>
             <security:user-service id="userDetailsService">
-                <security:user name="admin" password="password" authorities="ROLE_ADMIN" />
+                <security:user name="admin" password="password" authorities="ROLE_ADMIN, ROLE_USER" />
                 <security:user name="user" password="password" authorities="ROLE_USER" />
             </security:user-service>
         </security:authentication-provider>
     </security:authentication-manager>
-    
-    <security:global-method-security secured-annotations="enabled" jsr250-annotations="enabled" pre-post-annotations="enabled" />
-
+  
 </beans>
