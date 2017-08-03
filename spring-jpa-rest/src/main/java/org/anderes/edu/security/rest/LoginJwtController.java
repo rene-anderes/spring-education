@@ -33,7 +33,7 @@ public class LoginJwtController {
         if (authentication.isPresent()) {
             final Collection<String> roles = authentication.get().getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList());
             final String userName = authentication.get().getName();
-            JwtUserDto user = new JwtUserDto(123L, userName, roles);
+            JwtUserDto user = new JwtUserDto(userName, roles);
             final String token = jwtTokenGenerator.generateToken(user);
             return ResponseEntity.ok(new JwtToken(token));
         }

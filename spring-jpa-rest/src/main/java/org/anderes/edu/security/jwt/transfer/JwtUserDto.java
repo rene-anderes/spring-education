@@ -11,7 +11,7 @@ public class JwtUserDto {
 
     private Collection<String> roles = new HashSet<>();
 
-    public JwtUserDto(Long id, String username, Collection<String> roles) {
+    public JwtUserDto(String username, Collection<String> roles) {
         super();
         this.username = username;
         setRoles(roles);
