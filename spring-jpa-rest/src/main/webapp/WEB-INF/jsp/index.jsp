@@ -20,8 +20,13 @@
 	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
-
-<title>Cookbook chez René</title>
+	<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+	<style>
+		html, body, h1, h2, h3, h4, h5, h6 {
+		    font-family: Lato,Verdana,sans-serif;
+		}
+	</style>
+	<title>Cookbook chez René</title>
 </head>
 <body>
 	<!-- Sidebar -->
@@ -42,21 +47,21 @@
 	<!-- Page Content -->
 	<header class="w3-container w3-teal">
 	 	<button class="w3-button w3-teal w3-xxlarge w3-right" onclick="w3_open()">&#9776;</button>
-  		<h1>Web-Application "Cookbook"</h1>
+  		<h1>Kochbuch chéz René</h1>
 	</header> 
 	
 	<div class="w3-row">
-		<div class="w3-half w3-container">
-			<h5>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h5>
+		<div class="w3-third w3-container">
+			<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
 			<div id="recipes">
-				<ul class="w3-ul" id="list"></ul>
+				<ul class="w3-ul w3-hoverable w3-large" id="list"></ul>
 				<div class="w3-bar w3-center">
 					<a id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
 					<a id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
 				</div>
 			</div>
 		</div>
-		<div class="w3-half w3-container">
+		<div class="w3-twothird w3-container">
 			<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
 			
 			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
@@ -437,7 +442,7 @@
 				$( "#recipe #update" ).text( formatDate( recipe.editingDate ) );
 				$( "#recipe #tags span" ).remove();
 				$.each( recipe.tags, function( idx, tag ) {
-					$( "#recipe #tags" ).append( "<span class='w3-tag'>" + tag + "</span>&nbsp;" );
+					$( "#recipe #tags" ).append( "<span><span class='w3-tag'>" + tag + "</span>&nbsp;</span>" );
 				});
 				$( "#recipe #resourceId" ).text( recipe.uuid );
 			};
@@ -1002,9 +1007,11 @@
 		});
 		$(document).ajaxStart( function() {
 			$( "#loading" ).show();
+			$( "footer" ).hide();
 		});
 		$(document).ajaxStop( function() {
 			$( "#loading" ).hide();
+			$( "footer" ).show();
 		});
 	</script>
 </body>
