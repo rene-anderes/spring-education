@@ -11,8 +11,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>4.3.9.RELEASE</spring.version>
+        <spring.version>4.3.11.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
+        <jackson.version>2.9.1</jackson.version>
+        <eclipselink.version>2.6.5</eclipselink.version>
         <db.derby.version>10.13.1.1</db.derby.version>
         <db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
         <db.user>APP</db.user>
@@ -30,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.2</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -39,7 +41,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.20</version>
+                <version>2.20.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -114,7 +116,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.11.3.RELEASE</version>
+            <version>1.11.7.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -164,7 +166,8 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.2.Final</version>
+            <version>4.3.1.Final</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- JPA API -->
         <dependency>
@@ -176,12 +179,14 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.6.4</version>
+            <version>${eclipselink.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
-            <version>2.6.4</version>
+            <version>${eclipselink.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- Derby als Embedded Database -->
         <dependency>
@@ -199,18 +204,18 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>3.6</version>
         </dependency>
         <!-- JSON Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.8.8</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.8.8</version>
+            <version>${jackson.version}</version>
         </dependency>
         <!-- Servlet API -->
         <dependency>
@@ -258,7 +263,7 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.2.0</version>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
         
