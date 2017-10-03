@@ -112,7 +112,14 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Spring JPA -->
+        <!-- Dependencies Injection -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+        <!-- / Dependencies Injection -->
+        <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
@@ -127,6 +134,7 @@
             <artifactId>spring-hateoas</artifactId>
             <version>0.23.0.RELEASE</version>
         </dependency>
+        <!-- / Spring Framework -->
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -150,26 +158,26 @@
             <artifactId>jjwt</artifactId>
             <version>0.8.0</version>
         </dependency>
-         <!-- / JSON Web Token -->
-        <!-- Dependencies Injection -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-        <!-- Bean Validation -->
+        <!-- / JSON Web Token -->
+        <!-- Bean Validation API -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.0.0.GA</version>
+            <version>1.1.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.2.Final</version>
+            <version>5.4.1.Final</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- JPA API -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- / Bean Validation API -->
+        <!-- Java Persistence API -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
@@ -188,6 +196,7 @@
             <version>${eclipselink.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- / Java Persistence API -->
         <!-- Derby als Embedded Database -->
         <dependency>
             <groupId>org.apache.derby</groupId>
