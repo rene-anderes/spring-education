@@ -11,9 +11,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>4.3.11.RELEASE</spring.version>
+        <spring.version>4.3.13.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
-        <jackson.version>2.9.1</jackson.version>
+        <spring.data.jpa.version>1.11.9.RELEASE</spring.data.jpa.version>
+        <jackson.version>2.9.3</jackson.version>
         <eclipselink.version>2.6.5</eclipselink.version>
         <db.derby.version>10.13.1.1</db.derby.version>
         <db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
@@ -123,16 +124,16 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.11.7.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.data.jpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.hateoas</groupId>
             <artifactId>spring-hateoas</artifactId>
-            <version>0.23.0.RELEASE</version>
+            <version>0.24.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
         <!-- / Spring Framework -->
         <!-- Spring Security -->
@@ -168,7 +169,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.4.1.Final</version>
+            <version>5.4.2.Final</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -177,24 +178,20 @@
             <version>3.0.0</version>
         </dependency>
         <!-- / Bean Validation API -->
-        <!-- Java Persistence API -->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>2.1.0</version>
-        </dependency>
+       
         <!-- JPA Provider EclipseLink -->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${eclipselink.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!-- 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>${eclipselink.version}</version>
             <scope>runtime</scope>
+        </dependency>
+         -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
         </dependency>
         <!-- / Java Persistence API -->
         <!-- Derby als Embedded Database -->
