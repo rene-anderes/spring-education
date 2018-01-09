@@ -88,14 +88,14 @@
             </activation>
             <properties>
                 <db.url>jdbc:derby://localhost:1527/myCookbook;create=true</db.url>
-                <eclipselink.showsql>true</eclipselink.showsql>
+                <eclipselink.showsql>FINE</eclipselink.showsql>
             </properties>
         </profile>
         <profile>
             <id>live</id>
             <properties>
                 <db.url>jdbc:derby://localhost:1527/CookbookDatabase</db.url>
-                <eclipselink.showsql>false</eclipselink.showsql>
+                <eclipselink.showsql>INFO</eclipselink.showsql>
             </properties>
         </profile>
     </profiles>
@@ -157,7 +157,7 @@
          <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.0</version>
         </dependency>
         <!-- / JSON Web Token -->
         <!-- Bean Validation API -->
