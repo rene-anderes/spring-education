@@ -16,6 +16,7 @@
         <spring.data.jpa.version>1.11.9.RELEASE</spring.data.jpa.version>
         <jackson.version>2.9.3</jackson.version>
         <eclipselink.version>2.6.5</eclipselink.version>
+        <log4j2.version>2.10.0</log4j2.version>
         <db.derby.version>10.13.1.1</db.derby.version>
         <db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
         <db.user>APP</db.user>
@@ -237,6 +238,32 @@
             <version>1.2</version>
             <scope>runtime</scope>
         </dependency>
+        
+         <!-- Logging Framework -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+            <version>${log4j2.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Logging Framework -->
 
         <!-- ~~~~~~~~~ Testabhängigkeiten ~~~~~~~~~ -->
         <dependency>

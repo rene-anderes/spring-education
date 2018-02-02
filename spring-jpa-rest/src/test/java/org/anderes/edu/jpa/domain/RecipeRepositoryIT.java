@@ -41,10 +41,10 @@ public class RecipeRepositoryIT {
     
     @Inject @Rule 
     public DbUnitRule dbUnitRule;
-   
+    
     @Before
-    public void setup() {
-        
+    public void before() {
+        // nothing to do ...
     }
         
     @Test

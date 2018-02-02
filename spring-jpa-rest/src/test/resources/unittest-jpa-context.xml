@@ -9,21 +9,18 @@
       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
-      
-      
-    <jpa:repositories base-package="org.anderes.edu.jpa.domain" />  
+     
+    <jpa:repositories base-package="org.anderes.edu.jpa.domain" />
 
-    <!-- 
-        Die Test's werden mittels In-Memory Datenbank ausgeführt.
-     -->
-      
+    <!-- Die Test's werden mittels In-Memory Datenbank ausgeführt. -->
+
     <!-- JPA Entity Manager -->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="packagesToScan" value="org.anderes.edu.jpa.domain" />
         <property name="jpaDialect" ref="jpaDialect" />
         <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"/>
+            <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />
         </property>
         <property name="jpaProperties">
             <props>
@@ -35,9 +32,10 @@
                 <prop key="eclipselink.jdbc.native-sql">true</prop>
                 <prop key="eclipselink.weaving">false</prop>
                 <prop key="eclipselink.logging.level">FINE</prop>
-                <!-- Note: Setting eclipselink.logging.level to FINE is not sufficient (as of EclipseLink 2.4.0 - Juno), you have to set eclipselink.logging.level.sql to FINE.  -->
+                <!-- Note: Setting eclipselink.logging.level to FINE is not sufficient (as of EclipseLink 2.4.0 - Juno), you have to set eclipselink.logging.level.sql to FINE. -->
                 <prop key="eclipselink.logging.level.sql">FINE</prop>
                 <prop key="eclipselink.logging.parameters">true</prop>
+                <prop key="eclipselink.logging.logger">JavaLogger</prop>
             </props>
         </property>
     </bean>
@@ -55,9 +53,9 @@
     </bean>
 
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect" />
-    
+
     <!-- Wenn '<prop key="eclipselink.weaving">' auf true ist -->
     <!-- siehe http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/instrument/classloading/InstrumentationLoadTimeWeaver.html -->
-    <!-- <bean id="loadTimeWeaver" class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />  -->
-    
+    <!-- <bean id="loadTimeWeaver" class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" /> -->
+
 </beans>
