@@ -18,6 +18,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers("/secure*.*").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .and()
             .formLogin()
                 .loginPage("/login.jsp")
@@ -31,10 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-            .withUser("user").password("password").roles("USER");
+    public void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
+        builder.authenticationProvider(new CustomAuthenticationProvider());
     }
     
     @SuppressWarnings("deprecation")
