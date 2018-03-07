@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.security.version>5.0.2.RELEASE</spring.security.version>
+        <spring.security.version>5.0.3.RELEASE</spring.security.version>
         <log4j2.version>2.10.0</log4j2.version>
     </properties>
 
@@ -69,8 +69,8 @@
             <artifactId>spring-security-taglibs</artifactId>
             <version>${spring.security.version}</version>
         </dependency>
-
         <!-- / Spring Security -->
+        
         <!-- Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -112,24 +112,6 @@
         </dependency>
         <!-- Logging Framework -->
 
-        <!-- ~~~~~~~~~ Testabhängigkeiten ~~~~~~~~~ -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Spring Security Test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <version>${spring.security.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- / Spring Security Test -->
-
-        <!-- / ~~~~~~~~~ Testabhängigkeiten ~~~~~~~~~ -->
     </dependencies>
 
 </project>
