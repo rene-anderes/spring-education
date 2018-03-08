@@ -12,6 +12,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+/**
+ * Einfache Implementatione eines AuthenticationProvider.
+ * <p><b>Beachte:</b> Unverschlüsseltes Passwort.
+ *  
+ * @author René Anderes
+ *
+ */
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     private static List<User> users = new ArrayList<>();
