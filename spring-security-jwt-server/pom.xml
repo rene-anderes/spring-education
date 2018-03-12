@@ -14,6 +14,7 @@
         <spring.security.version>5.0.3.RELEASE</spring.security.version>
         <jersey.version>2.26</jersey.version>
         <log4j2.version>2.10.0</log4j2.version>
+        <jackson.version>2.9.3</jackson.version>
     </properties>
 
     <build>
@@ -68,7 +69,23 @@
             <version>1</version>
         </dependency>
         <!-- / Dependencies Injection -->
-
+        
+        <!-- JSON Web Token -->
+         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+        <!-- / JSON Web Token -->
+        
+        <!-- JSON-P -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <!-- / JSON-P -->
+        
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -88,18 +105,15 @@
             <version>${spring.security.version}</version>
         </dependency>
         <!-- / Spring Security -->
-
-        <!-- JAX-RS -->
+        
+        <!-- JSON Jackson -->
         <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
-        <dependency> <!-- without: IllegalStateException -->
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
-        </dependency>
-        <!-- / JAX-RS -->
-
+        <!-- / JSON Jackson -->
+        
         <!-- Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -144,22 +158,6 @@
             <scope>test</scope>
         </dependency>
         <!-- / Spring Security Test -->
-        
-        <!-- Jersey Test Framework -->
-        <dependency>
-            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-            <artifactId>jersey-test-framework-provider-jetty</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- / Jersey Test Framework -->
-
-        <!-- Wird für Grizzly benötigt (Test) -->
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-moxy</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- / Wird für Grizzly benötigt (Test) -->
 
         <dependency>
             <groupId>junit</groupId>

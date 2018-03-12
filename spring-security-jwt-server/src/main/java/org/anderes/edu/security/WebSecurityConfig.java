@@ -29,4 +29,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         manager.createUser(User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build());
         return manager;
     }
+
 }
