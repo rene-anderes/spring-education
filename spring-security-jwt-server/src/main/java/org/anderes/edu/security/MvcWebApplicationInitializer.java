@@ -1,5 +1,8 @@
 package org.anderes.edu.security;
 
+import org.anderes.edu.configuration.AppConfig;
+import org.anderes.edu.configuration.WebMvcConfig;
+import org.anderes.edu.configuration.WebSecurityConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 
@@ -7,7 +10,7 @@ public class MvcWebApplicationInitializer extends AbstractAnnotationConfigDispat
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] { WebSecurityConfig.class };
+        return new Class[] { AppConfig.class  };
     }
 
     @Override
@@ -17,7 +20,7 @@ public class MvcWebApplicationInitializer extends AbstractAnnotationConfigDispat
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] { WebMvcConfig.class };
+        return new Class[] { WebMvcConfig.class, WebSecurityConfig.class };
     }
     
 }

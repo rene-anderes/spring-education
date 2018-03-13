@@ -9,6 +9,8 @@ import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,14 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/users", produces = { APPLICATION_JSON_UTF8_VALUE } )
 public class JwtRestController {
     
+    final Logger logger = LoggerFactory.getLogger(JwtRestController.class);
+    
     @Inject
     private TokenGenerator tokenGenerator;
 
     @PostMapping(value="token")
     public ResponseEntity<String> getJwtToken() {
         
+        if (SecurityContextHolder.getContext() == null) {
+            logger.error("Authentication does not exists: Check the security configuration");
+            throw new IllegalStateException();
+        }
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() == null) {
+            logger.error("Principal does not exists: Check the security configuration");
             throw new IllegalStateException();
         }
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();

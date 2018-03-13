@@ -7,15 +7,26 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDateTime;
 
-import org.junit.Test;
+import javax.inject.Inject;
 
+import org.anderes.edu.configuration.AppConfig;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { AppConfig.class })
+@WebAppConfiguration
 public class JwtTokenGeneratorTest {
 
-
+    @Inject
+    private JwtTokenGenerator generator;
+    
     @Test
     public void shouldBeCorrectToken() {
-        // given
-        final JwtTokenGenerator generator = new JwtTokenGenerator();
+       
         // when
         final String token = generator.createToken("user", "USER", "ADMIN");
         // then
@@ -25,12 +36,17 @@ public class JwtTokenGeneratorTest {
     
     @Test
     public void shouldBeCorrectTokenWithExpiration() {
-        // given
-        final JwtTokenGenerator generator = new JwtTokenGenerator();
+
         // when
         final String token = generator.setExpiration(LocalDateTime.now().plusDays(1l)).createToken("user", "USER", "ADMIN");
         // then
         assertThat(token, is(not(nullValue())));
         assertThat(token.length(), is(183));
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void shouldBeNotCreatetToken() {
+       
+        generator.createToken(null, "USER", "ADMIN");
     }
 }
