@@ -8,8 +8,10 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDateTime;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolationException;
 
 import org.anderes.edu.configuration.AppConfig;
+import org.anderes.edu.security.rest.TokenGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,7 +24,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class JwtTokenGeneratorTest {
 
     @Inject
-    private JwtTokenGenerator generator;
+    private TokenGenerator generator;
     
     @Test
     public void shouldBeCorrectToken() {
@@ -44,7 +46,7 @@ public class JwtTokenGeneratorTest {
         assertThat(token.length(), is(183));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = ConstraintViolationException.class)
     public void shouldBeNotCreatetToken() {
        
         generator.createToken(null, "USER", "ADMIN");

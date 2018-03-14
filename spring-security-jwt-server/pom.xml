@@ -147,7 +147,26 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
         </dependency>
-        <!-- Apache Commons ... -->
+        <!-- / Apache Commons -->
+        
+        <!-- Bean Validation API -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.4.2.Final</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- / Bean Validation API -->
         
         <!-- Spring Testing Framework -->
         <dependency>

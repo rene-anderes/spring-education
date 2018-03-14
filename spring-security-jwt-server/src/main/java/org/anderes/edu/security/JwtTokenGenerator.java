@@ -8,14 +8,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
 
 import org.anderes.edu.security.rest.TokenGenerator;
 import org.apache.commons.lang3.Validate;
+import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +26,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 @Singleton
+@Validated
 public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
     
     private final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
@@ -40,8 +44,6 @@ public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
 
     @Override
     public String createToken(String username, Set<String> roles) {
-        Validate.notBlank(username);
-        Validate.notNull(roles);
         final Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
         return Jwts.builder().setClaims(claims)
@@ -51,8 +53,7 @@ public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
     }
 
     @Override
-    public TokenGenerator setExpiration(final LocalDateTime expirationDate) {
-        Validate.notNull(expirationDate);
+    public TokenGenerator setExpiration(@NotNull LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
         return this;
     }
