@@ -7,8 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
-@ComponentScan(basePackages = "org.anderes")
 @PropertySource("classpath:/config/application.properties")
+@ComponentScan(basePackages = "org.anderes.edu")
 public class AppConfig {
     
     //To resolve ${} in @Value

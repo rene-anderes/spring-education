@@ -1,4 +1,4 @@
-package org.anderes.edu.security.jwt.rest;
+package org.anderes.edu.security.rest;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;

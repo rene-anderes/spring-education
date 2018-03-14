@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 
-import org.anderes.edu.security.jwt.rest.TokenGenerator;
+import org.anderes.edu.security.rest.TokenGenerator;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +25,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Singleton
 public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
     
-    final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
-    private final static long DEFAULT_EXPIRATION_DAYS = 1L;
-    private LocalDateTime expirationDate = LocalDateTime.now().plusDays(DEFAULT_EXPIRATION_DAYS);
+    private final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
+    private final static long DEFAULT_EXPIRATION_HOURS = 24L;
+    private LocalDateTime expirationDate = LocalDateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS);
     @Value("${jwt.algorithm}")
     private String algorithm;
     @Value("${jwt.secret}")

@@ -1,4 +1,4 @@
-package org.anderes.edu.security.jwt.rest;
+package org.anderes.edu.security.rest;
 
 import java.time.LocalDateTime;
 import java.util.Set;
