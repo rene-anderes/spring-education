@@ -11,8 +11,6 @@ import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 
 import org.anderes.edu.security.rest.TokenGenerator;
-import org.apache.commons.lang3.Validate;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

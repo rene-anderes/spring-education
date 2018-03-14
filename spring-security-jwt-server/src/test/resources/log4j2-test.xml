@@ -11,10 +11,13 @@
         <Root level="ALL">
             <AppenderRef ref="STDOUT"/>
         </Root>
-        <Logger name="org.springframework" level="INFO" additivity="false">
+        <Logger name="org.springframework" level="DEBUG" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
         <Logger name="org.eclipse.jetty" level="DEBUG" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.hibernate.validator" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
     </Loggers>

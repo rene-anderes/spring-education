@@ -78,9 +78,9 @@ public class UsersControllerTest {
         event = parser.next();
         assertThat(event, is(Event.START_ARRAY));
         event = parser.next();
-        assertThat(parser.getString(), is("USER"));
+        assertThat(parser.getString(), is("ROLE_ANONYMOUS"));
         event = parser.next();
-        assertThat(parser.getString(), is("ANONYMOUS"));
+        assertThat(parser.getString(), is("ROLE_USER"));
         event = parser.next();
         assertThat(event, is(Event.END_ARRAY));
         event = parser.next();
