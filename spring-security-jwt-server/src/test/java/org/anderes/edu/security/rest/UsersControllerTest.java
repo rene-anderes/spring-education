@@ -1,5 +1,6 @@
 package org.anderes.edu.security.rest;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -8,14 +9,17 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.StringReader;
 
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -48,10 +52,60 @@ public class UsersControllerTest {
     }
     
     @Test
+    public void shouldBeDeleteUser() throws Exception {
+        
+        mockMvc.perform(delete("/users/user@delete")
+                        .with(httpBasic("admin", "password")))
+                    .andExpect(status().isOk())
+                    .andReturn();
+                
+        mockMvc.perform(delete("/users/user@delete")
+                        .with(httpBasic("admin", "password")))
+                    .andExpect(status().isNotFound())
+                    .andReturn();
+        
+        mockMvc.perform(get("/users/user@delete")
+                        .with(httpBasic("admin", "password"))
+                        .accept(APPLICATION_JSON_UTF8))
+                    .andExpect(status().isNotFound())
+                    .andReturn();
+       
+    }
+    
+    @Test
+    public void shouldBePostNewUser() throws Exception {
+        
+        final JsonArray roles = Json.createArrayBuilder().add("USER").build();
+        final JsonObject user = Json.createObjectBuilder().add("username", "Stephen").add("password", "Hawking").add("roles", roles).build();
+        
+        mockMvc.perform(post("/users")
+                        .with(httpBasic("admin", "password"))
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(user.toString()))
+            .andExpect(status().isCreated())
+            .andExpect(header().string("Location", containsString("http://localhost/users/Stephen")))
+            .andReturn();
+    }
+    
+    @Test
+    public void shouldBeDuplicateUser() throws Exception {
+        
+        final JsonArray roles = Json.createArrayBuilder().add("USER").build();
+        final JsonObject user = Json.createObjectBuilder().add("username", "user").add("password", "password").add("roles", roles).build();
+        
+        mockMvc.perform(post("/users")
+                        .with(httpBasic("admin", "password"))
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(user.toString()))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+    
+    @Test
     public void shouldBeGetUser() throws Exception {
         
-        MvcResult result = mockMvc.perform(get("/users/user")
-                        .with(httpBasic("user", "password"))
+        final MvcResult result = mockMvc.perform(get("/users/user")
+                        .with(httpBasic("admin", "password"))
                         .accept(APPLICATION_JSON_UTF8))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(APPLICATION_JSON_UTF8.toString()))
@@ -86,5 +140,15 @@ public class UsersControllerTest {
         event = parser.next();
         assertThat(event, is(Event.END_OBJECT));
         parser.close();
+    }
+    
+    @Test
+    public void shouldBeForbidden() throws Exception {
+        
+        mockMvc.perform(get("/users/user")
+                        .with(httpBasic("user", "password"))
+                        .accept(APPLICATION_JSON_UTF8))
+                    .andExpect(status().isForbidden())
+                    .andReturn();
     }
 }

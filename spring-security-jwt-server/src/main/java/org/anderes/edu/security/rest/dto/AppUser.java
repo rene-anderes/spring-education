@@ -1,9 +1,7 @@
 package org.anderes.edu.security.rest.dto;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 public class AppUser {
     
@@ -33,10 +31,6 @@ public class AppUser {
 
     public void setRoles(Collection<String> roles) {
         this.roles = new HashSet<>(roles);
-    }
-    
-    public void setRoles(String... role) {
-        roles = Arrays.stream(role).collect(Collectors.toCollection(HashSet::new));
     }
 
     @Override
