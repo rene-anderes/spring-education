@@ -52,6 +52,29 @@ public class UsersControllerTest {
     }
     
     @Test
+    public void shouldBeUpdateUser() throws Exception {
+        
+        final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").add("ROLE_ADMIN").build();
+        final JsonObject user = Json.createObjectBuilder().add("username", "userEdit").add("password", "newPassword").add("roles", roles).build();
+        
+        mockMvc.perform(put("/users/userEdit")
+                        .with(httpBasic("admin", "password"))
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(user.toString()))
+            .andExpect(status().isOk())
+            .andReturn();
+        
+        mockMvc.perform(get("/users/user")
+                        .with(httpBasic("userEdit", "newPassword"))
+                        .accept(APPLICATION_JSON_UTF8))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(APPLICATION_JSON_UTF8.toString()))
+                    .andExpect(content().string(is(not(nullValue()))))
+                    .andExpect(content().string(startsWith("{")))
+                    .andReturn();
+    }
+    
+    @Test
     public void shouldBeDeleteUser() throws Exception {
         
         mockMvc.perform(delete("/users/user@delete")
@@ -75,7 +98,7 @@ public class UsersControllerTest {
     @Test
     public void shouldBePostNewUser() throws Exception {
         
-        final JsonArray roles = Json.createArrayBuilder().add("USER").build();
+        final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").build();
         final JsonObject user = Json.createObjectBuilder().add("username", "Stephen").add("password", "Hawking").add("roles", roles).build();
         
         mockMvc.perform(post("/users")
@@ -90,7 +113,7 @@ public class UsersControllerTest {
     @Test
     public void shouldBeDuplicateUser() throws Exception {
         
-        final JsonArray roles = Json.createArrayBuilder().add("USER").build();
+        final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").build();
         final JsonObject user = Json.createObjectBuilder().add("username", "user").add("password", "password").add("roles", roles).build();
         
         mockMvc.perform(post("/users")
@@ -149,6 +172,16 @@ public class UsersControllerTest {
                         .with(httpBasic("user", "password"))
                         .accept(APPLICATION_JSON_UTF8))
                     .andExpect(status().isForbidden())
+                    .andReturn();
+    }
+    
+    @Test
+    public void shouldBeUnauthorized() throws Exception {
+        
+        mockMvc.perform(get("/users/user")
+                        .with(httpBasic("bill", "password"))
+                        .accept(APPLICATION_JSON_UTF8))
+                    .andExpect(status().isUnauthorized())
                     .andReturn();
     }
 }

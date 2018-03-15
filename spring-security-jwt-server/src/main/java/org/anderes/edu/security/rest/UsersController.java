@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,10 +63,7 @@ public class UsersController {
             return ResponseEntity.badRequest().build();
         }
         
-        final Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
-                        .map(r -> new SimpleGrantedAuthority(r))
-                        .collect(Collectors.toList());
-        final UserDetails userDetails = new User(user.getUsername(), user.getPassword(), authorities);
+        final UserDetails userDetails = mapToUserDetails(user);
         userManager.createUser(userDetails);
         
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{username}").buildAndExpand(userDetails.getUsername()).toUri();
@@ -81,5 +79,29 @@ public class UsersController {
         
         userManager.deleteUser(username);
         return ResponseEntity.ok().build();
+    }
+    
+    @PutMapping(value = "{username}", consumes = { APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> updateUser(@PathVariable("username") String username, final @RequestBody AppUser user) {
+       
+        if (!username.equalsIgnoreCase(user.getUsername())) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!userManager.userExists(user.getUsername())) {
+            return ResponseEntity.notFound().build();
+        }
+        userManager.updateUser(mapToUserDetails(user));
+        
+        return ResponseEntity.ok().build();
+    }
+    
+    private UserDetails mapToUserDetails(final AppUser user) {
+        final Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
+                        .map(r -> new SimpleGrantedAuthority(r))
+                        .collect(Collectors.toList());
+        return User.withDefaultPasswordEncoder()
+                        .username(user.getUsername())
+                        .password(user.getPassword())
+                        .authorities(authorities).build();
     }
 }
