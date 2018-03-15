@@ -1,4 +1,4 @@
-package org.anderes.edu.security;
+package org.anderes.web.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

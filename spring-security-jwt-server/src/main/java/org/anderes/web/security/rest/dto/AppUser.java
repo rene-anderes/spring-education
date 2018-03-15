@@ -1,4 +1,4 @@
-package org.anderes.edu.security.rest.dto;
+package org.anderes.web.security.rest.dto;
 
 import java.util.Collection;
 import java.util.HashSet;

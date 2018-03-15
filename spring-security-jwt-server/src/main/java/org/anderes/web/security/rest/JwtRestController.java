@@ -1,4 +1,4 @@
-package org.anderes.edu.security.rest;
+package org.anderes.web.security.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "users", produces = { APPLICATION_JSON_UTF8_VALUE } )
+@RequestMapping(path = "users/token", produces = { APPLICATION_JSON_UTF8_VALUE } )
 public class JwtRestController {
     
     final Logger logger = LoggerFactory.getLogger(JwtRestController.class);
@@ -28,7 +28,7 @@ public class JwtRestController {
     @Inject
     private TokenGenerator tokenGenerator;
 
-    @PostMapping(value="token")
+    @PostMapping()
     public ResponseEntity<String> getJwtToken() {
         
         if (SecurityContextHolder.getContext() == null) {

@@ -1,4 +1,4 @@
-package org.anderes.edu.security.rest;
+package org.anderes.web.security.rest;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,9 +23,9 @@ import javax.json.JsonObject;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.anderes.edu.configuration.AppConfig;
-import org.anderes.edu.configuration.WebMvcConfig;
-import org.anderes.edu.configuration.WebSecurityConfig;
+import org.anderes.web.configuration.AppConfig;
+import org.anderes.web.configuration.WebMvcConfig;
+import org.anderes.web.configuration.WebSecurityConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

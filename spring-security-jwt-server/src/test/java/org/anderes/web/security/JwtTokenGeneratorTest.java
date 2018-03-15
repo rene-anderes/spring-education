@@ -1,4 +1,4 @@
-package org.anderes.edu.security;
+package org.anderes.web.security;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 
-import org.anderes.edu.configuration.AppConfig;
-import org.anderes.edu.security.rest.TokenGenerator;
+import org.anderes.web.configuration.AppConfig;
+import org.anderes.web.security.rest.TokenGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

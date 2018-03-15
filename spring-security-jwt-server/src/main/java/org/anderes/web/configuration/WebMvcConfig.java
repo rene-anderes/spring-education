@@ -1,4 +1,4 @@
-package org.anderes.edu.configuration;
+package org.anderes.web.configuration;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "org.anderes.edu")
+@ComponentScan(basePackages = "org.anderes.web")
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     

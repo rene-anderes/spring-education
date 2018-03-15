@@ -1,10 +1,10 @@
-package org.anderes.edu.security;
+package org.anderes.web.security;
 
 import javax.inject.Inject;
 
-import org.anderes.edu.configuration.AppConfig;
-import org.anderes.edu.configuration.WebMvcConfig;
-import org.anderes.edu.configuration.WebSecurityConfig;
+import org.anderes.web.configuration.AppConfig;
+import org.anderes.web.configuration.WebMvcConfig;
+import org.anderes.web.configuration.WebSecurityConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.security.crypto.password.PasswordEncoder;

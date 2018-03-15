@@ -1,8 +1,8 @@
-package org.anderes.edu.security;
+package org.anderes.web.security;
 
-import org.anderes.edu.configuration.AppConfig;
-import org.anderes.edu.configuration.WebMvcConfig;
-import org.anderes.edu.configuration.WebSecurityConfig;
+import org.anderes.web.configuration.AppConfig;
+import org.anderes.web.configuration.WebMvcConfig;
+import org.anderes.web.configuration.WebSecurityConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 

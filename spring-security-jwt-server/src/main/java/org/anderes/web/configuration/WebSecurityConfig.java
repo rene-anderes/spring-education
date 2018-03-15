@@ -1,4 +1,4 @@
-package org.anderes.edu.configuration;
+package org.anderes.web.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

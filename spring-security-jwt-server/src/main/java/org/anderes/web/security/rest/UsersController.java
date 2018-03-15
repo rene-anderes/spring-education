@@ -1,4 +1,4 @@
-package org.anderes.edu.security.rest;
+package org.anderes.web.security.rest;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -13,7 +13,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
-import org.anderes.edu.security.rest.dto.AppUser;
+import org.anderes.web.security.rest.dto.AppUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

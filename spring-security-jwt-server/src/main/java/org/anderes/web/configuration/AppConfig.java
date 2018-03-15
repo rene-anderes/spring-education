@@ -1,4 +1,4 @@
-package org.anderes.edu.configuration;
+package org.anderes.web.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -9,7 +9,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 @Configuration
 @PropertySource("classpath:/config/application.properties")
-@ComponentScan(basePackages = "org.anderes.edu")
+@ComponentScan(basePackages = "org.anderes.web")
 public class AppConfig {
     
     // To resolve ${} in @Value
