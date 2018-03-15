@@ -12,6 +12,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.validation.Valid;
 
 import org.anderes.web.security.rest.dto.AppUser;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class UsersController {
     }
     
     @PostMapping(consumes = { APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE })
-    public ResponseEntity<?> insertNewUser(final @RequestBody AppUser user) {
+    public ResponseEntity<?> insertNewUser(final @Valid @RequestBody AppUser user) {
         
         if (userManager.userExists(user.getUsername())) {
             return ResponseEntity.badRequest().build();
@@ -85,7 +86,7 @@ public class UsersController {
     }
     
     @PutMapping(value = "{username}", consumes = { APPLICATION_JSON_UTF8_VALUE, APPLICATION_JSON_VALUE })
-    public ResponseEntity<?> updateUser(@PathVariable("username") String username, final @RequestBody AppUser user) {
+    public ResponseEntity<?> updateUser(@PathVariable("username") String username, final @Valid @RequestBody AppUser user) {
        
         if (!username.equalsIgnoreCase(user.getUsername())) {
             return ResponseEntity.badRequest().build();

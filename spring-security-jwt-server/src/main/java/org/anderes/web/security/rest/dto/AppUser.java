@@ -3,10 +3,17 @@ package org.anderes.web.security.rest.dto;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 public class AppUser {
     
+    @NotBlank
     private String username;
+    @NotBlank
     private String password;
+    @NotNull
     private HashSet<String> roles = new HashSet<>();
     
     public String getUsername() {

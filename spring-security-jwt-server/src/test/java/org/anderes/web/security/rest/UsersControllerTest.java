@@ -125,6 +125,20 @@ public class UsersControllerTest {
     }
     
     @Test
+    public void shouldBePostBadRequestNotValid() throws Exception {
+        
+        final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").build();
+        final JsonObject user = Json.createObjectBuilder().add("username", "Peter").add("password", "").add("roles", roles).build();
+        
+        mockMvc.perform(post("/users")
+                        .with(httpBasic("admin", "password"))
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(user.toString()))
+            .andExpect(status().isBadRequest())
+            .andReturn();
+    }
+    
+    @Test
     public void shouldBePostBadRequestDuplicateUser() throws Exception {
         
         final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").build();
