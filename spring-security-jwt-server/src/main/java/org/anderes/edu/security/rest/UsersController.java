@@ -20,6 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping(path = "users" )
 public class UsersController {
 
+    @Inject
+    private PasswordEncoder passwordEncoder;
     @Inject
     private UserDetailsManager userManager;
     
@@ -99,9 +102,8 @@ public class UsersController {
         final Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
                         .map(r -> new SimpleGrantedAuthority(r))
                         .collect(Collectors.toList());
-        return User.withDefaultPasswordEncoder()
-                        .username(user.getUsername())
-                        .password(user.getPassword())
+        return User.withUsername(user.getUsername())
+                        .password(passwordEncoder.encode(user.getPassword()))
                         .authorities(authorities).build();
     }
 }
