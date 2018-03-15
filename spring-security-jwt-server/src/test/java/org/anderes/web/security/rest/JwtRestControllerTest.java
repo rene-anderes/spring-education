@@ -59,4 +59,14 @@ public class JwtRestControllerTest {
         
     }
     
+    @Test
+    public void shouldBeUnauthorized() throws Exception {
+        
+        mockMvc.perform(post("/users/token")
+                        .with(httpBasic("bill", "password"))
+                        .accept(APPLICATION_JSON_UTF8))
+                    .andExpect(status().isUnauthorized())
+                    .andReturn();
+    }
+    
 }

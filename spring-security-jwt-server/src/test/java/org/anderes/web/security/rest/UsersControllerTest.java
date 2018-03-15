@@ -52,7 +52,7 @@ public class UsersControllerTest {
     }
     
     @Test
-    public void shouldBeUpdateUser() throws Exception {
+    public void shouldBePutUpdateUser() throws Exception {
         
         final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").add("ROLE_ADMIN").build();
         final JsonObject user = Json.createObjectBuilder().add("username", "userEdit").add("password", "newPassword").add("roles", roles).build();
@@ -72,6 +72,20 @@ public class UsersControllerTest {
                     .andExpect(content().string(is(not(nullValue()))))
                     .andExpect(content().string(startsWith("{")))
                     .andReturn();
+    }
+    
+    @Test
+    public void shouldBePutBadRequest() throws Exception {
+        
+        final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").add("ROLE_ADMIN").build();
+        final JsonObject user = Json.createObjectBuilder().add("username", "userBad").add("password", "newPassword").add("roles", roles).build();
+ 
+        mockMvc.perform(put("/users/userEdit")
+                        .with(httpBasic("admin", "password"))
+                        .contentType(APPLICATION_JSON_UTF8)
+                        .content(user.toString()))
+            .andExpect(status().isBadRequest())
+            .andReturn();
     }
     
     @Test
@@ -111,7 +125,7 @@ public class UsersControllerTest {
     }
     
     @Test
-    public void shouldBeDuplicateUser() throws Exception {
+    public void shouldBePostBadRequestDuplicateUser() throws Exception {
         
         final JsonArray roles = Json.createArrayBuilder().add("ROLE_USER").build();
         final JsonObject user = Json.createObjectBuilder().add("username", "user").add("password", "password").add("roles", roles).build();
@@ -166,7 +180,7 @@ public class UsersControllerTest {
     }
     
     @Test
-    public void shouldBeForbidden() throws Exception {
+    public void shouldBeGetForbidden() throws Exception {
         
         mockMvc.perform(get("/users/user")
                         .with(httpBasic("user", "password"))
@@ -176,7 +190,7 @@ public class UsersControllerTest {
     }
     
     @Test
-    public void shouldBeUnauthorized() throws Exception {
+    public void shouldBeGetUnauthorized() throws Exception {
         
         mockMvc.perform(get("/users/user")
                         .with(httpBasic("bill", "password"))
