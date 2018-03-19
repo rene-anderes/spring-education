@@ -33,7 +33,7 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
         final String token = jwtAuthenticationToken.getToken();
 
         Optional<UserDetails> parsedUser = jwtTokenValidator.parseToken(token);
-        final UserDetails user = parsedUser.orElseThrow(() -> new BadCredentialsException("JWT token is not valid"));
+        final UserDetails user = parsedUser.orElseThrow(() -> new BadCredentialsException("Json-Web-Token is not valid!"));
         
         return user;
     }

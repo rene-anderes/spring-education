@@ -6,7 +6,9 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import org.anderes.web.security.JwtAuthenticationEntryPoint;
 import org.anderes.web.security.JwtAuthenticationProvider;
+import org.anderes.web.security.JwtAuthenticationSuccessHandler;
 import org.anderes.web.security.JwtAuthenticationTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(PUT, "/employees/*").hasRole("ADMIN")
                 .antMatchers(DELETE, "/employees/*").hasRole("ADMIN")
                 .and()
-                .httpBasic()
+                .httpBasic().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 .and()
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
@@ -46,6 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() throws Exception {
         final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter = new JwtAuthenticationTokenFilter();
         jwtAuthenticationTokenFilter.setAuthenticationManager(authenticationManager());
+        jwtAuthenticationTokenFilter.setAuthenticationSuccessHandler(new JwtAuthenticationSuccessHandler());
         return jwtAuthenticationTokenFilter;
     }
 }

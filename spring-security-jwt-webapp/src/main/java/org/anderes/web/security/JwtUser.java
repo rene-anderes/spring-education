@@ -3,6 +3,7 @@ package org.anderes.web.security;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,9 @@ public class JwtUser implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
     public JwtUser(String username, String token, Collection<String> roles) {
+        Validate.notBlank(username);
+        Validate.notBlank(token);
+        Validate.notNull(roles);
         this.username = username;
         this.token = token;
         this.authorities = roles.stream()
