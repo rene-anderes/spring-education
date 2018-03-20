@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,17 +26,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
        
-        http.authorizeRequests()                                                               
-                .antMatchers(GET, "/employees/*").permitAll()
+        http.authorizeRequests()    
+//                .antMatchers(GET, "/employees/*").permitAll()
                 .antMatchers(POST, "/employees/*").hasRole("ADMIN")
                 .antMatchers(PUT, "/employees/*").hasRole("ADMIN")
                 .antMatchers(DELETE, "/employees/*").hasRole("ADMIN")
-                .and()
-                .httpBasic().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                .and()
-                .sessionManagement().sessionCreationPolicy(STATELESS)
+                .anyRequest().permitAll()
                 .and()
                 .authenticationProvider(new JwtAuthenticationProvider())
+                .httpBasic().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                .and()
+                .addFilterAfter(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+                .sessionManagement().sessionCreationPolicy(STATELESS)
+                .and()
                 .csrf().disable();
     }
 

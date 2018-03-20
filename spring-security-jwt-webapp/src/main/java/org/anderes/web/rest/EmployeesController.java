@@ -24,7 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class EmployeesController {
     
     @GetMapping(value = "{lastname}", produces = { APPLICATION_JSON_UTF8_VALUE })
-    public ResponseEntity<Employee> getUser(@PathVariable("lastname") String lastname) {
+    public ResponseEntity<Employee> getEmployee(@PathVariable("lastname") String lastname) {
         
         final Employee employee = new Employee(lastname, "Bill");
         return ResponseEntity.ok(employee);

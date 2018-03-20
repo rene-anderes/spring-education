@@ -9,7 +9,12 @@ public class Employee {
     @NotNull
     private String lastname;
 
+    public Employee() {
+        super();
+    }
+    
     public Employee(String lastname, String firstname) {
+        this();
         this.lastname = lastname;
         this.firstname = firstname;
     }
