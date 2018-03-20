@@ -1,7 +1,6 @@
 package org.anderes.web.configuration;
 
 import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -27,7 +26,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
        
         http.authorizeRequests()    
-//                .antMatchers(GET, "/employees/*").permitAll()
                 .antMatchers(POST, "/employees/*").hasRole("ADMIN")
                 .antMatchers(PUT, "/employees/*").hasRole("ADMIN")
                 .antMatchers(DELETE, "/employees/*").hasRole("ADMIN")
