@@ -5,10 +5,8 @@ Technologie
 	Spring REST
 	Spring HATEOAS
 	Spring Data (JPA)
-	Spring Security
 	Spring Testframework
 	BeanValidation 1.0
-	JSON Web Token
 
 Projekt bauen (war File erstellen)
 	mvn clean install

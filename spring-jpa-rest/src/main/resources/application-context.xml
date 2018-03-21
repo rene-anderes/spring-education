@@ -18,7 +18,6 @@
 
     <tx:annotation-driven />
     <context:annotation-config />
-    <context:property-placeholder  location="classpath:/config/application.properties"/>
     <context:component-scan base-package="org.anderes.edu" />
     
     <mvc:annotation-driven>

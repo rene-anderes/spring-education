@@ -1,15 +1,9 @@
 package org.anderes.edu.jpa.rest;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +27,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -45,15 +38,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
                 "classpath:application-context.xml",
                 "classpath:unittest-jpa-context.xml",
-                "classpath:unittest-application-context.xml",
-                "classpath:unittest-security-context.xml"
+                "classpath:unittest-application-context.xml"
 })
 @WebAppConfiguration
 @UsingDataSet(value = { "/data/prepare.json" })
@@ -65,27 +54,10 @@ public class RecipeControllerIT {
     
     @Inject @Rule 
     public DbUnitRule dbUnitRule;
-    @Value("${jwt.header}")
-    private String tokenHeader;
-    private String token = "Bearer ";
   
     @Before
     public void setUp() {
-        assertThat("Bitte Spring-Konfiguration überprüfen.", tokenHeader, is(not("${jwt.header}")));
-        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-                        .apply(springSecurity())                       
-                        .build();
-        try {
-            MvcResult result = mockMvc.perform(post("/users/token")
-                            .with(httpBasic("admin", "password"))
-                            .accept(APPLICATION_JSON_UTF8))
-                            .andExpect(status().isOk())
-                            .andReturn();
-            JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-            token += (String) parser.parse(result.getResponse().getContentAsString(), JSONObject.class).get("token");
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
     }
 
     @Test
@@ -131,7 +103,6 @@ public class RecipeControllerIT {
     public void shouldBeSaveNewRecipePOST() throws Exception {
         final RecipeResource recipeToSave = createRecipeWithoutUUID();
         mockMvc.perform(post("/recipes")
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(recipeToSave)))
                         .andExpect(status().isCreated())
@@ -143,7 +114,6 @@ public class RecipeControllerIT {
     public void shouldBeNOTSaveNewRecipePOST() throws Exception {
         final RecipeResource recipeToSave = createInvalidRecipe();
         mockMvc.perform(post("/recipes")
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(recipeToSave)))
                         .andExpect(status().isBadRequest())
@@ -151,21 +121,9 @@ public class RecipeControllerIT {
     }
     
     @Test
-    public void shouldBeNOTSaveNewRecipePOSTWrongAuthentication() throws Exception {
-        final RecipeResource recipeToSave = createRecipeWithoutUUID();
-        mockMvc.perform(post("/recipes")
-                        .header(tokenHeader, "c0e5582e-252f-4e94-8a49-e12b4b047")
-                        .contentType(APPLICATION_JSON)
-                        .content(convertObjectToJsonBytes(recipeToSave)))
-                        .andExpect(status().isForbidden())
-                        .andReturn();
-    }
-    
-    @Test
     public void shouldBeSaveNewRecipePUT() throws Exception {
         final RecipeResource recipeToSave = createRecipeWithUUID();
         mockMvc.perform(put("/recipes/" + recipeToSave.getUuid() + "?updateDate=false")
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(recipeToSave)))
                         .andExpect(status().isCreated())
@@ -176,7 +134,6 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeUpdateRecipe() throws Exception {
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
-                        .header(tokenHeader, token)
                         .accept(APPLICATION_JSON))
                         .andExpect(status().isOk()).andReturn();
         final ObjectMapper mapper = new ObjectMapper();
@@ -184,7 +141,6 @@ public class RecipeControllerIT {
         resource.setRating(3);
 
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
-                        .header(tokenHeader, token)
                         .content(convertObjectToJsonBytes(resource))
                         .contentType(APPLICATION_JSON))
                         .andExpect(status().isOk()).andReturn();
@@ -192,8 +148,7 @@ public class RecipeControllerIT {
     
     @Test
     public void shouldBeDeleteRecipe() throws Exception {
-        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7")
-                        .header(tokenHeader, token))
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7"))
                         .andExpect(status().is2xxSuccessful())
                         .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
@@ -272,7 +227,7 @@ public class RecipeControllerIT {
     public void shouldBeSaveNewIngredient() throws Exception {
         
         final IngredientResource newIngredient = new IngredientResource("1g", "Salz", "beliebig");
-        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients").header(tokenHeader, token)
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients")
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isCreated())
@@ -284,7 +239,7 @@ public class RecipeControllerIT {
     public void shouldBeNOTSaveNewIngredientWrongData() throws Exception {
         
         final IngredientResource newIngredient = new IngredientResource("1g", null, "beliebig");
-        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients").header(tokenHeader, token)
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c692c7/ingredients")
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isBadRequest())
@@ -295,7 +250,7 @@ public class RecipeControllerIT {
     public void shouldBeNOTSaveNewIngredientWrongRecipeId() throws Exception {
         
         final IngredientResource newIngredient = new IngredientResource("1g", "Salz", "beliebig");
-        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c69sss/ingredients").header(tokenHeader, token)
+        mockMvc.perform(post("/recipes/adf99b55-4804-4398-af4e-e37ec2c69sss/ingredients")
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(newIngredient)))
                         .andExpect(status().isNotFound())
@@ -308,7 +263,6 @@ public class RecipeControllerIT {
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", "250g", "Spaghetti", "Bio");
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/" + ingredient.getResourceId())
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
                         .andExpect(status().isOk())
@@ -321,7 +275,6 @@ public class RecipeControllerIT {
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", null, "Spaghetti", null);
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/" + ingredient.getResourceId())
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
                         .andExpect(status().isOk())
@@ -334,7 +287,6 @@ public class RecipeControllerIT {
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", "250g", "Spaghetti", "Bio");
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047sss/ingredients/" + ingredient.getResourceId())
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
                         .andExpect(status().isNotFound())
@@ -347,7 +299,6 @@ public class RecipeControllerIT {
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", null, "Spaghetti", null);
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/abcWrong")
-                        .header(tokenHeader, token)
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
                         .andExpect(status().isNotFound())
@@ -357,13 +308,11 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeDeleteIngredient() throws Exception {
 
-        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
-                        .header(tokenHeader, token))
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211"))
                         .andExpect(status().isOk())
                         .andReturn();
 
-        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
-                        .header(tokenHeader, token))
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211"))
                         .andExpect(status().isOk())
                         .andReturn();
     }
@@ -371,8 +320,7 @@ public class RecipeControllerIT {
     @Test
     public void shouldBeNotDeleteIngredientWrongRecipeId() throws Exception {
 
-        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c69sss/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211")
-                        .header(tokenHeader, token))
+        mockMvc.perform(delete("/recipes/adf99b55-4804-4398-af55-e37ec2c69sss/ingredients/c0e5582e-252f-4e94-8a49-e12b4b047211"))
                         .andExpect(status().isNotFound())
                         .andReturn();
     }
