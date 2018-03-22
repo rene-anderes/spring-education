@@ -3,10 +3,6 @@ package org.anderes.edu.jpa.rest;
 import static java.lang.Boolean.TRUE;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
 import java.time.Instant;
@@ -19,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import org.anderes.edu.jpa.domain.Ingredient;
 import org.anderes.edu.jpa.domain.Recipe;
@@ -32,7 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,7 +47,7 @@ public class RecipeController {
     @Inject 
     private RecipeRepository repository;
     
-    @RequestMapping(method = GET, produces = { APPLICATION_JSON_VALUE })
+    @GetMapping(produces = { APPLICATION_JSON_VALUE })
     public Page<RecipeShortResource> showRecipeShort(Pageable pageable) {
         final Page<Recipe> collection = repository.findAll(pageable);
         
@@ -61,12 +62,13 @@ public class RecipeController {
         return new PageImpl<RecipeShortResource>(content, pageable, content.size());
     }
 
-    @RequestMapping(method = GET, value = "{id}", produces = { APPLICATION_JSON_VALUE })
+    @GetMapping(value = "{id}", produces = { APPLICATION_JSON_VALUE })
     public ResponseEntity<RecipeResource> showOneRecipe(@PathVariable("id") String recipeId) {
-        final Recipe findRecipe = repository.findOne(recipeId);
-        if (findRecipe == null) {
+        final Optional<Recipe> recipe = repository.findById(recipeId);
+        if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
+        final Recipe findRecipe = recipe.get(); 
         final RecipeResource recipeResource = new RecipeResource(findRecipe.getUuid());
         DtoMapper.map(findRecipe, recipeResource);
         recipeResource.setAddingDate(findRecipe.getAddingDateTime()).setEditingDate(findRecipe.getLastUpdateTime());
@@ -80,32 +82,31 @@ public class RecipeController {
         return ResponseEntity.ok(recipeResource);
     }
     
-    @RequestMapping(method = DELETE, value = "{id}")
+    @DeleteMapping(value = "{id}")
     public ResponseEntity<?> deleteRecipe(@PathVariable("id") String resourceId) {
-        repository.delete(resourceId);
+        repository.deleteById(resourceId);
         return ResponseEntity.ok().build();
     }
     
-    @RequestMapping(method = POST, consumes = { APPLICATION_JSON_VALUE })
-    public ResponseEntity<?> saveRecipe(@RequestBody RecipeResource newResource) {
+    @PostMapping(consumes = { APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> saveRecipe(@Valid @RequestBody RecipeResource newResource) {
         final Recipe newRecipe = new Recipe();
         return saveNewRecipe(newResource, newRecipe, TRUE);
     }
     
-    @RequestMapping(method = PUT, value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
-    public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @RequestBody RecipeResource resource,
+    @PutMapping(value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
+    public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @Valid @RequestBody RecipeResource resource,
             @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate) {
-        System.out.println("updateDate: " + updateDate);
-        final Recipe existsRecipe = repository.findOne(resourceId);
-        if (existsRecipe == null) {
+
+        final Optional<Recipe> existsRecipe = repository.findById(resourceId);
+        if (!existsRecipe.isPresent()) {
             final Recipe newRecipe = new Recipe(resourceId);
             return saveNewRecipe(resource, newRecipe, updateDate);
-        } else {
-            DtoMapper.map(resource, existsRecipe);
-            existsRecipe.setLastUpdate(LocalDateTime.now());
-            repository.save(existsRecipe);
-            return ResponseEntity.ok().build();
-        }
+        } 
+        DtoMapper.map(resource, existsRecipe.get());
+        existsRecipe.get().setLastUpdate(LocalDateTime.now());
+        repository.save(existsRecipe.get());
+        return ResponseEntity.ok().build();
     }
 
     private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Recipe newRecipe, final Boolean updateDate) {
@@ -127,30 +128,30 @@ public class RecipeController {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.systemDefault());
     }
     
-    @RequestMapping(method = GET, value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
+    @GetMapping(value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<List<IngredientResource>> showIngredients(@PathVariable("id") String recipeId) {
-        final Recipe findRecipe = repository.findOne(recipeId);
-        if (findRecipe == null) {
+        final Optional<Recipe> findRecipe = repository.findById(recipeId);
+        if (!findRecipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final List<IngredientResource> resources = findRecipe.getIngredients().stream()
+        final List<IngredientResource> resources = findRecipe.get().getIngredients().stream()
                         .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
                         .collect(Collectors.toList());
         resources.stream().forEach(r -> {
             final Link linkSelfRel = linkTo(RecipeController.class)
-                            .slash(findRecipe.getUuid()).slash("ingredients").slash(r.getResourceId()).withSelfRel();
+                            .slash(findRecipe.get().getUuid()).slash("ingredients").slash(r.getResourceId()).withSelfRel();
             r.add(linkSelfRel);
         });
         return ResponseEntity.ok().body(resources);
     }
     
-    @RequestMapping(method = GET, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
+    @GetMapping(value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<IngredientResource> showOneIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
-        final Recipe findRecipe = repository.findOne(recipeId);
-        if (findRecipe == null) {
+        final Optional<Recipe> findRecipe = repository.findById(recipeId);
+        if (!findRecipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final Optional<IngredientResource> resource = findRecipe.getIngredients().stream()
+        final Optional<IngredientResource> resource = findRecipe.get().getIngredients().stream()
                         .filter(i -> i.getUuid().equals(ingredientId))
                         .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
                         .findFirst();
@@ -160,37 +161,39 @@ public class RecipeController {
         return ResponseEntity.notFound().build();
     }
     
-    @RequestMapping(method = PUT, value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
+    @PutMapping(value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> updateIngredient(@PathVariable("id") String recipeId, 
-                    @PathVariable("ingredientId") String ingredientId, @RequestBody IngredientResource resource) {
+                    @PathVariable("ingredientId") String ingredientId, @Valid @RequestBody IngredientResource resource) {
         
-        final Recipe findRecipe = repository.findOne(recipeId);
-        if (findRecipe == null) {
+        final Optional<Recipe> findRecipe = repository.findById(recipeId);
+        if (!findRecipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
         
-        final Optional<Ingredient> ingredient = findRecipe.getIngredients().stream().filter(i -> i.getUuid().equals(ingredientId)).findFirst();
+        final Optional<Ingredient> ingredient = findRecipe.get().getIngredients().stream()
+                        .filter(i -> i.getUuid().equals(ingredientId))
+                        .findFirst();
         if (ingredient.isPresent()) {
             ingredient.get().setAnnotation(resource.getComment());
             ingredient.get().setDescription(resource.getDescription());
             ingredient.get().setQuantity(resource.getPortion());
-            repository.save(findRecipe);
+            repository.save(findRecipe.get());
             return ResponseEntity.ok().build();
         }
         
         return ResponseEntity.notFound().build();
     }
     
-    @RequestMapping(method = POST, value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
-    public ResponseEntity<?> saveIngredient(@PathVariable("id") String recipeId, @RequestBody IngredientResource resource) {
+    @PostMapping(value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
+    public ResponseEntity<?> saveIngredient(@PathVariable("id") String recipeId, @Valid @RequestBody IngredientResource resource) {
         
-        final Recipe recipe = repository.findOne(recipeId);
-        if (recipe == null) {
+        final Optional<Recipe> recipe = repository.findById(recipeId);
+        if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
         final Ingredient ingredient = new Ingredient(resource.getPortion(), resource.getDescription(), resource.getComment());
-        recipe.addIngredient(ingredient);
-        repository.save(recipe);
+        recipe.get().addIngredient(ingredient);
+        repository.save(recipe.get());
         
         final URI location = ServletUriComponentsBuilder
                         .fromCurrentRequest().path("/{ingredientId}")
@@ -198,22 +201,24 @@ public class RecipeController {
         return ResponseEntity.created(location).build();
     }
     
-    @RequestMapping(method = DELETE, value = "{id}/ingredients/{ingredientId}")
+    @DeleteMapping(value = "{id}/ingredients/{ingredientId}")
     public ResponseEntity<?> deleteIngredient(@PathVariable("id") String recipeId, @PathVariable("ingredientId") String ingredientId) {
         
-        final Recipe recipe = repository.findOne(recipeId);
-        if (recipe == null) {
+        final Optional<Recipe> recipe = repository.findById(recipeId);
+        if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final Optional<Ingredient> ingredient = recipe.getIngredients().stream().filter(i -> i.getUuid().equals(ingredientId)).findFirst();
+        final Optional<Ingredient> ingredient = recipe.get().getIngredients().stream()
+                        .filter(i -> i.getUuid().equals(ingredientId))
+                        .findFirst();
         if (ingredient.isPresent()) {
-            recipe.removeIngredient(ingredient.get());
-            repository.save(recipe);
+            recipe.get().removeIngredient(ingredient.get());
+            repository.save(recipe.get());
         }
         return ResponseEntity.ok().build();
     }
     
-    @RequestMapping(method = GET, value = "tags", produces = { APPLICATION_JSON_VALUE })
+    @GetMapping(value = "tags", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<Collection<String>> showAllTags() {
         final List<String> tags = repository.findAllTag();
         final Set<String> filteredTags = tags.stream().filter(t -> t != null).collect(Collectors.toSet());

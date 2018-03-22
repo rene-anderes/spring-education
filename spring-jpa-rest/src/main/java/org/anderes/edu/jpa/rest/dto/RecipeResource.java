@@ -5,6 +5,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -12,14 +17,21 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class RecipeResource extends ResourceSupport {
 	
+    @Size(min = 36, max = 36)
 	private String uuid;
 	private Date lastUpdate = new Date();
     private Date addingDate = new Date();
+    @NotNull @Size(min = 1, max = 80)
 	private String title;
+    @NotNull @Size(min = 8, max = 8000)
 	private String preparation;
+    @Size(min = 0, max = 8000)
 	private String preamble;
+    @NotNull @Size(min = 1, max = 10)
 	private String noOfPerson;
+    @NotNull @Size(min = 0, max = 100)
 	private Set<String> tags = new HashSet<String>();
+    @NotNull @Min(0) @Max(5)
 	private Integer rating = Integer.valueOf(0);
 
 	public RecipeResource() {

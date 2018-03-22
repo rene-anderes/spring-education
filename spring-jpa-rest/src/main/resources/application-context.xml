@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:tx="http://www.springframework.org/schema/tx" 
     xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:jpa="http://www.springframework.org/schema/data/jpa" 
     xmlns:mvc="http://www.springframework.org/schema/mvc" 
-    xmlns:security="http://www.springframework.org/schema/security"
     xmlns:util="http://www.springframework.org/schema/util" 
     xsi:schemaLocation="
       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-      http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <tx:annotation-driven />
-    <context:annotation-config />
     <context:component-scan base-package="org.anderes.edu" />
     
     <mvc:annotation-driven>
@@ -49,7 +41,11 @@
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-
+    
+    <!-- Spring-driven Method Validation -->
+    <!-- siehe https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validation-beanvalidation-spring-method -->
+    <bean id="validatorPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
+    
     <!-- Log4j JDK Logging Adapter - siehe https://logging.apache.org/log4j/2.0/log4j-jul/index.html -->
     <bean id="systemProps" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="targetObject" value="#{@systemProperties}" />

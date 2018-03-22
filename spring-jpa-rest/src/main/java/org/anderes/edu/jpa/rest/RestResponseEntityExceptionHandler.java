@@ -1,6 +1,6 @@
 package org.anderes.edu.jpa.rest;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 import javax.validation.ConstraintViolationException;
 
@@ -16,7 +16,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = { ConstraintViolationException.class })
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        String bodyOfResponse = "Data not valid.";
-        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), BAD_REQUEST, request);
+        String bodyOfResponse = "Entity for JPA not valid.";
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), SERVICE_UNAVAILABLE, request);
     }
 }

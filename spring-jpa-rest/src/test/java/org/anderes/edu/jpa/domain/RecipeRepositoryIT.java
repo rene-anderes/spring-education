@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -65,9 +66,10 @@ public class RecipeRepositoryIT {
     
     @Test
     public void shouldBeOneRecipe() {
-        final Recipe recipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
+        final Optional<Recipe> recipe = repository.findById("c0e5582e-252f-4e94-8a49-e12b4b047afb");
         assertNotNull(recipe);
-        assertThat(recipe.getTitle(), is("Arabische Spaghetti"));
+        assertThat(recipe.isPresent(), is(true));
+        assertThat(recipe.get().getTitle(), is("Arabische Spaghetti"));
     }
     
     @Test
@@ -99,9 +101,10 @@ public class RecipeRepositoryIT {
         assertThat(savedRecipe, is(not(nullValue())));
         assertThat(savedRecipe.getUuid(), is(not(nullValue())));
         
-        final Recipe findRecipe = repository.findOne(savedRecipe.getUuid());
-        assertNotSame(newRecipe, findRecipe);
-        assertThat(newRecipe, is(findRecipe));
+        final Optional<Recipe> findRecipe = repository.findById(savedRecipe.getUuid());
+        assertThat(findRecipe.isPresent(), is(true));
+        assertNotSame(newRecipe, findRecipe.get());
+        assertThat(newRecipe, is(findRecipe.get()));
     }
     
     @Test
@@ -110,7 +113,7 @@ public class RecipeRepositoryIT {
             orderBy = { "RECIPE.UUID", "INGREDIENT.DESCRIPTION", "INGREDIENT.ANNOTATION" }
     )
     public void shouldBeUpdateRecipe() {
-        final Recipe updateRecipe = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
+        final Recipe updateRecipe = repository.findById("c0e5582e-252f-4e94-8a49-e12b4b047afb").get();
         updateRecipe.setPreamble("Neuer Preamble vom Test");
         updateRecipe.addIngredient(new Ingredient("1", "Tomate", "vollreif"));
         final Recipe savedRecipe = repository.save(updateRecipe);
@@ -119,19 +122,21 @@ public class RecipeRepositoryIT {
         assertThat(savedRecipe.getPreamble(), is("Neuer Preamble vom Test"));
         assertThat(savedRecipe.getIngredients().size(), is(4));
         
-        final Recipe findRecipe = repository.findOne(savedRecipe.getUuid());
+        final Optional<Recipe> findRecipe = repository.findById(savedRecipe.getUuid());
+        
         assertThat(findRecipe, is(not(nullValue())));
-        assertThat(findRecipe.getPreamble(), is("Neuer Preamble vom Test"));
-        assertThat(findRecipe.getIngredients().size(), is(4));
-        assertNotSame(updateRecipe, findRecipe);
-        assertThat(updateRecipe, is(findRecipe));
+        assertThat(findRecipe.isPresent(), is(true));
+        assertThat(findRecipe.get().getPreamble(), is("Neuer Preamble vom Test"));
+        assertThat(findRecipe.get().getIngredients().size(), is(4));
+        assertNotSame(updateRecipe, findRecipe.get());
+        assertThat(updateRecipe, is(findRecipe.get()));
     }
     
     @Test
     @ShouldMatchDataSet(value = { "/data/expected-afterRecipeDelete.json" },
             orderBy = { "RECIPE.UUID", "INGREDIENT.UUID" })
     public void shouldBeDelete() {
-        final Recipe toDelete = repository.findOne("c0e5582e-252f-4e94-8a49-e12b4b047afb");
+        final Recipe toDelete = repository.findById("c0e5582e-252f-4e94-8a49-e12b4b047afb").get();
         assertThat("Das Rezept mit der ID 'c0e5582e-252f-4e94-8a49-e12b4b047afb' existiert nicht in der Datenbank", toDelete, is(not(nullValue())));
         repository.delete(toDelete);
         

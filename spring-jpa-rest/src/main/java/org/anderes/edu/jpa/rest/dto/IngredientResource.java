@@ -1,6 +1,9 @@
 
 package org.anderes.edu.jpa.rest.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,9 +11,13 @@ import org.springframework.hateoas.ResourceSupport;
 
 public class IngredientResource extends ResourceSupport {
 
+    @Size(min = 36, max = 36)
     private String resourceId;
+    @Size(min = 0, max = 20)
     private String portion;
+    @NotNull
     private String description;
+    @Size(min = 0, max = 80)
     private String comment;
 
     public IngredientResource() {

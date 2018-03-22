@@ -1,12 +1,12 @@
 Einfache Beispielapplikation "Kochbuch"
 
 Technologie
-	Spring DI
+	Spring 5 
 	Spring REST
 	Spring HATEOAS
 	Spring Data (JPA)
 	Spring Testframework
-	BeanValidation 1.0
+	Spring Validation / BeanValidation 1.1
 
 Projekt bauen (war File erstellen)
 	mvn clean install

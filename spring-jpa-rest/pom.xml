@@ -11,13 +11,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>4.3.13.RELEASE</spring.version>
-        <spring.security.version>4.2.3.RELEASE</spring.security.version>
-        <spring.data.jpa.version>1.11.9.RELEASE</spring.data.jpa.version>
-        <jackson.version>2.9.3</jackson.version>
-        <eclipselink.version>2.6.5</eclipselink.version>
+        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring.data.jpa.version>2.0.5.RELEASE</spring.data.jpa.version>
+        <jackson.version>2.9.4</jackson.version>
+        <eclipselink.version>2.7.1</eclipselink.version>
         <log4j2.version>2.10.0</log4j2.version>
-        <db.derby.version>10.13.1.1</db.derby.version>
+        <db.derby.version>10.14.1.0</db.derby.version>
         <db.driver>org.apache.derby.jdbc.ClientDriver</db.driver>
         <db.user>APP</db.user>
         <db.password>APP</db.password>
@@ -43,7 +42,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.20.1</version>
+                <version>2.21.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -53,7 +52,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <forkCount>1</forkCount>
+                    <forkCount>2</forkCount>
                     <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
@@ -121,6 +120,7 @@
             <version>1</version>
         </dependency>
         <!-- / Dependencies Injection -->
+        
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -137,23 +137,7 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <!-- / Spring Framework -->
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <!-- / Spring Security -->
+        
         <!-- JSON Web Token -->
          <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -161,6 +145,7 @@
             <version>0.9.0</version>
         </dependency>
         <!-- / JSON Web Token -->
+        
         <!-- Bean Validation API -->
         <dependency>
             <groupId>javax.validation</groupId>
@@ -177,22 +162,21 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.el</artifactId>
             <version>3.0.0</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- / Bean Validation API -->
        
         <!-- JPA Provider EclipseLink -->
-        <!-- 
-        <dependency>
+         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <version>${eclipselink.version}</version>
-            <scope>runtime</scope>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.1.1</version>
         </dependency>
-         -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <version>${eclipselink.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- / Java Persistence API -->
         <!-- Derby als Embedded Database -->
@@ -211,14 +195,9 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <version>3.7</version>
         </dependency>
         <!-- JSON Jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -308,14 +287,6 @@
             <scope>test</scope>
         </dependency>
         <!-- / dbUnitBruner -->
-        <!-- Spring Security Test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <version>${spring.security.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- / Spring Security Test -->
         
         <!-- / ~~~~~~~~~ Testabhängigkeiten ~~~~~~~~~ -->
     </dependencies>
