@@ -5,9 +5,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.net.URI;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +21,7 @@ import org.anderes.edu.jpa.domain.RecipeRepository;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.anderes.edu.jpa.rest.dto.RecipeShortResource;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +45,8 @@ public class RecipeController {
 
     @Inject 
     private RecipeRepository repository;
+    @Inject
+    private ConversionService conversionService;
     
     @GetMapping(produces = { APPLICATION_JSON_VALUE })
     public Page<RecipeShortResource> showRecipeShort(Pageable pageable) {
@@ -68,13 +69,10 @@ public class RecipeController {
         if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final Recipe findRecipe = recipe.get(); 
-        final RecipeResource recipeResource = new RecipeResource(findRecipe.getUuid());
-        DtoMapper.map(findRecipe, recipeResource);
-        recipeResource.setAddingDate(findRecipe.getAddingDateTime()).setEditingDate(findRecipe.getLastUpdateTime());
+        final RecipeResource recipeResource = conversionService.convert(recipe.get(), RecipeResource.class);
         
         final Link linkRel = linkTo(RecipeController.class)
-                        .slash(findRecipe.getUuid())
+                        .slash(recipeResource.getUuid())
                         .slash("ingredients")
                         .withRel("ingredients");
         
@@ -90,8 +88,7 @@ public class RecipeController {
     
     @PostMapping(consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@Valid @RequestBody RecipeResource newResource) {
-        final Recipe newRecipe = new Recipe();
-        return saveNewRecipe(newResource, newRecipe, TRUE);
+        return saveNewRecipe(newResource, TRUE);
     }
     
     @PutMapping(value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
@@ -100,32 +97,25 @@ public class RecipeController {
 
         final Optional<Recipe> existsRecipe = repository.findById(resourceId);
         if (!existsRecipe.isPresent()) {
-            final Recipe newRecipe = new Recipe(resourceId);
-            return saveNewRecipe(resource, newRecipe, updateDate);
+            if (resourceId.equals(resource.getUuid())) {
+                return saveNewRecipe(resource, updateDate);
+            }
+            return ResponseEntity.badRequest().build();
         } 
-        DtoMapper.map(resource, existsRecipe.get());
-        existsRecipe.get().setLastUpdate(LocalDateTime.now());
+        DtoHelper.updateRecipe(resource, existsRecipe.get());
         repository.save(existsRecipe.get());
         return ResponseEntity.ok().build();
     }
 
-    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Recipe newRecipe, final Boolean updateDate) {
-        DtoMapper.map(resource, newRecipe);
+    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Boolean updateDate) {
+        final Recipe newRecipe = conversionService.convert(resource, Recipe.class);
         if (updateDate) {
             newRecipe.setAddingDate(LocalDateTime.now());
             newRecipe.setLastUpdate(LocalDateTime.now());
-        } else {
-            // Datum übernehmen
-            newRecipe.setAddingDate(longToLocatDateTime(resource.getAddingDate()));
-            newRecipe.setLastUpdate(longToLocatDateTime(resource.getEditingDate()));
         }
         final Recipe result = repository.save(newRecipe);
         final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getUuid()).toUri();
         return ResponseEntity.created(location).build();
-    }
-
-    private LocalDateTime longToLocatDateTime(final Long datetime) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.systemDefault());
     }
     
     @GetMapping(value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })

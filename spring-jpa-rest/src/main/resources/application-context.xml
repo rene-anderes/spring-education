@@ -23,7 +23,16 @@
     
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
-    
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="org.anderes.edu.jpa.rest.RecipeResourceToRecipeEntity"/>
+                <bean class="org.anderes.edu.jpa.rest.RecipeEntityToRecipeResource"/>
+            </set>
+        </property>
+    </bean>
+
     <!-- using Spring HATEOAS -->
     <bean class="org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration" />
 

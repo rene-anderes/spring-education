@@ -16,6 +16,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = { ConstraintViolationException.class })
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+        final ConstraintViolationException e = (ConstraintViolationException)ex;
+        e.getConstraintViolations().stream()
+            .map(c -> String.format("Bean Validation | Class '%s' | '%s': %s", c.getRootBeanClass(), c.getPropertyPath(), c.getMessage()))
+            .forEach(System.err::println);
         String bodyOfResponse = "Entity for JPA not valid.";
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), SERVICE_UNAVAILABLE, request);
     }

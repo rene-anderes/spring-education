@@ -34,7 +34,7 @@ public class DtoMapperTest {
         recipe.addIngredient(new Ingredient("2", "Tomaten", "Bioqualität"));
         
         // when
-        DtoMapper.map(resource, recipe);
+        DtoHelper.updateRecipe(resource, recipe);
         
         // then
         assertThat(recipe.getUuid(), is(resource.getUuid()));
@@ -61,39 +61,13 @@ public class DtoMapperTest {
         final Recipe recipe = new Recipe(resource.getUuid());
         
         // when
-        DtoMapper.map(resource, recipe);
+        DtoHelper.updateRecipe(resource, recipe);
         
         // then
         assertThat(recipe.getUuid(), is(resource.getUuid()));
         assertThat(recipe.getTitle(), is("Arabische Spaghetti"));
         assertThat(recipe.getTags().size(), is(1));
         assertThat(recipe.getTags(), hasItems("pasta"));
-    }
-
-    @Test
-    public void shouldBeMapRecipeResource() {
-    
-        // given
-        final Recipe recipe = new Recipe(UUID.randomUUID().toString());
-        recipe.setTitle("Arabische Spaghetti").setPreamble("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird...")
-            .setNoOfPerson("2").setPreparation("Pouletfleisch in schmale Streifen schneiden und kurz anbraten")
-            .setRating(4).addTag("test").addTag("vegetarisch").setAddingDate(LocalDateTime.of(2000, Month.DECEMBER, 29, 0, 0))
-            .setLastUpdate(LocalDateTime.of(2000, Month.DECEMBER, 29, 0, 0));
-        
-        final RecipeResource resource = new RecipeResource(recipe.getUuid());
-        
-        // when
-        DtoMapper.map(recipe, resource);
-        
-        // then
-        assertThat(resource.getUuid(), is(recipe.getUuid()));
-        assertThat(resource.getTitle(), is("Arabische Spaghetti"));
-        assertThat(resource.getTags().size(), is(2));
-        assertThat(resource.getTags(), hasItems("test", "vegetarisch"));
-        assertThat(resource.getPreamble(), is("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird..."));
-        assertThat(resource.getNoOfPerson(), is("2"));
-        assertThat(resource.getRating(), is(4));
-        assertThat(resource.getPreparation(), is("Pouletfleisch in schmale Streifen schneiden und kurz anbraten"));
     }
     
     private Long december(int year, int dayOfMonth) {
