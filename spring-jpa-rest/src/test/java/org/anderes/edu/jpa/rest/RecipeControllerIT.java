@@ -67,8 +67,8 @@ public class RecipeControllerIT {
                         .param("size", "10"))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
-                        .andExpect(jsonPath("content", hasSize(3)))
-                        .andExpect(jsonPath("totalElements", is(3)))
+                        .andExpect(jsonPath("content", hasSize(4)))
+                        .andExpect(jsonPath("totalElements", is(4)))
                         .andExpect(jsonPath("content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
                         .andExpect(jsonPath("content[0].links[0].rel", is("self")))
                         .andReturn();
@@ -127,7 +127,7 @@ public class RecipeControllerIT {
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(recipeToSave)))
                         .andExpect(status().isCreated())
-                        .andExpect(header().string("Location", containsString("http://localhost/recipes/" + recipeToSave.getUuid())))
+                        .andExpect(header().string("Location", is("http://localhost/recipes/" + recipeToSave.getUuid())))
                         .andReturn();
     }
     
@@ -168,7 +168,7 @@ public class RecipeControllerIT {
                         .andReturn();
         mockMvc.perform(get("/recipes").accept(APPLICATION_JSON).param("limit", "50"))
                         .andExpect(status().isOk())
-                        .andExpect(jsonPath("totalElements", is(2)))
+                        .andExpect(jsonPath("totalElements", is(3)))
                         .andReturn();
     }
 
@@ -321,14 +321,15 @@ public class RecipeControllerIT {
     }
     
     @Test
-    public void shouldBeNotUpdateIngredientIdNotExists() throws Exception {
+    public void shouldBePUTNewIntegrient() throws Exception {
         
-        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b0wrong", null, "Spaghetti", null);
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b0asdfg", null, "Spaghetti", null);
         
-        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b0wrong")
+        mockMvc.perform(put("/recipes/aaa99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b0asdfg")
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isCreated())
+                        .andExpect(header().string("Location", is("http://localhost/recipes/aaa99b55-4804-4398-af55-e37ec2c692ff/ingredients/c0e5582e-252f-4e94-8a49-e12b4b0asdfg")))
                         .andReturn();
     }
     

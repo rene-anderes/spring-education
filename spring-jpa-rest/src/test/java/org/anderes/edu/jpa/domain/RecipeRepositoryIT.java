@@ -61,7 +61,7 @@ public class RecipeRepositoryIT {
             assertThat(recipe.getTitle(), is(notNullValue()));
             counter++;
         }
-        assertThat(counter, is(3));
+        assertThat(counter, is(4));
     }
     
     @Test
@@ -149,6 +149,6 @@ public class RecipeRepositoryIT {
     public void shouldBeFindAllTag() {
         final List<String> tags = repository.findAllTag();
         assertThat(tags, is(notNullValue()));
-        assertThat(tags.size(), is(6));
+        assertThat(tags.size(), is(7));
     }
 }

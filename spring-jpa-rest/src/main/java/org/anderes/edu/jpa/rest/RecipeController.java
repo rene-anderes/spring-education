@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.anderes.edu.jpa.domain.Ingredient;
@@ -88,38 +89,41 @@ public class RecipeController {
     
     @PostMapping(consumes = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> saveRecipe(@Valid @RequestBody RecipeResource newResource) {
-        return saveNewRecipe(newResource, TRUE);
+        final String uuid = saveNewRecipe(newResource, TRUE);
+        final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(uuid).toUri();
+        return ResponseEntity.created(location).build();
     }
     
     @PutMapping(value = "{id}", consumes = { APPLICATION_JSON_VALUE } )
     public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @Valid @RequestBody RecipeResource resource,
-            @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate) {
+            @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate, HttpServletRequest request) {
 
         if (!resourceId.equals(resource.getUuid())) {
             return ResponseEntity.badRequest().build();
         }
 
         final Optional<Recipe> existsRecipe = repository.findById(resourceId);
-        if (!existsRecipe.isPresent()) {
-            // ein neues Rezept wird gespeichert
-            return saveNewRecipe(resource, updateDate);
+        if (existsRecipe.isPresent()) {
+            // bestehendes Rezept wird aktualisiert
+            DtoHelper.updateRecipe(resource, existsRecipe.get());
+            repository.save(existsRecipe.get());
+            return ResponseEntity.ok().build();
         } 
         
-        // bestehendes Rezept wird aktualisiert
-        DtoHelper.updateRecipe(resource, existsRecipe.get());
-        repository.save(existsRecipe.get());
-        return ResponseEntity.ok().build();
+        // ein neues Rezept wird gespeichert
+        saveNewRecipe(resource, updateDate);
+        final URI location = ServletUriComponentsBuilder.fromRequestUri(request).build().toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    private ResponseEntity<?> saveNewRecipe(final RecipeResource resource, final Boolean updateDate) {
+    private String saveNewRecipe(final RecipeResource resource, final Boolean updateDate) {
         final Recipe newRecipe = conversionService.convert(resource, Recipe.class);
         if (updateDate) {
             newRecipe.setAddingDate(LocalDateTime.now());
             newRecipe.setLastUpdate(LocalDateTime.now());
         }
         final Recipe result = repository.save(newRecipe);
-        final URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getUuid()).toUri();
-        return ResponseEntity.created(location).build();
+        return result.getUuid();
     }
     
     @GetMapping(value = "{id}/ingredients", produces = { APPLICATION_JSON_VALUE })
@@ -157,7 +161,8 @@ public class RecipeController {
     
     @PutMapping(value = "{id}/ingredients/{ingredientId}", produces = { APPLICATION_JSON_VALUE })
     public ResponseEntity<?> updateIngredient(@PathVariable("id") String recipeId, 
-                    @PathVariable("ingredientId") String ingredientId, @Valid @RequestBody IngredientResource resource) {
+                    @PathVariable("ingredientId") String ingredientId, @Valid @RequestBody IngredientResource resource,
+                    HttpServletRequest request) {
         
         final Optional<Recipe> findRecipe = repository.findById(recipeId);
         if (!findRecipe.isPresent()) {
@@ -168,15 +173,19 @@ public class RecipeController {
         }
         
         final Optional<Ingredient> ingredient = findRecipe.get().getIngredients().stream()
-                        .filter(i -> i.getUuid().equals(ingredientId))
-                        .findFirst();
+                        .filter(i -> i.getUuid().equals(ingredientId)).findFirst();
+        
         if (ingredient.isPresent()) {
+            // bestehende Zutat aktualisieren
             DtoHelper.updateIngredient(resource, ingredient.get());
             repository.save(findRecipe.get());
             return ResponseEntity.ok().build();
         }
         
-        return ResponseEntity.notFound().build();
+        // neue Zutat speichern
+        saveNewIngredient(findRecipe.get(), resource);
+        final URI location = ServletUriComponentsBuilder.fromRequestUri(request).build().toUri();
+        return ResponseEntity.created(location).build();
     }
     
     @PostMapping(value = "{id}/ingredients", consumes = { APPLICATION_JSON_VALUE })
@@ -186,14 +195,18 @@ public class RecipeController {
         if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final Ingredient ingredient = conversionService.convert(resource, Ingredient.class);
-        recipe.get().addIngredient(ingredient);
-        repository.save(recipe.get());
-        
-        final URI location = ServletUriComponentsBuilder
+        final String uuid = saveNewIngredient(recipe.get(), resource);
+        final URI location = ServletUriComponentsBuilder 
                         .fromCurrentRequest().path("/{ingredientId}")
-                        .buildAndExpand(ingredient.getUuid()).toUri();
+                        .buildAndExpand(uuid).toUri();
         return ResponseEntity.created(location).build();
+    }
+    
+    private String saveNewIngredient(final Recipe recipe, final IngredientResource resource) {
+        final Ingredient ingredient = conversionService.convert(resource, Ingredient.class);
+        recipe.addIngredient(ingredient);
+        repository.save(recipe);
+        return ingredient.getUuid();
     }
     
     @DeleteMapping(value = "{id}/ingredients/{ingredientId}")
