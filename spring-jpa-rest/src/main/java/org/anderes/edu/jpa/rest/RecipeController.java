@@ -98,10 +98,13 @@ public class RecipeController {
         final Optional<Recipe> existsRecipe = repository.findById(resourceId);
         if (!existsRecipe.isPresent()) {
             if (resourceId.equals(resource.getUuid())) {
+                // ein neues Rezept wird gespeichert
                 return saveNewRecipe(resource, updateDate);
             }
             return ResponseEntity.badRequest().build();
         } 
+        
+        // bestehendes Rezept wird aktualisiert
         DtoHelper.updateRecipe(resource, existsRecipe.get());
         repository.save(existsRecipe.get());
         return ResponseEntity.ok().build();
@@ -164,9 +167,7 @@ public class RecipeController {
                         .filter(i -> i.getUuid().equals(ingredientId))
                         .findFirst();
         if (ingredient.isPresent()) {
-            ingredient.get().setAnnotation(resource.getComment());
-            ingredient.get().setDescription(resource.getDescription());
-            ingredient.get().setQuantity(resource.getPortion());
+            DtoHelper.updateIngredient(resource, ingredient.get());
             repository.save(findRecipe.get());
             return ResponseEntity.ok().build();
         }

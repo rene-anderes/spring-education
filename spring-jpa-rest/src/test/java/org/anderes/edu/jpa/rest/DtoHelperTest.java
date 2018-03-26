@@ -15,14 +15,15 @@ import java.util.UUID;
 
 import org.anderes.edu.jpa.domain.Ingredient;
 import org.anderes.edu.jpa.domain.Recipe;
+import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
-public class DtoMapperTest {
+public class DtoHelperTest {
     
     @Test
-    public void shouldBeMapRecipe() {
+    public void shouldBeUpdateRecipe() {
         // given
         RecipeResource resource = new RecipeResource(UUID.randomUUID().toString());
         resource.setTitle("Arabische Spaghetti").setPreamble("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird...")
@@ -52,7 +53,7 @@ public class DtoMapperTest {
     }
     
     @Test
-    public void shouldBeMapToRecipeWithSpecialTags() {
+    public void shouldBeUpdateRecipeWithSpecialTags() {
         // given
         RecipeResource resource = new RecipeResource(UUID.randomUUID().toString());
         resource.setTitle("Arabische Spaghetti").setPreamble("Da bei diesem Rezept das Scharfe (Curry) mit dem Süssen (Sultaninen) gemischt wird...")
@@ -75,4 +76,20 @@ public class DtoMapperTest {
         return DateUtils.truncate(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), Calendar.DAY_OF_MONTH).getTime();
     }
 
+    @Test
+    public void shouldBeUpdateIngredient() {
+        // given
+        final String uuid = UUID.randomUUID().toString();
+        final IngredientResource resource = new IngredientResource(uuid, "2 EL", "Tomatenpüre", "2-fach konzentriert");
+        final Ingredient ingredient = new Ingredient(uuid, "1 EL", "Tomaten..", "3-fach konzentriert");
+
+        // when
+        DtoHelper.updateIngredient(resource, ingredient);
+        
+        // then
+        assertThat(ingredient.getUuid(), is(uuid));
+        assertThat(ingredient.getQuantity(), is("2 EL"));
+        assertThat(ingredient.getDescription(), is("Tomatenpüre"));
+        assertThat(ingredient.getAnnotation(), is("2-fach konzentriert"));
+    }
 }

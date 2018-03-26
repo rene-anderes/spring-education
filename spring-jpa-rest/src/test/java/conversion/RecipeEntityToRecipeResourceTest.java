@@ -1,4 +1,4 @@
-package org.anderes.edu.jpa.rest;
+package conversion;
 
 import static java.time.Month.DECEMBER;
 import static org.hamcrest.CoreMatchers.is;
@@ -21,15 +21,9 @@ import org.junit.runner.RunWith;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-                "classpath:application-context.xml",
-                "classpath:unittest-jpa-context.xml",
-                "classpath:unittest-application-context.xml"
-})
-@WebAppConfiguration
+@ContextConfiguration(locations = { "classpath:conversion-context.xml" })
 public class RecipeEntityToRecipeResourceTest {
 
     @Inject

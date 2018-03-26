@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="org.anderes.edu.jpa.conversion.RecipeResourceToRecipeEntity"/>
+                <bean class="org.anderes.edu.jpa.conversion.RecipeEntityToRecipeResource"/>
+            </set>
+        </property>
+    </bean>
+    
+    <!-- Spring-driven Method Validation -->
+    <!-- siehe https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validation-beanvalidation-spring-method -->
+    <bean id="validatorPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
+       
+</beans>

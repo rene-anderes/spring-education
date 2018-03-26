@@ -1,4 +1,4 @@
-package org.anderes.edu.jpa.rest;
+package org.anderes.edu.jpa.conversion;
 
 import org.anderes.edu.jpa.domain.Recipe;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
