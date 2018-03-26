@@ -132,7 +132,7 @@ public class RecipeControllerIT {
     }
     
     @Test
-    public void shouldBeUpdateRecipe() throws Exception {
+    public void shouldBeUpdateRecipePUT() throws Exception {
         final MvcResult result = mockMvc.perform(get("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
                         .accept(APPLICATION_JSON))
                         .andExpect(status().isOk()).andReturn();
@@ -144,6 +144,21 @@ public class RecipeControllerIT {
                         .content(convertObjectToJsonBytes(resource))
                         .contentType(APPLICATION_JSON))
                         .andExpect(status().isOk()).andReturn();
+    }
+
+    /**
+     * Die ID der Resource entspricht nicht der ID in der URL
+     */
+    @Test
+    public void shouldBeNotUpdateRecipePUT() throws Exception {
+
+        final RecipeResource resource = new RecipeResource("c0e5582e-252f-4e94-8a49-notSame");
+        resource.setTitle("junit").setNoOfPerson("2").setPreamble("......");
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb")
+                        .content(convertObjectToJsonBytes(resource ))
+                        .contentType(APPLICATION_JSON))
+                        .andExpect(status().isBadRequest()).andReturn();
     }
     
     @Test
@@ -299,6 +314,18 @@ public class RecipeControllerIT {
         final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b047112", null, "Spaghetti", null);
         
         mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/abcWrong")
+                        .contentType(APPLICATION_JSON)
+                        .content(convertObjectToJsonBytes(ingredient)))
+                        .andExpect(status().isBadRequest())
+                        .andReturn();
+    }
+    
+    @Test
+    public void shouldBeNotUpdateIngredientIdNotExists() throws Exception {
+        
+        final IngredientResource ingredient = new IngredientResource("c0e5582e-252f-4e94-8a49-e12b4b0wrong", null, "Spaghetti", null);
+        
+        mockMvc.perform(put("/recipes/c0e5582e-252f-4e94-8a49-e12b4b047afb/ingredients/c0e5582e-252f-4e94-8a49-e12b4b0wrong")
                         .contentType(APPLICATION_JSON)
                         .content(convertObjectToJsonBytes(ingredient)))
                         .andExpect(status().isNotFound())

@@ -7,8 +7,10 @@
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="org.anderes.edu.jpa.conversion.RecipeResourceToRecipeEntity"/>
-                <bean class="org.anderes.edu.jpa.conversion.RecipeEntityToRecipeResource"/>
+                <bean class="org.anderes.edu.jpa.converter.RecipeResourceToRecipeEntity"/>
+                <bean class="org.anderes.edu.jpa.converter.RecipeEntityToRecipeResource"/>
+                <bean class="org.anderes.edu.jpa.converter.IngredientEntityToIngredientResource"/>
+                <bean class="org.anderes.edu.jpa.converter.IngredientResourceToIngredientEntity"/>
             </set>
         </property>
     </bean>

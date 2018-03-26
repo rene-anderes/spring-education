@@ -95,13 +95,14 @@ public class RecipeController {
     public ResponseEntity<?> updateRecipe(@PathVariable("id") String resourceId, @Valid @RequestBody RecipeResource resource,
             @RequestParam(value = "updateDate", required = false, defaultValue = "true") Boolean updateDate) {
 
+        if (!resourceId.equals(resource.getUuid())) {
+            return ResponseEntity.badRequest().build();
+        }
+
         final Optional<Recipe> existsRecipe = repository.findById(resourceId);
         if (!existsRecipe.isPresent()) {
-            if (resourceId.equals(resource.getUuid())) {
-                // ein neues Rezept wird gespeichert
-                return saveNewRecipe(resource, updateDate);
-            }
-            return ResponseEntity.badRequest().build();
+            // ein neues Rezept wird gespeichert
+            return saveNewRecipe(resource, updateDate);
         } 
         
         // bestehendes Rezept wird aktualisiert
@@ -128,7 +129,7 @@ public class RecipeController {
             return ResponseEntity.notFound().build();
         }
         final List<IngredientResource> resources = findRecipe.get().getIngredients().stream()
-                        .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
+                        .map(i -> conversionService.convert(i, IngredientResource.class))
                         .collect(Collectors.toList());
         resources.stream().forEach(r -> {
             final Link linkSelfRel = linkTo(RecipeController.class)
@@ -146,7 +147,7 @@ public class RecipeController {
         }
         final Optional<IngredientResource> resource = findRecipe.get().getIngredients().stream()
                         .filter(i -> i.getUuid().equals(ingredientId))
-                        .map(i -> new IngredientResource(i.getUuid(), i.getQuantity(), i.getDescription(), i.getAnnotation()))
+                        .map(i -> conversionService.convert(i, IngredientResource.class))
                         .findFirst();
         if (resource.isPresent()) {
             return ResponseEntity.ok().body(resource.get());
@@ -161,6 +162,9 @@ public class RecipeController {
         final Optional<Recipe> findRecipe = repository.findById(recipeId);
         if (!findRecipe.isPresent()) {
             return ResponseEntity.notFound().build();
+        }
+        if (!resource.getResourceId().equals(ingredientId)) {
+            return ResponseEntity.badRequest().build();
         }
         
         final Optional<Ingredient> ingredient = findRecipe.get().getIngredients().stream()
@@ -182,7 +186,7 @@ public class RecipeController {
         if (!recipe.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        final Ingredient ingredient = new Ingredient(resource.getPortion(), resource.getDescription(), resource.getComment());
+        final Ingredient ingredient = conversionService.convert(resource, Ingredient.class);
         recipe.get().addIngredient(ingredient);
         repository.save(recipe.get());
         

@@ -1,4 +1,4 @@
-package conversion;
+package converter;
 
 import static java.time.Month.DECEMBER;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:conversion-context.xml" })
+@ContextConfiguration(locations = { "classpath:converter-context.xml" })
 public class RecipeEntityToRecipeResourceTest {
 
     @Inject

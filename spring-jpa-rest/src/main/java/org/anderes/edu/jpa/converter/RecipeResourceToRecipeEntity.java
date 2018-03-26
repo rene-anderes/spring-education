@@ -1,4 +1,4 @@
-package org.anderes.edu.jpa.conversion;
+package org.anderes.edu.jpa.converter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
