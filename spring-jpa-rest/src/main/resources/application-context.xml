@@ -10,7 +10,7 @@
       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <context:component-scan base-package="org.anderes.edu" />
+    <context:component-scan base-package="org.anderes.edu.jpa.rest" />
     
     <mvc:annotation-driven>
         <mvc:argument-resolvers>

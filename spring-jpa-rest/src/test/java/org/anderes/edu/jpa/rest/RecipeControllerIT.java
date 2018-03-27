@@ -19,12 +19,10 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.anderes.edu.dbunitburner.DbUnitRule;
-import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
+import org.anderes.edu.jpa.domain.RecipeRepositoryStub;
 import org.anderes.edu.jpa.rest.dto.IngredientResource;
 import org.anderes.edu.jpa.rest.dto.RecipeResource;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -39,25 +37,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-                "classpath:application-context.xml",
-                "classpath:unittest-jpa-context.xml",
-                "classpath:unittest-application-context.xml"
-})
+@ContextConfiguration(locations = { "classpath:unittest-application-context.xml" })
 @WebAppConfiguration
-@UsingDataSet(value = { "/data/prepare.json" })
 public class RecipeControllerIT {
 
     @Inject
     private WebApplicationContext ctx;
     private MockMvc mockMvc;
-    
-    @Inject @Rule 
-    public DbUnitRule dbUnitRule;
-  
+    @Inject
+    private RecipeRepositoryStub repository;
+
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(ctx).build();
+        repository.initialize();
     }
 
     @Test

@@ -56,6 +56,17 @@
 
     <bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect" />
 
+
+    <bean name="databaseTester" class="org.dbunit.DataSourceDatabaseTester">
+        <constructor-arg ref="dataSource"></constructor-arg>
+    </bean>
+
+    <bean name="rule" class="org.anderes.edu.dbunitburner.DbUnitRule">
+        <constructor-arg ref="databaseTester"></constructor-arg>
+    </bean>
+    
+    <bean name="customDataTypeFactory" class="org.anderes.edu.dbunitburner.CustomDataTypeFactory"></bean>
+    
     <!-- Wenn '<prop key="eclipselink.weaving">' auf true ist -->
     <!-- siehe http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/instrument/classloading/InstrumentationLoadTimeWeaver.html -->
     <!-- <bean id="loadTimeWeaver" class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" /> -->
