@@ -8,7 +8,7 @@
     </Appenders>
 
     <Loggers>
-        <Root level="NONE">
+        <Root level="INFO">
             <AppenderRef ref="STDOUT"/>
         </Root>
         <Logger name="org.hibernate.validator" level="INFO" additivity="false">

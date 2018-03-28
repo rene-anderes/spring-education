@@ -23,5 +23,8 @@
         <Logger name="org.dbunit" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
+        <Logger name="com.jayway" level="INFO" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
     </Loggers>
 </Configuration>
