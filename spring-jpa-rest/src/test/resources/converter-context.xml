@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="org.anderes.edu.jpa.converter.RecipeResourceToRecipeEntity"/>
-                <bean class="org.anderes.edu.jpa.converter.RecipeEntityToRecipeResource"/>
-                <bean class="org.anderes.edu.jpa.converter.IngredientEntityToIngredientResource"/>
-                <bean class="org.anderes.edu.jpa.converter.IngredientResourceToIngredientEntity"/>
+                <bean class="org.anderes.cookbook.web.converter.RecipeResourceToRecipeEntity" />
+                <bean class="org.anderes.cookbook.web.converter.RecipeEntityToRecipeResource" />
+                <bean class="org.anderes.cookbook.web.converter.IngredientEntityToIngredientResource" />
+                <bean class="org.anderes.cookbook.web.converter.IngredientResourceToIngredientEntity" />
             </set>
         </property>
     </bean>
-    
-    <!-- Spring-driven Method Validation -->
-    <!-- siehe https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validation-beanvalidation-spring-method -->
-    <bean id="validatorPostProcessor" class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor"/>
-       
+
 </beans>

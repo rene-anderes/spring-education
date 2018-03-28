@@ -13,12 +13,12 @@
     
     <tx:annotation-driven />
     <context:annotation-config />
-    <jpa:repositories base-package="org.anderes.edu.jpa.domain" />
+    <jpa:repositories base-package="org.anderes.cookbook.domain" />
 
     <!-- JPA Entity Manager -->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="org.anderes.edu.jpa.domain" />
+        <property name="packagesToScan" value="org.anderes.cookbook.domain" />
         <property name="jpaDialect" ref="jpaDialect" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter" />

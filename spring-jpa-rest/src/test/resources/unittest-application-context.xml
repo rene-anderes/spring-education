@@ -10,9 +10,9 @@
       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
     
-    <bean id="recipeRepository" scope="singleton" class="org.anderes.edu.jpa.domain.RecipeRepositoryStub"/>
+    <bean id="recipeRepository" scope="singleton" class="org.anderes.cookbook.domain.RecipeRepositoryStub"/>
 
-    <context:component-scan base-package="org.anderes.edu.jpa.rest" />       
+    <context:component-scan base-package="org.anderes.cookbook.web.rest" />       
        
     <mvc:annotation-driven>
         <mvc:argument-resolvers>
@@ -26,13 +26,13 @@
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
 
-    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+   <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="org.anderes.edu.jpa.converter.RecipeResourceToRecipeEntity"/>
-                <bean class="org.anderes.edu.jpa.converter.RecipeEntityToRecipeResource"/>
-                <bean class="org.anderes.edu.jpa.converter.IngredientEntityToIngredientResource"/>
-                <bean class="org.anderes.edu.jpa.converter.IngredientResourceToIngredientEntity"/>
+                <bean class="org.anderes.cookbook.web.converter.RecipeResourceToRecipeEntity" />
+                <bean class="org.anderes.cookbook.web.converter.RecipeEntityToRecipeResource" />
+                <bean class="org.anderes.cookbook.web.converter.IngredientEntityToIngredientResource" />
+                <bean class="org.anderes.cookbook.web.converter.IngredientResourceToIngredientEntity" />
             </set>
         </property>
     </bean>
