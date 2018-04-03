@@ -6,7 +6,7 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 body
 {
 	/* Font */
-	font-family: Lato,Verdana,sans-serif;
+	font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 	font-size: 15px;
 
 	/* Text color */
@@ -30,7 +30,7 @@ body
 blockquote
 {
 	font-style: italic;
-	font-family: Georgia, Times, "Times New Roman", serif;
+	font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 	padding: 2px 0;
 	border-style: solid;
 	border-color: #ccc;

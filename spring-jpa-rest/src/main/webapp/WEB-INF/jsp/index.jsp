@@ -1,5 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" session="false" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+
+<% 
+java.util.jar.Manifest manifest = new java.util.jar.Manifest();
+manifest.read(pageContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
+java.util.jar.Attributes attributes = manifest.getMainAttributes();
+request.setAttribute("release", attributes.getValue("Implementation-Version"));
+%>
 
 <c:url var="resources" value="/resources"/>
 
@@ -20,20 +27,22 @@
 	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
-	<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Proza+Libre">
 	<style>
 		html, body, h1, h2, h3, h4, h5, h6 {
-		    font-family: Lato,Verdana,sans-serif;
+		    font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 		}
 	</style>
-	<title>Cookbook chez René</title>
+	<title>Kochbuch chez René</title>
 </head>
 <body>
 	<!-- Sidebar -->
-	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-right" style="display:none;right:0;" id="mySidebar">
-	  <button class="w3-bar-item w3-button" onclick="w3_close()">Close &times;</button>
-	  <button class="w3-button w3-bar-item w3-red" onclick="dialogLogin.show()">Login</button>
-	  <button id="addRecipe" class="w3-button w3-bar-item w3-red" title="neues Rezept erfassen">Neues Rezept</button>
+	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left w3-light-gray" style="display:none;left:0;" id="mySidebar">
+	  <button class="w3-bar-item w3-button w3-red" onclick="w3_close()">Close</button>
+	  <button class="w3-button w3-bar-item" onclick="dialogLogin.show()">Login</button>
+	  <button id="addRecipe" class="w3-button w3-bar-item" title="neues Rezept erfassen">Neues Rezept</button>
+      <button id="backupDatabase" class="w3-button w3-bar-item" title="Backup Database">Backup Database</button>
+      <button id="about" class="w3-button w3-bar-item" title="About">About</button>
 	</div>
 	<script>
 		function w3_open() {
@@ -45,11 +54,11 @@
 	</script>
 	
 	<!-- Page Content -->
-	<header class="w3-container w3-teal">
-	 	<button class="w3-button w3-teal w3-xxlarge w3-right" onclick="w3_open()">&#9776;</button>
-  		<h1>Kochbuch chéz René</h1>
+	<header class="w3-bar w3-teal w3-xxlarge">
+	 	<button class="w3-bar-item w3-button w3-teal" onclick="w3_open()">&#9776;</button>
+  		<span class="w3-bar-item">Kochbuch chez René</span>
 	</header> 
-	
+
 	<div class="w3-row">
 		<div class="w3-third w3-container">
 			<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
@@ -72,7 +81,7 @@
 			    <p id="ingredients"></p>
 			    <h3>Zubereitung</h3>
 			    <p id="preparation"></p>
-			    <p>Rating <span class="w3-badge" id="rating"></span></p>
+			    <p>Rating <span class="w3-badge w3-teal" id="rating"></span></p>
 			    <p class="w3-tiny">
 			    	Erfasst: <span id="adding"></span><br>
 			    	Aktualisiert: <span id="update"></span><br>
@@ -127,11 +136,11 @@
 						</div>
 						<div class="w3-panel">
 							<div class="w3-row-padding">
-								<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-green">1</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-green">2</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-green">3</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-green">4</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-green">5</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-teal">1</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-teal">2</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-teal">3</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-teal">4</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-teal">5</span></label>
 							</div>
 							<p class="w3-text-gray">Rating</p>
 						</div>
@@ -215,7 +224,7 @@
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
-		var $tokenUrl = $rootUrl + "/users/token";
+		var $tokenUrl = "/spring-security-jwt-server/users/token";
 
 		var dialogDelete = {
 
@@ -234,7 +243,8 @@
 						dialogMessage.show( message );
 					})
 					.then( function() {
-						location.reload;
+						recipe.init();
+						recipes.show();
 					});
 			}
 		}
@@ -389,7 +399,7 @@
 					$("#nextPage").show();
 				}
 			};
-			
+
 			return {
 				init: init,
 				show: show
@@ -442,7 +452,7 @@
 				$( "#recipe #update" ).text( formatDate( recipe.editingDate ) );
 				$( "#recipe #tags span" ).remove();
 				$.each( recipe.tags, function( idx, tag ) {
-					$( "#recipe #tags" ).append( "<span><span class='w3-tag'>" + tag + "</span>&nbsp;</span>" );
+					$( "#recipe #tags" ).append( "<span><span class='w3-tag w3-teal'>" + tag + "</span>&nbsp;</span>" );
 				});
 				$( "#recipe #resourceId" ).text( recipe.uuid );
 			};
@@ -865,8 +875,10 @@
 			
 			var initCkEditor = function() {
 				// Toolbarkonfigurator: http://ckeditor.com/latest/samples/toolbarconfigurator/index.html
+				// entities: false -> Umlaute nicht codieren
 				CKEDITOR.replace( "editPreamble", {
 				    contentsCss: "resources/ckEditorContents.css",
+				    entities: false,
 				    resize_enabled: true,
 				    language: "de",
 				    toolbarGroups: [
@@ -890,6 +902,7 @@
 				});
 				CKEDITOR.replace( "editPreparation", {
 				    contentsCss: "resources/ckEditorContents.css",
+				    entities: false,
 				    resize_enabled: true,
 				    language: "de",
 				    toolbarGroups: [
@@ -928,18 +941,21 @@
 				recipes.init( $recipesUrl, showRecipe );
 				recipeEdit.init( $recipesUrl, tokenProvider );
 				recipe.init();
-				recipes.show().fail( erroHandler );
+				recipes.show().fail( errorHandler );
 				user.change( function( token ) {
 					if ( token ) {
 						$( "#editAndDelete" ).show();
 						$( "#addRecipe").show();
+						$( "#backupDatabase" ).show();
 					} else {
 						$( "#editAndDelete" ).hide();
 						$( "#addRecipe").hide();
+						$( "#backupDatabase" ).hide();
 					}
 				});
 				$( "#editAndDelete" ).hide();
 				$( "#addRecipe").hide();
+				$( "#backupDatabase" ).hide();
 				$( "#addRecipe").click( function() {
 					newRecipe();
 				});
@@ -950,14 +966,20 @@
 				$( "#editAndDelete #delete" ).click( function() {
 					dialogDelete.show();
 				});
+				$( "#backupDatabase" ).click( function() {
+					backup().fail( errorHandler );
+				});
+				$( "#about" ).click( function() {
+					about().fail( errorHandler );
+				});
 			};
 			
 			var showRecipe = function( url ) {
 				recipeEdit.hide();
-				recipe.show( url ).fail( erroHandler );
+				recipe.show( url ).fail( errorHandler );
 			};
 
-			var erroHandler = function( message ) {
+			var errorHandler = function( message ) {
 				dialogMessage.show( "Error\n" + message );
 			};
 			
@@ -995,9 +1017,55 @@
 				return deferred.promise();
 			};
 			
+			var backup = function( ) {
+				var deferred = $.Deferred();
+				var $backupUrl = $recipesUrl + "/backup";
+				var $token = user.getToken();
+				$.ajax({
+				    url: $backupUrl,
+				    method: "POST",
+				    contentType: "application/json; charset=UTF-8",
+					headers: { "Authorization": "Bearer " + $token }
+				})
+				.fail( function(xhr, status, error) {
+					var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+					console.log( err );
+					deferred.reject( err );
+				})
+				.then( function( json ) {
+					var $message = "Backup erstellt. Backup-Path: '" + json.backuppath + "'";
+					dialogMessage.show( $message );
+					deferred.resolve();
+				})
+				return deferred.promise();
+			};
+			
+			var about = function( ) {
+				var deferred = $.Deferred();
+				$.getJSON( $rootUrl + "/infos" )
+					.done( function( about ) {
+						var $message = "Client-Release: ${release} <br>";
+				        $message += "Server<br>";
+				        $message += "Applikations-Release: " + about.applicationRelease + "<br>";
+				        $message += "Spring-Version: " + about.springVersion + "<br>";
+				        $message += "Spring-Security-Version: " + about.springSecurityVersion + "<br>";
+				        $message += "Datenbank-Version (Derby): " + about.derbyVersion + "<br>";
+				        dialogMessage.show( $message );
+						deferred.resolve();
+					})
+					.fail(function(xhr, status, error) {
+						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log(err);
+						deferred.reject( err );
+					})
+				return deferred.promise();
+			};
+			
 			return {
 				init: init,
-				deleteRecipe: deleteRecipe
+				deleteRecipe: deleteRecipe,
+				backup: backup,
+				about: about
 			}
 			
 		})();
