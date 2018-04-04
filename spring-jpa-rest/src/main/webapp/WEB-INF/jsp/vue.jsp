@@ -29,9 +29,9 @@
 			<ul class="w3-ul w3-hoverable w3-large" id="list">
 				<li v-for="recipe in recipes"><a href="#" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</a></li>
 			</ul>
-			<div class="w3-bar w3-center">
-				<a id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
-				<a id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
+			<div class="w3-bar w3-center" id="paging">
+				<a v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
+				<a v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
 			</div>
 		</div>
 	</div>
@@ -42,11 +42,8 @@
 		
 		var recipes = (function() {
 			var url = $recipesUrl;
-			var pageSize = 10;
-			var pageNo = 0;
-			var showRecipeCallback;
 					
-			var load = function() {
+			var load = function( pageNo, pageSize ) {
 				var deferred = $.Deferred();
 				var completeUrl = url + "?sort=title&page=" + pageNo + "&size=" + pageSize;
 				$.getJSON( completeUrl )
@@ -68,15 +65,15 @@
 		})();
 		
 		var recipesViewModel = new Vue({
-			el: '#recipes',
+			el: '#list',
 			data: { 
 				recipes: {} 
 			},
-			beforeUpdated: function() {
-				$( "#recipes" ).fadeOut( "fast" );
+			beforeUpdate: function() {
+				$( "#recipes" ).hide();
 			},
 			updated: function() {
-				$( "#recipes" ).fadeIn( "fast" );
+				$( "#recipes" ).fadeIn( "slow" );
 			},
 			methods: {
 				selectRecipe: function( recipe ) {
@@ -90,10 +87,40 @@
 					alert("url: " + url);
 				}
 			}
-		})
+		});
+		var pagingViewModel = new Vue({
+			el: '#paging',
+			data: {
+				pageSize: 10,
+				pageNo: 0	
+			},
+			created: function() {
+				console.log( "pagingViewModel created" );
+			},
+			beforeUpdated: function() {
+				$( "#recipes" ).fadeOut( "fast" );
+			},
+			methods: {
+				nextPage: function() {
+					this.pageNo++;
+					recipes.load(this.pageNo, this.pageSize).then( function( json ) {
+						recipesViewModel.recipes = json;
+					})
+				},
+				prevPage: function() {
+					if (this.pageNo > 0) {
+						this.pageNo--;
+						recipes.load(this.pageNo, this.pageSize).then( function( json ) {
+							recipesViewModel.recipes = json;
+						})
+					}
+				}
+			}
+		});
+		
 		$(function() {
 			$( "#recipes" ).hide();
-			recipes.load().then( function( json ) {
+			recipes.load(pagingViewModel.pageNo, pagingViewModel.pageSize).then( function( json ) {
 				console.log( json );
 				recipesViewModel.recipes = json;
 			})
