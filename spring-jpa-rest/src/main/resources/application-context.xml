@@ -20,6 +20,7 @@
     </mvc:annotation-driven>
     
     <mvc:view-controller path="/" view-name="index"/>
+    <mvc:view-controller path="/vue.html" view-name="vue"/>
     
     <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources/ directory -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
