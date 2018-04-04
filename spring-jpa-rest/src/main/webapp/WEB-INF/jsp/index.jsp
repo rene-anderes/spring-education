@@ -46,10 +46,10 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	</div>
 	<script>
 		function w3_open() {
-		  $("#mySidebar").css("display", "block");
+			$("#mySidebar").css("display", "block");
 		}
 		function w3_close() {
-		  $("#mySidebar").hide();
+			$("#mySidebar").hide();
 		}
 	</script>
 	

@@ -23,24 +23,49 @@
 </head>
 <body>
 
-	<div class="w3-third w3-container">
-		<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
-		<div id="recipes">
-			<ul class="w3-ul w3-hoverable w3-large" id="list">
-				<li v-for="recipe in recipes"><a href="#" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</a></li>
-			</ul>
-			<div class="w3-bar w3-center" id="paging">
-				<a v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
-				<a v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
+	<div class="w3-row">
+		<div class="w3-third w3-container">
+			<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
+			<div id="recipes">
+				<ul class="w3-ul w3-hoverable w3-large" id="list">
+					<li v-for="recipe in recipes"><a class="w3-button" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</a></li>
+				</ul>
+				<div class="w3-bar w3-center" id="paging">
+					<button v-bind:disabled="pageNo == 0" v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
+					<button v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</button>
+				</div>
 			</div>
 		</div>
+		<div class="w3-twothird w3-container">
+			<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
+			
+			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
+			<div id="recipe">
+			    <h1>{{ recipe.title }}</h1>
+			    <p v-html="recipe.preamble"></p>
+			    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
+			    <div id="ingredients">
+				    <table class="w3-table w3-bordered">
+				    	<tr v-for="ingredient in ingredients"><td>{{ ingredient.portion }}</td><td>{{ ingredient.description }} {{ ingredient.description }}</td></tr>
+				    </table>
+			    </div>
+			    <h3>Zubereitung</h3>
+			    <p v-html="recipe.preparation"></p>
+			    <p>Rating <span class="w3-badge w3-teal" id="rating">{{ recipe.rating }}</span></p>
+			    <p class="w3-tiny">
+			    	Erfasst: <span id="adding">{{ formatDate(recipe.addingDate) }}</span><br>
+			    	Aktualisiert: <span id="update">{{ formatDate(recipe.editingDate) }}</span><br>
+			    </p>
+			    <p class="w3-tiny">Stichworte:&nbsp;<span v-for="tag in recipe.tags"><span class='w3-tag w3-teal'>{{ tag }}</span>&nbsp;</span></p>
+		    </div>
+		</div>
 	</div>
-	
+
 	<script>
 		var $rootUrl = "/spring-jpa-rest"
 		var $recipesUrl = $rootUrl + "/recipes";
 		
-		var recipes = (function() {
+		var recipesStorage = ( function() {
 			var url = $recipesUrl;
 					
 			var load = function( pageNo, pageSize ) {
@@ -64,27 +89,72 @@
 			}
 		})();
 		
+		var recipeStorage = ( function() {
+			var load = function( url ) {
+				var deferred = $.Deferred();
+				$.getJSON( url )
+					.done( function(recipe) {
+						deferred.resolve( recipe );
+					})
+					.fail(function(xhr, status, error) {
+						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
+						console.log(err);
+						deferred.reject( err );
+					})
+				return deferred.promise();
+			};
+			
+			return {
+				load: load
+			} 
+		})();
+		
+		var formatDate = function( number ) {
+			var $myDate = new Date(number);
+			return $myDate.toLocaleString();
+		};
+		
+		var recipeViewModel = new Vue({
+			el: '#recipe',
+			data: {
+				recipe: {}
+			},
+			beforeUpdate: function() {
+				$( this.$el ).hide();
+			},
+			updated: function() {
+				$( this.$el ).fadeIn( "slow" );
+			},
+			methods: {
+				formatDate: function( number ) {
+					var $myDate = new Date(number);
+					return $myDate.toLocaleString();
+				}
+			}
+		});
+		
 		var recipesViewModel = new Vue({
 			el: '#list',
 			data: { 
 				recipes: {} 
 			},
 			beforeUpdate: function() {
-				$( "#recipes" ).hide();
+				$( this.$el ).hide();
 			},
 			updated: function() {
-				$( "#recipes" ).fadeIn( "slow" );
+				$( this.$el ).fadeIn( "slow" );
 			},
 			methods: {
 				selectRecipe: function( recipe ) {
-					alert("recipe: " + recipe);
 					var url = "";
 					$.each(recipe.links, function(idx, link) {
 						if (link.rel == "self") {
 							url = link.href;
 						}
 					});
-					alert("url: " + url);
+					recipeStorage.load( url ).then( function( json ) {
+						recipeViewModel.recipe = json;
+					});
 				}
 			}
 		});
@@ -103,14 +173,14 @@
 			methods: {
 				nextPage: function() {
 					this.pageNo++;
-					recipes.load(this.pageNo, this.pageSize).then( function( json ) {
+					recipesStorage.load(this.pageNo, this.pageSize).then( function( json ) {
 						recipesViewModel.recipes = json;
 					})
 				},
 				prevPage: function() {
 					if (this.pageNo > 0) {
 						this.pageNo--;
-						recipes.load(this.pageNo, this.pageSize).then( function( json ) {
+						recipesStorage.load(this.pageNo, this.pageSize).then( function( json ) {
 							recipesViewModel.recipes = json;
 						})
 					}
@@ -120,9 +190,10 @@
 		
 		$(function() {
 			$( "#recipes" ).hide();
-			recipes.load(pagingViewModel.pageNo, pagingViewModel.pageSize).then( function( json ) {
+			recipesStorage.load(pagingViewModel.pageNo, pagingViewModel.pageSize).then( function( json ) {
 				console.log( json );
 				recipesViewModel.recipes = json;
+				$( "#recipes" ).show();
 			})
 		});
 		$(document).ajaxStart( function() {
