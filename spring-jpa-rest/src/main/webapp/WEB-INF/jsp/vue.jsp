@@ -68,29 +68,23 @@
 			</div>
 		</div>
 		<div class="w3-twothird w3-container">
-			<p id="choice">Wähle ein Rezept aus der Liste aus ...</p>
-			
 			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
 			<div id="recipe">
-			    <h1>{{ recipe.title }}</h1>
-			    <p v-html="recipe.preamble"></p>
-			    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
-			    <div id="ingredients"><ingredients-list></ingredients-list>
-
-			    <!-- 
-				    <table class="w3-table w3-bordered">
-				    	<tr v-for="ingredient in ingredients"><td>{{ ingredient.portion }}</td><td>{{ ingredient.description }} {{ ingredient.description }}</td></tr>
-				    </table>
-				-->    
-			    </div>
-			    <h3>Zubereitung</h3>
-			    <p v-html="recipe.preparation"></p>
-			    <p>Rating <span class="w3-badge w3-teal" id="rating">{{ recipe.rating }}</span></p>
-			    <p class="w3-tiny">
-			    	Erfasst: <span id="adding">{{ formatDate(recipe.addingDate) }}</span><br>
-			    	Aktualisiert: <span id="update">{{ formatDate(recipe.editingDate) }}</span><br>
-			    </p>
-				<p class="w3-tiny">Stichworte:&nbsp;<span v-for="tag in recipe.tags"><span class='w3-tag w3-teal'>{{ tag }}</span>&nbsp;</span></p>
+				<p v-if="!recipe.uuid" id="choice">Wähle ein Rezept aus der Liste aus ...</p>
+				<div v-else>
+				    <h1>{{ recipe.title }}</h1>
+				    <p v-html="recipe.preamble"></p>
+				    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
+				    <div><ingredients-list></ingredients-list></div>
+				    <h3>Zubereitung</h3>
+				    <p v-html="recipe.preparation"></p>
+				    <p>Rating <span class="w3-badge w3-teal" id="rating">{{ recipe.rating }}</span></p>
+				    <p class="w3-tiny">
+				    	Erfasst: <span id="adding">{{ formatDate(recipe.addingDate) }}</span><br>
+				    	Aktualisiert: <span id="update">{{ formatDate(recipe.editingDate) }}</span><br>
+				    </p>
+					<p class="w3-tiny">Stichworte:&nbsp;<span v-for="tag in recipe.tags"><span class='w3-tag w3-teal'>{{ tag }}</span>&nbsp;</span></p>
+				</div>
 		    </div>
 		</div>
 	</div>
@@ -108,73 +102,6 @@
 				recipes: getRecipesUrl
 			}
 		})();
-
-		/*
-		var recipesStorage = ( function() {
-			var url = $recipesUrl;
-					
-			var load = function( pageNo, pageSize ) {
-				var deferred = $.Deferred();
-				var completeUrl = url + "?sort=title&page=" + pageNo + "&size=" + pageSize;
-				$.getJSON( completeUrl )
-					.fail( function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log( err );
-						deferred.reject( err );
-					})
-					.then( function( json ) {
-						deferred.resolve( json.content );
-					})
-				
-				return deferred.promise();
-			};
-
-			return {
-				load: load
-			}
-		})();
-		
-		var recipeStorage = ( function() {
-			var load = function( url ) {
-				var deferred = $.Deferred();
-				$.getJSON( url )
-					.done( function(recipe) {
-						deferred.resolve( recipe );
-					})
-					.fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
-						deferred.reject( err );
-					})
-				return deferred.promise();
-			};
-			
-			return {
-				load: load
-			} 
-		})();
-		
-		var ingredientsStorage = ( function() {
-			var load = function( url ) {
-				var deferred = $.Deferred();
-				console.log( "URL: " + url);
-				$.getJSON( url )
-					.done( function( ingredients ) {
-						deferred.resolve( ingredients );
-					})
-					.fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
-						deferred.reject( err );
-					})
-				return deferred.promise();
-			};
-			
-			return {
-				load: load
-			} 
-		})();
-		*/
 
 		var dataStorage = ( function() {
 			var load = function( url ) {
@@ -285,7 +212,6 @@
 		
 
 		$(function() {
-
 			$( "#recipes" ).hide();
 			var url = dataUrl.recipes(pagingViewModel.pageNo, pagingViewModel.pageSize);
 			dataStorage.load( url ).then( function( json ) {
