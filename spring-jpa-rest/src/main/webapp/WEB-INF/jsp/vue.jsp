@@ -14,6 +14,7 @@
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Proza+Libre">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-dark-grey.css">
 	<style>
 		html, body, h1, h2, h3, h4, h5, h6 {
 		    font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
@@ -21,7 +22,7 @@
 	</style>
 	<title>Cookbook with vue.js</title>
 </head>
-<body>
+<body class="w3-theme-d5">
 	<script>
 		const EventBus = new Vue()
 		Object.defineProperties(Vue.prototype, {
@@ -39,10 +40,10 @@
 				}
 			},
 			beforeUpdate: function() {
-				
+				$( this.$el ).hide();
 			},
 			updated: function() {
-				console.log( "ingredients updated");
+				$( this.$el ).fadeIn( "slow" );
 			},
 			created: function() { 
 				this.$eventbus.$on( 'ingredients-update', function( json ) {
@@ -52,11 +53,17 @@
 		});
 	</script>
 
+	<header class="w3-container w3-theme-l3 w3-margin-bottom">
+  		<h1>Kochbuch chez René</h1>
+	</header> 
+	
 	<div id="app" class="w3-row">
 		<div class="w3-third w3-container">
-			<h2>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h2>
+			<div class="w3-container w3-theme">
+				<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
+			</div>
 			<div id="recipes">
-				<ul class="w3-ul w3-hoverable w3-xlarge" id="list">
+				<ul class="w3-ul w3-hoverable w3-large" id="list">
 					<li v-for="recipe in recipes" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
 				</ul>
 				<div class="w3-bar w3-center" id="paging">
@@ -87,16 +94,20 @@
 				    <h3>Zubereitung</h3>
 				    <p v-html="recipe.preparation"></p>
 				    <p>&nbsp;</p>
-				    <p>Rating <span class="w3-badge w3-teal" id="rating">{{ recipe.rating }}</span></p>
+				    <p>Rating <span class="w3-badge w3-theme-l3" id="rating">{{ recipe.rating }}</span></p>
 				    <p class="w3-tiny">
 				    	Erfasst: <span id="adding">{{ formatDate(recipe.addingDate) }}</span><br>
 				    	Aktualisiert: <span id="update">{{ formatDate(recipe.editingDate) }}</span><br>
 				    </p>
-					<p class="w3-tiny">Stichworte:&nbsp;<span v-for="tag in recipe.tags"><span class='w3-tag w3-teal'>{{ tag }}</span>&nbsp;</span></p>
+					<p class="w3-tiny">Stichworte:&nbsp;<span v-for="tag in recipe.tags"><span class='w3-tag w3-theme-l3'>{{ tag }}</span>&nbsp;</span></p>
 				</div>
 		    </div>
 		</div>
 	</div>
+	<p>&nbsp;</p>
+	<footer class="w3-container w3-center w3-theme-d5">
+		<p>© 1996-2018 René Anderes | www.anderes.org | design and implemented by René Anderes | Powered by w3.css, jQuery & vue.js</p>
+	</footer> 
 
 	<script>
 		var dataUrl = ( function() {
@@ -225,7 +236,7 @@
 			var url = dataUrl.recipes(pagingViewModel.pageNo, pagingViewModel.pageSize);
 			dataStorage.load( url ).then( function( json ) {
 				recipesViewModel.recipes = json.content;
-				$( "#recipes" ).show();
+				$( "#recipes" ).fadeIn( "slow" );
 			})
 		});
 		$(document).ajaxStart( function() {
