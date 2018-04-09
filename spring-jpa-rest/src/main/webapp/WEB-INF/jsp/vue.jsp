@@ -48,18 +48,16 @@
 				this.$eventbus.$on( 'ingredients-update', function( json ) {
 					this.ingredients = json; 
 				}.bind(this));
-			}, 
-		  	template: 
-			  '<table class="w3-table w3-bordered"><tr v-for="ingredient in ingredients"><td>{{ ingredient.portion }}</td><td>{{ ingredient.description }} {{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td></tr></table>'
+			}
 		});
 	</script>
 
 	<div id="app" class="w3-row">
 		<div class="w3-third w3-container">
-			<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
+			<h2>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h2>
 			<div id="recipes">
-				<ul class="w3-ul w3-hoverable w3-large" id="list">
-					<li v-for="recipe in recipes"><a class="w3-button" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</a></li>
+				<ul class="w3-ul w3-hoverable w3-xlarge" id="list">
+					<li v-for="recipe in recipes" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
 				</ul>
 				<div class="w3-bar w3-center" id="paging">
 					<button v-bind:disabled="pageNo == 0" v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
@@ -75,9 +73,20 @@
 				    <h1>{{ recipe.title }}</h1>
 				    <p v-html="recipe.preamble"></p>
 				    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
-				    <div><ingredients-list></ingredients-list></div>
+				    <div>
+				    	<ingredients-list inline-template>
+							<table class="w3-table w3-bordered" style="max-width: 50%">
+								<tr v-for="ingredient in ingredients">
+									<td>{{ ingredient.portion }}</td>
+									<td>{{ ingredient.description }} {{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
+								</tr>
+							</table>
+						</ingredients-list>
+			    	</div>
+			    	<p>&nbsp;</p>
 				    <h3>Zubereitung</h3>
 				    <p v-html="recipe.preparation"></p>
+				    <p>&nbsp;</p>
 				    <p>Rating <span class="w3-badge w3-teal" id="rating">{{ recipe.rating }}</span></p>
 				    <p class="w3-tiny">
 				    	Erfasst: <span id="adding">{{ formatDate(recipe.addingDate) }}</span><br>
