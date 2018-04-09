@@ -50,11 +50,11 @@
 				}.bind(this));
 			}, 
 		  	template: 
-			  '<table class="w3-table w3-bordered"><tr v-for="ingredient in ingredients"><td>{{ ingredient.portion }}</td><td>{{ ingredient.description }} {{ ingredient.comment }}</td></tr></table>'
+			  '<table class="w3-table w3-bordered"><tr v-for="ingredient in ingredients"><td>{{ ingredient.portion }}</td><td>{{ ingredient.description }} {{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td></tr></table>'
 		});
 	</script>
 
-	<div class="w3-row">
+	<div id="app" class="w3-row">
 		<div class="w3-third w3-container">
 			<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
 			<div id="recipes">
@@ -70,7 +70,7 @@
 		<div class="w3-twothird w3-container">
 			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
 			<div id="recipe">
-				<p v-if="!recipe.uuid" id="choice">Wähle ein Rezept aus der Liste aus ...</p>
+				<p v-if="!recipe.uuid">Wähle ein Rezept aus der Liste aus ...</p>
 				<div v-else>
 				    <h1>{{ recipe.title }}</h1>
 				    <p v-html="recipe.preamble"></p>
