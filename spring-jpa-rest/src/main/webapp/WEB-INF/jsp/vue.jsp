@@ -58,7 +58,7 @@
 	</header> 
 	
 	<div id="app" class="w3-row">
-		<div class="w3-third w3-container">
+		<div class="w3-third w3-container w3-margin-top">
 			<div class="w3-container w3-theme">
 				<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
 			</div>
@@ -85,7 +85,7 @@
 							<table class="w3-table w3-bordered" style="max-width: 50%">
 								<tr v-for="ingredient in ingredients">
 									<td>{{ ingredient.portion }}</td>
-									<td>{{ ingredient.description }} {{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
+									<td>{{ ingredient.description }}&nbsp;{{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
 								</tr>
 							</table>
 						</ingredients-list>
@@ -105,8 +105,8 @@
 		</div>
 	</div>
 	<p>&nbsp;</p>
-	<footer class="w3-container w3-center w3-theme-d5">
-		<p>© 1996-2018 René Anderes | www.anderes.org | design and implemented by René Anderes | Powered by w3.css, jQuery & vue.js</p>
+	<footer class="w3-container w3-center w3-theme-d5" style="display: none;">
+		<p>© 1996-2018 René Anderes | www.anderes.org | design and implemented by René Anderes | Powered by w3.css, jQuery &amp; vue.js</p>
 	</footer> 
 
 	<script>
@@ -208,9 +208,6 @@
 				pageSize: 10,
 				pageNo: 0	
 			},
-			beforeUpdate: function() {
-				//$( "#recipes" ).fadeOut( "fast" );
-			},
 			methods: {
 				nextPage: function() {
 					this.pageNo++;
@@ -228,11 +225,9 @@
 				}
 			}
 		});
-
 		
 
 		$(function() {
-			$( "#recipes" ).hide();
 			var url = dataUrl.recipes(pagingViewModel.pageNo, pagingViewModel.pageSize);
 			dataStorage.load( url ).then( function( json ) {
 				recipesViewModel.recipes = json.content;
@@ -241,9 +236,11 @@
 		});
 		$(document).ajaxStart( function() {
 			$( "#loading" ).show();
+			$( "footer" ).hide();
 		});
 		$(document).ajaxStop( function() {
 			$( "#loading" ).hide();
+			$( "footer" ).fadeIn( "slow" );
 		});
 	</script>
 
