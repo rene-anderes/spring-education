@@ -71,7 +71,7 @@
 				}
 			},
 			components: {
-				'paging-comp' : pagingComponent	
+				'paging' : pagingComponent	
 			},
 			beforeUpdate: function() {
 				$( this.$el ).hide();
@@ -171,38 +171,35 @@
 				<h3>Liste aller Rezepte <span id="loading"><i class="fa fa-refresh"></i></span></h3>
 			</div>
 			<recipe-list inline-template>
-				<div id="recipes">
-					<ul class="w3-ul w3-hoverable w3-large" id="list">
+				<div>
+					<ul class="w3-ul w3-hoverable w3-large">
 						<li v-for="recipe in recipes" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
 					</ul>
-					<paging-comp inline-template>
-						<div class="w3-bar w3-center" id="paging">
+					<paging inline-template>
+						<div class="w3-bar w3-center">
 							<button v-bind:disabled="pageNo == 0" v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
 							<button v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</button>
 						</div>
-					</paging-comp>
+					</paging>
 				</div>
 			</recipe-list>
 		</div>
 		<div class="w3-twothird w3-container">
-			<!-- ************************** einzelnes Rezept anzeigen ********************* -->
 			<recipe inline-template>
-				<div id="recipe">
+				<div>
 					<p v-if="!recipe.uuid">Wähle ein Rezept aus der Liste aus ...</p>
 					<div v-else>
 					    <h1>{{ recipe.title }}</h1>
 					    <p v-html="recipe.preamble"></p>
 					    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
-					    <div>
-					    	<ingredients inline-template>
-								<table class="w3-table w3-bordered" style="max-width: 50%">
-									<tr v-for="ingredient in ingredients">
-										<td>{{ ingredient.portion }}</td>
-										<td>{{ ingredient.description }}&nbsp;{{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
-									</tr>
-								</table>
-							</ingredients>
-				    	</div>
+				    	<ingredients inline-template>
+							<table class="w3-table w3-bordered" style="max-width:50%">
+								<tr v-for="ingredient in ingredients">
+									<td>{{ ingredient.portion }}</td>
+									<td>{{ ingredient.description }}&nbsp;{{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
+								</tr>
+							</table>
+						</ingredients>
 				    	<p>&nbsp;</p>
 					    <h3>Zubereitung</h3>
 					    <p v-html="recipe.preparation"></p>
