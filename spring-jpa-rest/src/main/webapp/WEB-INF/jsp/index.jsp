@@ -22,6 +22,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	<script type="text/javascript" src="${ resources }/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="${ resources }/jquery.tag-editor.min.js"></script>
 	<script type="text/javascript" src="${ resources }/jquery.caret.min.js"></script>
+	<script type="text/javascript" src="${ resources }/cookbookStorage.js"></script>
 	
 	<link rel="stylesheet" href="${ resources }/jquery-ui.min.css">
 	<link rel="stylesheet" href="${ resources }/jquery.tag-editor.css">

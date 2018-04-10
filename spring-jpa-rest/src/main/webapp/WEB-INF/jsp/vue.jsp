@@ -11,6 +11,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" type="text/javascript" crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript" crossorigin="anonymous"></script>
+	<script src="${ resources }/cookbookStorage.js" type="text/javascript"></script>
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Proza+Libre">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
@@ -51,6 +52,7 @@
 				}.bind(this));
 			}
 		});
+		
 	</script>
 
 	<header class="w3-container w3-theme-l3 w3-margin-bottom">
@@ -110,40 +112,6 @@
 	</footer> 
 
 	<script>
-		var dataUrl = ( function() {
-			var $rootUrl = "/spring-jpa-rest"
-			var $recipesUrl = $rootUrl + "/recipes";
-			
-			var getRecipesUrl = function( pageNo, pageSize ) {
-				return $recipesUrl + "?sort=title&page=" + pageNo + "&size=" + pageSize;
-			}
-
-			return {
-				recipes: getRecipesUrl
-			}
-		})();
-
-		var dataStorage = ( function() {
-			var load = function( url ) {
-				var deferred = $.Deferred();
-				console.log( "load data from: " + url);
-				$.getJSON( url )
-					.done( function( ingredients ) {
-						deferred.resolve( ingredients );
-					})
-					.fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
-						deferred.reject( err );
-					})
-				return deferred.promise();
-			};
-			
-			return {
-				load: load
-			} 
-		})();
-
 		var recipeViewModel = new Vue({
 			el: '#recipe',
 			data: {
@@ -151,7 +119,7 @@
 			},
 			beforeUpdate: function() {
 				$( this.$el ).hide();
-				dataStorage.load( this.getIngredientsUrl() )
+				cookbook.load( this.getIngredientsUrl() )
 					.then( function( json )	{
 						EventBus.$eventbus.$emit( 'ingredients-update', json );
 					});
@@ -195,7 +163,7 @@
 							url = link.href;
 						}
 					});
-					dataStorage.load( url ).then( function( json ) {
+					cookbook.load( url ).then( function( json ) {
 						recipeViewModel.recipe = json;
 					})
 				}
@@ -211,14 +179,16 @@
 			methods: {
 				nextPage: function() {
 					this.pageNo++;
-					dataStorage.load(dataUrl.recipes(this.pageNo, this.pageSize)).then( function( json ) {
+					url = cookbook.getRecipesUrl(this.pageNo, this.pageSize);
+					cookbook.load( url ).then( function( json ) {
 						recipesViewModel.recipes = json.content;
 					})
 				},
 				prevPage: function() {
 					if (this.pageNo > 0) {
 						this.pageNo--;
-						dataStorage.load(dataUrl.recipes(this.pageNo, this.pageSize)).then( function( json ) {
+						url = cookbook.getRecipesUrl(this.pageNo, this.pageSize);
+						cookbook.load(url).then( function( json ) {
 							recipesViewModel.recipes = json.content;
 						})
 					}
@@ -228,8 +198,8 @@
 		
 
 		$(function() {
-			var url = dataUrl.recipes(pagingViewModel.pageNo, pagingViewModel.pageSize);
-			dataStorage.load( url ).then( function( json ) {
+			var url = cookbook.getRecipesUrl(pagingViewModel.pageNo, pagingViewModel.pageSize);
+			cookbook.load( url ).then( function( json ) {
 				recipesViewModel.recipes = json.content;
 				$( "#recipes" ).fadeIn( "slow" );
 			})
