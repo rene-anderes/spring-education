@@ -25,7 +25,7 @@
 </head>
 <body class="w3-theme-d5">
 	<script>
-		const EventBus = new Vue()
+		const EventBus = new Vue();
 		Object.defineProperties(Vue.prototype, {
 			$eventbus: {
 				get: function () {
@@ -158,7 +158,7 @@
 				}
 			}
 		};
-		
+
 	</script>
 
 	<header class="w3-container w3-theme-l3 w3-margin-bottom">
@@ -217,7 +217,7 @@
 	</div>
 	<p>&nbsp;</p>
 	<footer class="w3-container w3-center w3-theme-d5" style="display: none;">
-		<p>© 1996-2018 René Anderes | www.anderes.org | design and implemented by René Anderes | Powered by w3.css, jQuery &amp; vue.js</p>
+		<p>&copy; 1996-2018 René Anderes | www.anderes.org | design and implemented by René Anderes | Powered by w3.css, jQuery &amp; vue.js</p>
 	</footer> 
 
 	<script>
@@ -225,7 +225,7 @@
 			el: '#app',
 			components: {
 				'recipe-list' : recipesComponent,
-				'recipe' : recipeComponent	
+				'recipe' : recipeComponent
 			},
 		});
 		
