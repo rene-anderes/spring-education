@@ -52,7 +52,6 @@
 				}.bind(this));
 			}
 		});
-		
 	</script>
 
 	<header class="w3-container w3-theme-l3 w3-margin-bottom">
@@ -192,17 +191,20 @@
 							recipesViewModel.recipes = json.content;
 						})
 					}
+				},
+				init: function() {
+					url = cookbook.getRecipesUrl(this.pageNo, this.pageSize);
+					cookbook.load( url ).then( function( json ) {
+						recipesViewModel.recipes = json.content;
+						$( "#recipes" ).fadeIn( "slow" );
+					})
 				}
 			}
 		});
 		
 
 		$(function() {
-			var url = cookbook.getRecipesUrl(pagingViewModel.pageNo, pagingViewModel.pageSize);
-			cookbook.load( url ).then( function( json ) {
-				recipesViewModel.recipes = json.content;
-				$( "#recipes" ).fadeIn( "slow" );
-			})
+			pagingViewModel.init();
 		});
 		$(document).ajaxStart( function() {
 			$( "#loading" ).show();
