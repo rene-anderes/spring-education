@@ -1,11 +1,32 @@
 
-var cookbook = ( function() {
+var cookbookAPI = ( function() {
 	
 	var $rootUrl = "/spring-jpa-rest"
 	var $recipesUrl = $rootUrl + "/recipes";
+	var $springInfoUrl = $rootUrl + "/tech/info/spring";
+	var $databaseInfoUrl = $rootUrl + "/tech/info/database";
+	
+	var getRecipesRootUrl = function() {
+		return $recipesUrl;
+	}
 	
 	var getRecipesUrl = function( pageNo, pageSize ) {
 		return $recipesUrl + "?sort=title&page=" + pageNo + "&size=" + pageSize;
+	}
+	
+	var getRecipeUrl = function( recipeId ) {
+		return $recipesUrl + "/" + recipeId;
+	}
+	
+	var getSpringInfoUrl = function() {
+		return $springInfoUrl;
+	}
+	
+	var getDatabaseInfoUrl = function() {
+		return $databaseInfoUrl
+	}
+	var getTagsUrl = function() {
+		return $recipesUrl + "/tags";
 	}
 	
 	var load = function( url ) {
@@ -22,8 +43,14 @@ var cookbook = ( function() {
 			})
 		return deferred.promise();
 	};
+	
 	return {
 		load: load,
-		getRecipesUrl: getRecipesUrl
+		getRecipesUrl: getRecipesUrl,
+		getRecipeUrl: getRecipeUrl,
+		getSpringInfoUrl: getSpringInfoUrl,
+		getDatabaseInfoUrl: getDatabaseInfoUrl,
+		getTagsUrl: getTagsUrl,
+		getRecipesRootUrl: getRecipesRootUrl
 	}
 })();

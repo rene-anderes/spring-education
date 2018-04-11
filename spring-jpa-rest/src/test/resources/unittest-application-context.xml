@@ -12,7 +12,7 @@
     
     <bean id="recipeRepository" scope="singleton" class="org.anderes.cookbook.domain.RecipeRepositoryStub"/>
 
-    <context:component-scan base-package="org.anderes.cookbook.web.rest" />       
+    <context:component-scan base-package="org.anderes.cookbook.web.rest" />      
        
     <mvc:annotation-driven>
         <mvc:argument-resolvers>

@@ -21,7 +21,7 @@
 		    font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 		}
 	</style>
-	<title>Cookbook with vue.js</title>
+	<title>cookbookAPI with vue.js</title>
 </head>
 <body class="w3-theme-d5">
 	<script>
@@ -56,8 +56,8 @@
 					};
 				},
 				processLoad: function() {
-					url = cookbook.getRecipesUrl(this.pageNo, this.pageSize);
-					cookbook.load( url ).then( function( json ) {
+					url = cookbookAPI.getRecipesUrl(this.pageNo, this.pageSize);
+					cookbookAPI.load( url ).then( function( json ) {
 						EventBus.$eventbus.$emit( 'recipes-update', json.content );
 					});
 				}, 
@@ -92,7 +92,7 @@
 							url = link.href;
 						}
 					});
-					cookbook.load( url ).then( function( json ) {
+					cookbookAPI.load( url ).then( function( json ) {
 						EventBus.$eventbus.$emit( 'recipe-update', json );
 					})
 				}
@@ -129,7 +129,7 @@
 			},
 			beforeUpdate: function() {
 				$( this.$el ).hide();
-				cookbook.load( this.getIngredientsUrl() )
+				cookbookAPI.load( this.getIngredientsUrl() )
 					.then( function( json )	{
 						EventBus.$eventbus.$emit( 'ingredients-update', json );
 					});

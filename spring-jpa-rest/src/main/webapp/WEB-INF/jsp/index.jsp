@@ -223,8 +223,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		</div>
 	</div>
 	<script>
-		var $rootUrl = "/spring-jpa-rest"
-		var $recipesUrl = $rootUrl + "/recipes";
+		var $recipesUrl = cookbookAPI.getRecipesRootUrl();
 		var $tokenUrl = "/spring-security-jwt-server/users/token";
 
 		var dialogDelete = {
@@ -361,18 +360,15 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		
 			var show = function() {
 				var deferred = $.Deferred();
-				var completeUrl = url + "?sort=title&page=" + pageNo + "&size=" + pageSize;
-				$.getJSON( completeUrl )
-					.fail( function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log( err );
-						deferred.reject( err );
-					})
+				cookbookAPI.load( cookbookAPI.getRecipesUrl( pageNo, pageSize ) )
 					.then( function( json ) {
 						buildRecipesList( json.content );
+						$( "#recipes" ).fadeIn( "slow" );
 						deferred.resolve();
 					})
-				$( "#recipes" ).fadeIn( "fast" );
+					.fail( function( error ) {
+						deferred.reject( error );
+					})
 				return deferred.promise();
 			};
 
@@ -416,8 +412,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			
 			var show = function( url ) {
 				var deferred = $.Deferred();
-				$.getJSON( url )
-					.done( function(recipe) {
+				cookbookAPI.load( url )
+					.then( function(recipe) {
 						buildRecipe( recipe );
 						$.each( recipe.links, function(idx, link) {
 							if ( link.rel == "ingredients" ) {
@@ -429,10 +425,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 						$( "#recipe #resourceId" ).hide();
 						deferred.resolve();
 					})
-					.fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
-						deferred.reject( err );
+					.fail( function( error ) {
+						deferred.reject( error );
 					})
 				return deferred.promise();
 			};
@@ -459,12 +453,9 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			};
 
 			var getIngredients = function( url ) {
-				$.getJSON( url )
-					.done(function(ingredients) {
+				cookbookAPI.load( url )
+					.then( function(ingredients ) {
 						buildIngredients(ingredients);
-					}).fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
 					})
 			};
 
@@ -549,8 +540,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				$( "#recipe-edit #tags" ).tagEditor( "destroy" );
 				$( "#recipe-edit textarea[name='tags']" ).val( null );
 			
-				$.getJSON( recipesUrl + "/" + "tags" )
-					.done( function( tags ) { 
+				cookbookAPI.load( cookbookAPI.getTagsUrl() )
+					.then( function( tags ) { 
 						$allTags = tags;
 						console.log( "Tags: " + $allTags )
 						$( "#recipe-edit #tags" ).tagEditor( { 
@@ -563,9 +554,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					    } );
 		 				deferred.resolve();
 					})
-					.fail( function( xhr, status, error ) {
-		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
+					.fail( function( error ) {
 		 				deferred.reject( err );
 	 				})
 	 			return deferred.promise();
@@ -602,8 +591,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				resetForm();
 				var deferred = $.Deferred();
 				var $ingredientsUrl;
-				var $recipeUrl = recipesUrl + "/" + resourceId;
-				$.getJSON( $recipeUrl )
+				cookbookAPI.load( cookbookAPI.getRecipeUrl( resourceId ) )
 					.then( function( recipe ) { 
 						$.each(recipe.links, function( idx, link ) {
 							if (link.rel == "ingredients") {
@@ -619,10 +607,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	 					buildTagEditor( tags )
 						deferred.resolve();
 	 				})
-					.fail( function( xhr, status, error ) {
-		  				var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log( err );
-		 				deferred.reject( err );
+					.fail( function( error ) {
+		 				deferred.reject( error );
 	 				})
 	 			return deferred.promise();
 			};
@@ -635,16 +621,12 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					
 			var getIngredients = function( url ) {
 				$( "#recipe-edit #ingredients li" ).remove();
-				$.getJSON( url )
-					.done( function( ingredients ) {
+				cookbookAPI.load( url )
+					.then( function( ingredients ) {
 						$.each( ingredients, function( idx, ingredient ) {
 							buildIngredient( ingredient );	
 			        	});
 					})
-					.fail( function( xhr, status, error ) {
-	   				    var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log( err );
-	  				})
 			};
 		
 			var buildIngredient = function( ingredient ) {
@@ -1042,23 +1024,18 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			};
 			
 			var about = function( ) {
-				var deferred = $.Deferred();
-				$.getJSON( $rootUrl + "/infos" )
-					.done( function( about ) {
-						var $message = "Client-Release: ${release} <br>";
+				var deferred1 = cookbookAPI.load( cookbookAPI.getSpringInfoUrl() );
+				var deferred2 = cookbookAPI.load( cookbookAPI.getDatabaseInfoUrl() ) 
+				$.when( deferred1, deferred2 )
+					.then( function( spring, database ) {
+						var $message = "Client-Release: ${release} <p>";
 				        $message += "Server<br>";
-				        $message += "Applikations-Release: " + about.applicationRelease + "<br>";
-				        $message += "Spring-Version: " + about.springVersion + "<br>";
-				        $message += "Spring-Security-Version: " + about.springSecurityVersion + "<br>";
-				        $message += "Datenbank-Version (Derby): " + about.derbyVersion + "<br>";
-				        dialogMessage.show( $message );
-						deferred.resolve();
+				        $message += "Spring-Version: " + spring["Spring-Version"] + "<br>";
+				        $message += "Database Product-Name: " + database["Product-Name"] + "<br>";
+				        $message += "Database Product-Version: " + database["Product-Version"] + "<br>";
+				        dialogMessage.show( $message )
 					})
-					.fail(function(xhr, status, error) {
-						var err = "Request Failed: " + status + ", " + xhr.status + ", " + error;
-						console.log(err);
-						deferred.reject( err );
-					})
+				
 				return deferred.promise();
 			};
 			

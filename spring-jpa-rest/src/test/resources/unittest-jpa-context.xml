@@ -12,7 +12,9 @@
      
     <tx:annotation-driven />
     <context:annotation-config />
-    <jpa:repositories base-package="org.anderes.cookbook.domain" />
+    <context:component-scan base-package="org.anderes.tech" />
+    
+    <jpa:repositories base-package="org.anderes.cookbook.domain"/>
 
     <!-- Die Test's werden mittels In-Memory Datenbank ausgeführt. -->
 
