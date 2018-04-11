@@ -181,7 +181,12 @@
 			<recipe-list inline-template>
 				<div>
 					<ul class="w3-ul w3-hoverable w3-large">
-						<li v-for="recipe in recipes" :key="recipe.uuid" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
+						<li v-for="recipe in recipes" :key="recipe.uuid" style="cursor:pointer;" v-on:click="selectRecipe(recipe)" class="w3-display-container">
+							{{ recipe.title }}
+							<span v-if="false" class="w3-button w3-display-right">
+								<i class="fa fa-pencil-square-o w3-right-align" aria-hidden="true"></i>
+							</span>
+						</li>
 					</ul>
 					<paging inline-template>
 						<div class="w3-bar w3-center">

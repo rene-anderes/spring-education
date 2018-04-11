@@ -129,11 +129,11 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 						</div>
 						<div class="w3-panel">
 							<textarea name="preparation" id="editPreparation"></textarea>
-							<label class="w3-text-gray">Preparation</label>
+							<label class="w3-text-gray">Zubereitung</label>
 						</div>
 						<div class="w3-panel">
 							<textarea name="tags" id="tags"></textarea>
-							<label class="w3-text-gray">Tags</label>
+							<label class="w3-text-gray">Stichworte</label>
 						</div>
 						<div class="w3-panel">
 							<div class="w3-row-padding">
@@ -646,8 +646,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputQuantity.val( ingredient.portion );
 				}
 				inputQuantity.appendTo( colQuantity );
-				labelQuantity = $("<label class='w3-text-gray'>");
-				labelQuantity.text( "Quantity" );
+				labelQuantity = $("<label class='w3-text-gray w3-tiny'>");
+				labelQuantity.text( "Menge" );
 				labelQuantity.appendTo( colQuantity );
 				
 				/* ---------- Description */
@@ -658,8 +658,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputDescription.val( ingredient.description );
 				}
 				inputDescription.appendTo( colDescription );
-				labelDescription = $( "<label class='w3-text-gray'>" );
-				labelDescription.text( "Description" );
+				labelDescription = $( "<label class='w3-text-gray w3-tiny'>" );
+				labelDescription.text( "Beschreibung" );
 				labelDescription.appendTo( colDescription );
 				
 				/* ---------- Annotation */
@@ -670,8 +670,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputAnnotation.val( ingredient.comment );
 				}
 				inputAnnotation.appendTo( colAnnotation );
-				labelAnnotation = $( "<label class='w3-text-gray'>" );
-				labelAnnotation.text( "Annotation" );
+				labelAnnotation = $( "<label class='w3-text-gray w3-tiny'>" );
+				labelAnnotation.text( "Kommentar" );
 				labelAnnotation.appendTo( colAnnotation );
 				
 				/* ---------- Remove-Button */
