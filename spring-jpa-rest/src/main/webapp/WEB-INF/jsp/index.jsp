@@ -375,12 +375,11 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			var buildRecipesList = function( collection ) {
 				$("#list li").remove();
 				$.each($(collection), function(idx, recipe) {
-					var url = "";
-					$.each(recipe.links, function(idx, link) {
-						if (link.rel == "self") {
-							url = link.href;
-						}
+					var links = $.grep( recipe.links, function( link ) {
+						return link.rel == "self";
 					});
+					var url = links[0].href;
+					
 					a = $("<a>").attr("href", "#");
 					a.text(recipe.title);
 					a.click(function() {
@@ -415,11 +414,10 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				cookbookAPI.load( url )
 					.then( function(recipe) {
 						buildRecipe( recipe );
-						$.each( recipe.links, function(idx, link) {
-							if ( link.rel == "ingredients" ) {
-								getIngredients( link.href );
-							}
+						var links = $.grep( recipe.links, function( link ) {
+							return link.rel == "ingredients";
 						});
+						getIngredients( links[0].href );
 						$( "#choice" ).hide();
 						$( "#recipe" ).fadeIn();
 						$( "#recipe #resourceId" ).hide();

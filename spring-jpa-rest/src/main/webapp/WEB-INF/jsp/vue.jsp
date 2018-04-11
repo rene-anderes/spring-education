@@ -86,12 +86,12 @@
 			},
 			methods: {
 				selectRecipe: function( recipe ) {
-					var url = "";
-					$.each(recipe.links, function(idx, link) {
-						if (link.rel == "self") {
-							url = link.href;
-						}
+	
+					var links = $.grep( recipe.links, function( link ) {
+						return link.rel == "self";
 					});
+					var url = links[0].href;
+					
 					cookbookAPI.load( url ).then( function( json ) {
 						EventBus.$eventbus.$emit( 'recipe-update', json );
 					})
@@ -100,65 +100,73 @@
 		};
 		
 		var ingredientsComponent = {
-			data: function() {
+			data : function() {
 				return {
-					ingredients: [ ]
+					ingredients : []
 				}
 			},
-			beforeUpdate: function() {
-				$( this.$el ).hide();
+			beforeUpdate : function() {
+				$(this.$el).hide();
 			},
-			updated: function() {
-				$( this.$el ).fadeIn( "slow" );
+			updated : function() {
+				$(this.$el).fadeIn("slow");
 			},
-			created: function() { 
-				this.$eventbus.$on( 'ingredients-update', function( json ) {
-					this.ingredients = json; 
-				}.bind(this));
-			}
-		};
-		
-		var recipeComponent = {
-			data: function() {
-				return {
-					recipe: {}
-				}
-			},
-			components: {
-				'ingredients' : ingredientsComponent	
-			},
-			beforeUpdate: function() {
-				$( this.$el ).hide();
-				cookbookAPI.load( this.getIngredientsUrl() )
-					.then( function( json )	{
-						EventBus.$eventbus.$emit( 'ingredients-update', json );
-					});
-			},
-			updated: function() {
-				$( this.$el ).fadeIn( "slow" );
-			},
-			created: function() { 
-				EventBus.$eventbus.$on( 'recipe-update', function( json ) {
-					this.recipe = json;
+			created : function() {
+				this.$eventbus.$on('ingredients-update', function(json) {
+					this.ingredients = json;
 				}.bind(this));
 			},
-			methods: {
-				formatDate: function( number ) {
-					var $myDate = new Date(number);
-					return $myDate.toLocaleString();
-				},
-				getIngredientsUrl: function() {
-					var url = "";
-					$.each( this.recipe.links, function(idx, link) {
-						if ( link.rel == "ingredients" ) {
-							url = link.href ;
+			computed : {
+				orderedIngredients : function() {
+					return this.ingredients.sort( function( a, b ){
+						if (a.description.toLowerCase() > b.description.toLowerCase()) {
+							return 1;
 						}
+						if (a.description.toLowerCase() < b.description.toLowerCase()) {
+							return -1;
+						}
+						return 0;
 					});
-					return url;
 				}
 			}
 		};
 
+		var recipeComponent = {
+			data : function() {
+				return {
+					recipe : {}
+				}
+			},
+			components : {
+				'ingredients' : ingredientsComponent
+			},
+			beforeUpdate : function() {
+				$(this.$el).hide();
+				cookbookAPI.load(this.getIngredientsUrl()).then(function(json) {
+					EventBus.$eventbus.$emit('ingredients-update', json);
+				});
+			},
+			updated : function() {
+				$(this.$el).fadeIn("slow");
+			},
+			created : function() {
+				EventBus.$eventbus.$on('recipe-update', function(json) {
+					this.recipe = json;
+				}.bind(this));
+			},
+			methods : {
+				formatDate : function(number) {
+					var $myDate = new Date(number);
+					return $myDate.toLocaleString();
+				},
+				getIngredientsUrl : function() {
+					var links = $.grep( this.recipe.links, function( link ) {
+						return link.rel == "ingredients";
+					});
+					return links[0].href;
+				}
+			}
+		};
 	</script>
 
 	<header class="w3-container w3-theme-l3 w3-margin-bottom">
@@ -173,7 +181,7 @@
 			<recipe-list inline-template>
 				<div>
 					<ul class="w3-ul w3-hoverable w3-large">
-						<li v-for="recipe in recipes" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
+						<li v-for="recipe in recipes" :key="recipe.uuid" style="cursor:pointer;" v-on:click="selectRecipe(recipe)">{{ recipe.title }}</li>
 					</ul>
 					<paging inline-template>
 						<div class="w3-bar w3-center">
@@ -194,7 +202,7 @@
 					    <h3>Zutaten für <span id="noofperson">{{ recipe.noOfPerson }}</span> Personen</h3>
 				    	<ingredients inline-template>
 							<table class="w3-table w3-bordered" style="max-width:50%">
-								<tr v-for="ingredient in ingredients">
+								<tr v-for="ingredient in orderedIngredients" :key="ingredient.resourceId">
 									<td>{{ ingredient.portion }}</td>
 									<td>{{ ingredient.description }}&nbsp;{{ ingredient.comment ? "(" + ingredient.comment + ")" : "" }}</td>
 								</tr>

@@ -229,7 +229,7 @@ public class RecipeController {
     @GetMapping(value = "tags", produces = { APPLICATION_JSON_VALUE })
     public HttpEntity<Collection<String>> showAllTags() {
         final List<String> tags = repository.findAllTag();
-        final Set<String> filteredTags = tags.stream().filter(t -> t != null).collect(Collectors.toSet());
+        final Set<String> filteredTags = tags.stream().filter(t -> t != null).sorted().collect(Collectors.toSet());
         return ResponseEntity.ok().body(filteredTags);
     }
         
