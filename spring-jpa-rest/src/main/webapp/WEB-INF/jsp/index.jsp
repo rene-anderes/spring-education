@@ -33,17 +33,48 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		html, body, h1, h2, h3, h4, h5, h6 {
 		    font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 		}
+		/* tag-editor */
+		.tag-editor-tag {color:#fff !important; background-color:#77a3ca !important}	/* w3-theme-d1 */
+		.tag-editor-spacer {color:#f8fbfc !important; background-color:#f8fbfc !important} /* w3-theme-l5 */
+		/* delete icon */
+		.tag-editor .tag-editor-delete {color:#fff !important; background-color:#77a3ca !important}	/* w3-theme-d1 */
+		.tag-editor .tag-editor-delete i:before { color:#fff !important; }
+		.tag-editor .tag-editor-delete:hover i:before { color: #f44336 !important; }	/* w3-red */
+		 
+		/* w3.css theme (siehe https://www.w3schools.com/w3css/w3css_color_generator.asp) */
+		.w3-theme-l5 {color:#000 !important; background-color:#f8fbfc !important}
+		.w3-theme-l4 {color:#000 !important; background-color:#e9f0f6 !important}
+		.w3-theme-l3 {color:#000 !important; background-color:#d3e1ee !important}
+		.w3-theme-l2 {color:#000 !important; background-color:#bdd2e5 !important}
+		.w3-theme-l1 {color:#000 !important; background-color:#a7c4dd !important}
+		.w3-theme-d1 {color:#fff !important; background-color:#77a3ca !important}
+		.w3-theme-d2 {color:#fff !important; background-color:#5d92c0 !important}
+		.w3-theme-d3 {color:#fff !important; background-color:#4681b4 !important}
+		.w3-theme-d4 {color:#fff !important; background-color:#3c6e9a !important}
+		.w3-theme-d5 {color:#fff !important; background-color:#325c81 !important}
+		
+		.w3-theme-light {color:#000 !important; background-color:#f8fbfc !important}
+		.w3-theme-dark {color:#fff !important; background-color:#325c81 !important}
+		.w3-theme-action {color:#fff !important; background-color:#325c81 !important}
+		
+		.w3-theme {color:#000 !important; background-color:#92b6d5 !important}
+		.w3-text-theme {color:#92b6d5 !important}
+		.w3-border-theme {border-color:#92b6d5 !important}
+		
+		.w3-hover-theme:hover {color:#000 !important; background-color:#92b6d5 !important}
+		.w3-hover-text-theme {color:#92b6d5 !important}
+		.w3-hover-border-theme:hover {border-color:#92b6d5 !important}
 	</style>
 	<title>Kochbuch chez René</title>
 </head>
-<body>
+<body class="w3-theme-l5">
 	<!-- Sidebar -->
-	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left w3-light-gray" style="display:none;left:0;" id="mySidebar">
+	<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left w3-theme-l4" style="display:none;left:0;" id="mySidebar">
 	  <button class="w3-bar-item w3-button w3-red" onclick="w3_close()">Close</button>
-	  <button class="w3-button w3-bar-item" onclick="dialogLogin.show()">Login</button>
-	  <button id="addRecipe" class="w3-button w3-bar-item" title="neues Rezept erfassen">Neues Rezept</button>
-      <button id="backupDatabase" class="w3-button w3-bar-item" title="Backup Database">Backup Database</button>
-      <button id="about" class="w3-button w3-bar-item" title="About">About</button>
+	  <button class="w3-button w3-bar-item w3-theme-d5" onclick="dialogLogin.show()">Login</button>
+	  <button id="addRecipe" class="w3-button w3-bar-item w3-theme-d5" title="neues Rezept erfassen">Neues Rezept</button>
+      <button id="backupDatabase" class="w3-button w3-bar-item w3-theme-d5" title="Backup Database">Backup Database</button>
+      <button id="about" class="w3-button w3-bar-item w3-theme-d5" title="About">About</button>
 	</div>
 	<script>
 		function w3_open() {
@@ -55,8 +86,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	</script>
 	
 	<!-- Page Content -->
-	<header class="w3-bar w3-teal w3-xxlarge">
-	 	<button class="w3-bar-item w3-button w3-teal" onclick="w3_open()">&#9776;</button>
+	<header class="w3-bar w3-theme-d5 w3-xxlarge">
+	 	<button class="w3-bar-item w3-button w3-theme-d5" onclick="w3_open()">&#9776;</button>
   		<span class="w3-bar-item">Kochbuch chez René</span>
 	</header> 
 
@@ -82,7 +113,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			    <p id="ingredients"></p>
 			    <h3>Zubereitung</h3>
 			    <p id="preparation"></p>
-			    <p>Rating <span class="w3-badge w3-teal" id="rating"></span></p>
+			    <p>Rating <span class="w3-badge w3-theme-d4" id="rating"></span></p>
 			    <p class="w3-tiny">
 			    	Erfasst: <span id="adding"></span><br>
 			    	Aktualisiert: <span id="update"></span><br>
@@ -93,8 +124,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				    <hr>
 			    	<form>
 					    <p>
-				    		<button id="edit" class="w3-button w3-red" type="submit">Editieren</button>&nbsp;
-				    		<button id="delete" class="w3-button w3-red">Löschen</button>
+				    		<button id="edit" class="w3-button w3-theme-d4" type="submit">Editieren</button>&nbsp;
+				    		<button id="delete" class="w3-button w3-theme-d4">Löschen</button>
 					    </p>
 			    	</form>
 		    	</div>
@@ -108,46 +139,46 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 						<input type="hidden" id="token" name="token" value="${ token }">
 						<div class="w3-panel">
 							<input class="w3-input" type="text" min="5" max="255" required id="title" name="title">
-							<label class="w3-text-gray">Title</label>
+							<label class="w3-text-theme">Title</label>
 						</div>
 						<div class="w3-panel">
 							<textarea name="preamble" id="editPreamble"></textarea>
-							<label class="w3-text-gray">Preamble</label>
+							<label class="w3-text-theme">Preamble</label>
 						</div>
 						<div class="w3-panel">
-							<label class="w3-text-gray">Zutaten für</label>
+							<label class="w3-text-theme">Zutaten für</label>
 							<input class="w3-input" style="width:25%" type="text" min="1" max="10" required id="noOfPerson" name="noOfPerson">
-							<label class="w3-text-gray">Personen</label>
+							<label class="w3-text-theme">Personen</label>
 						</div>
 						<div class="w3-panel">
-							<ul class="w3-ul w3-light-gray" id="ingredients">
+							<ul class="w3-ul w3-theme-l5" id="ingredients">
 								<li><h3>Zutaten</h3></li>
 							</ul>
 						</div>
 						<div class="w3-panel">
-							<button class="w3-button w3-circle w3-red" id="addIngredient" title="Zutat hinzufügen">+</button>
+							<button class="w3-button w3-circle w3-theme-d4" id="addIngredient" title="Zutat hinzufügen">+</button>
 						</div>
 						<div class="w3-panel">
 							<textarea name="preparation" id="editPreparation"></textarea>
-							<label class="w3-text-gray">Zubereitung</label>
+							<label class="w3-text-theme">Zubereitung</label>
 						</div>
 						<div class="w3-panel">
 							<textarea name="tags" id="tags"></textarea>
-							<label class="w3-text-gray">Stichworte</label>
+							<label class="w3-text-theme">Stichworte</label>
 						</div>
 						<div class="w3-panel">
 							<div class="w3-row-padding">
-								<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-teal">1</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-teal">2</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-teal">3</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-teal">4</span></label>
-								<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-teal">5</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="1" checked><label><span class="w3-badge w3-theme-d4">1</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="2" checked><label><span class="w3-badge w3-theme-d4">2</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="3" checked><label><span class="w3-badge w3-theme-d4">3</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="4" checked><label><span class="w3-badge w3-theme-d4">4</span></label>
+								<input class="w3-radio" type="radio" name="rating" value="5" checked><label><span class="w3-badge w3-theme-d4">5</span></label>
 							</div>
-							<p class="w3-text-gray">Rating</p>
+							<p class="w3-text-theme">Rating</p>
 						</div>
 						<hr>
 						<div class="w3-panel w3-row-padding">
-							<div class="w3-col s2"><button class="w3-button w3-red" type="submit" id="save">Speichern</button></div>
+							<div class="w3-col s2"><button class="w3-button w3-theme-d4" type="submit" id="save">Speichern</button></div>
 							<div class="w3-col s2"><span class="w3-button w3-green" id="status"></span></div>
 							<div class="w3-col s8"></div>
 						</div> 
@@ -158,24 +189,24 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		</div>
 	</div>
 	<p>&nbsp;</p>
-	<footer class="w3-container w3-teal">
+	<footer class="w3-container w3-theme-d5">
 		<h5>Cookbook</h5>
 		<p>by René Anderes</p>
 	</footer> 	
 	
 	<div id="dialogDelete" class="w3-modal">
 		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
-			<header class="w3-container w3-blue">
-				<span onclick="dialogDelete.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
+			<header class="w3-container w3-theme-d5">
+				<span onclick="dialogDelete.cancel();" class="w3-button w3-theme-d4 w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
 				<h2>Confirmation Required</h2>
 			</header>
 			<div class="w3-container">
 				<p>Das Rezept wirklich löschen?</p>
 			</div>
-			<div class="w3-container w3-light-grey w3-padding">
+			<div class="w3-container w3-theme-l4 w3-padding">
 				<div class="w3-bar w3-right-align">
-					<button class="w3-button w3-red" onclick="dialogDelete.confirm();">Ja</button>
-					<button class="w3-button w3-red" onclick="dialogDelete.cancel();">Nein</button>
+					<button class="w3-button w3-theme-d4" onclick="dialogDelete.confirm();">Ja</button>
+					<button class="w3-button w3-theme-d4" onclick="dialogDelete.cancel();">Nein</button>
 				</div>
 			</div>
 		</div>
@@ -183,16 +214,16 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	
 	<div id="dialogMessage" class="w3-modal">
 		<div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
-			<header class="w3-container w3-blue">
-				<span onclick="dialogMessage.cancel();" class="w3-button w3-blue w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
+			<header class="w3-container w3-theme-d5">
+				<span onclick="dialogMessage.cancel();" class="w3-button w3-theme-d5 w3-xlarge w3-display-topright" title="Close Dialog">&times;</span>
 				<h2>Meldung</h2>
 			</header>
 			<div class="w3-container">
 				<p id="messageText"></p>
 			</div>
-			<div class="w3-container w3-light-grey w3-padding">
+			<div class="w3-container w3-theme-l4 w3-padding">
 				<div class="w3-bar w3-right-align">
-					<button class="w3-button w3-red" onclick="dialogMessage.cancel();">OK</button>
+					<button class="w3-button w3-theme-d4" onclick="dialogMessage.cancel();">OK</button>
 				</div>
 			</div>
 		</div>
@@ -212,12 +243,12 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					<input class="w3-input w3-border w3-margin-bottom" type="text" placeholder="Enter Username" name="username" required>
 					<label><b>Password</b></label>
 					<input class="w3-input w3-border" type="password" placeholder="Enter Password" name="password" required>
-					<button class="w3-button w3-block w3-red w3-section w3-padding" type="submit">Login</button>
+					<button class="w3-button w3-block w3-theme-d4 w3-section w3-padding" type="submit">Login</button>
 				</div>
 			</form>
 
-			<div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-				<button onclick="dialogLogin.cancel();" type="button" class="w3-button w3-red">Cancel</button>
+			<div class="w3-container w3-border-top w3-padding-16 w3-theme-l4">
+				<button onclick="dialogLogin.cancel();" type="button" class="w3-button w3-theme-d4">Cancel</button>
 				<p id="error"></p>
 			</div>
 		</div>
@@ -445,7 +476,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				$( "#recipe #update" ).text( formatDate( recipe.editingDate ) );
 				$( "#recipe #tags span" ).remove();
 				$.each( recipe.tags, function( idx, tag ) {
-					$( "#recipe #tags" ).append( "<span><span class='w3-tag w3-teal'>" + tag + "</span>&nbsp;</span>" );
+					$( "#recipe #tags" ).append( "<span><span class='w3-tag w3-theme-d4'>" + tag + "</span>&nbsp;</span>" );
 				});
 				$( "#recipe #resourceId" ).text( recipe.uuid );
 			};
@@ -648,7 +679,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputQuantity.val( ingredient.portion );
 				}
 				inputQuantity.appendTo( colQuantity );
-				labelQuantity = $("<label class='w3-text-gray w3-tiny'>");
+				labelQuantity = $("<label class='w3-text-theme w3-tiny'>");
 				labelQuantity.text( "Menge" );
 				labelQuantity.appendTo( colQuantity );
 				
@@ -660,7 +691,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputDescription.val( ingredient.description );
 				}
 				inputDescription.appendTo( colDescription );
-				labelDescription = $( "<label class='w3-text-gray w3-tiny'>" );
+				labelDescription = $( "<label class='w3-text-theme w3-tiny'>" );
 				labelDescription.text( "Beschreibung" );
 				labelDescription.appendTo( colDescription );
 				
@@ -672,14 +703,14 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					inputAnnotation.val( ingredient.comment );
 				}
 				inputAnnotation.appendTo( colAnnotation );
-				labelAnnotation = $( "<label class='w3-text-gray w3-tiny'>" );
+				labelAnnotation = $( "<label class='w3-text-theme w3-tiny'>" );
 				labelAnnotation.text( "Kommentar" );
 				labelAnnotation.appendTo( colAnnotation );
 				
 				/* ---------- Remove-Button */
 				colRemove = $("<div class='w3-col s1'>");
 				colRemove.appendTo( rowDiv );
-				spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-light-gray'>&times;</span>")
+				spanRemove = $("<span class='w3-button w3-white w3-xlarge w3-right w3-text-theme'>&times;</span>")
 				spanRemove.appendTo( colRemove );
 				spanRemove.click( function() {
 					if ( ingredient.resourceId ) {
