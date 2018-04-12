@@ -223,8 +223,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		</div>
 	</div>
 	<script>
-		var $recipesUrl = cookbookAPI.getRecipesRootUrl();
-		var $tokenUrl = "/spring-security-jwt-server/users/token";
+		const $recipesUrl = cookbookAPI.getRecipesRootUrl();
+		const $tokenUrl = "/spring-security-jwt-server/users/token";
 
 		var dialogDelete = {
 
@@ -568,11 +568,15 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			};
 			
 			var show = function( resourceId ) {
+				$( "#recipeEdit" ).hide();
 				$( "#recipe-edit #status" ).hide();
-				initTagEditor().then( processRecipe( resourceId )
-					.then( function() { $( "#recipeEdit" ).fadeIn(); } ) )
-					.fail( function( message ) { dialogMessage.show( message )
-				});
+				initTagEditor().then( 
+						processRecipe( resourceId ).then( function() { 
+								$( "#recipeEdit" ).fadeIn(); 
+							})
+					).fail( function( message ) { 
+						dialogMessage.show( message ) 
+					});
 			};
 			
 			var resetForm = function() {
@@ -588,20 +592,13 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			var processRecipe = function( resourceId ) {
 				resetForm();
 				var deferred = $.Deferred();
-				var $ingredientsUrl;
 				cookbookAPI.load( cookbookAPI.getRecipeUrl( resourceId ) )
 					.then( function( recipe ) { 
-						$.each(recipe.links, function( idx, link ) {
-							if (link.rel == "ingredients") {
-								$ingredientsUrl = link.href;
-							}
-						});
-						$recipeObject = recipe;
-						buildRecipe( recipe );
+	 					loadAndBuildIngredients( recipe );
+						mapRecipeToHtmlForm( recipe );
 						return recipe.tags;
 					})
 	 				.then( function( tags ) {
-	 					getIngredients( $ingredientsUrl );
 	 					buildTagEditor( tags )
 						deferred.resolve();
 	 				})
@@ -617,13 +614,18 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	        	});
 			};
 					
-			var getIngredients = function( url ) {
+			var loadAndBuildIngredients = function( recipe ) {
+				$( "#recipe-edit #ingredients").hide();
 				$( "#recipe-edit #ingredients li" ).remove();
-				cookbookAPI.load( url )
+				var links = $.grep( recipe.links, function( link ) {
+					return link.rel == "ingredients";
+				});
+				cookbookAPI.load( links[0].href )
 					.then( function( ingredients ) {
 						$.each( ingredients, function( idx, ingredient ) {
 							buildIngredient( ingredient );	
 			        	});
+			        	$( "#recipe-edit #ingredients").fadeIn( "slow" );
 					})
 			};
 		
@@ -690,7 +692,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				})
 			};
 		
-			var buildRecipe = function( recipe ) {
+			var mapRecipeToHtmlForm = function( recipe ) {
 				$( "#recipe-edit #uuid").val( recipe.uuid );
 				$( "#recipe-edit #title" ).val( recipe.title );
 				CKEDITOR.instances['editPreamble'].setData( recipe.preamble );
@@ -711,27 +713,13 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	  				$( "#recipe-edit #status" ).text( "Rezept gespeichert." );
 	  				setTimeout( function() {
 	  					$( "#recipe-edit #status" ).fadeOut( "slow" );
-	  				}, 1000);
+	  				}, 2000);
 				})
 			};
 		
 			var updateRecipe = function() {
 				var deferred = $.Deferred();
-				$recipe = {};
-				$recipe.uuid = $( "#recipe-edit input[name='uuid']" ).val();
-				if ( !$recipe.uuid ) {
-					$recipe.uuid = null;
-				}
-				$recipe.title = $( "#recipe-edit input[name='title']" ).val().trim();
-				$recipe.preamble = CKEDITOR.instances['editPreamble'].getData();
-				if ( !$recipe.preamble ) {
-					$recipe.preamble = null;
-				}
-				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val().trim();
-				$recipe.preparation = CKEDITOR.instances['editPreparation'].getData();
-				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val().trim();
-				$recipe.tags = $( "#recipe-edit #tags" ).tagEditor('getTags')[0].tags;
-				
+				$recipe = mapFormDataToRecipe();
 				$json = JSON.stringify($recipe);
 				console.log( "Recipe : " + $json );
 				
@@ -752,7 +740,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		  			.then( function() {
 		  				updateIngredients( $recipe.uuid )
 			  				.then( function() {
-			  					show( $recipe.uuid ); // Daten in der View aktualisieren
+			  					show( $recipe.uuid ); // Daten in der View aktualisieren, bei neuen Zudaten werde so die ID's gesetzt
 			  					deferred.resolve(); 
 			  				})
 			  				.fail( function( xhr, status, error ) {
@@ -799,25 +787,47 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				var deferred = $.Deferred();
 				$( "#recipe-edit .ingredient" ).each( function( index, li ) {
 					$( "body" ).queue( function() {
-						$ingredient = {};
-						$ingredient.resourceId = $( li ).attr( "id" );
-						$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
-						if ( !$ingredient.portion ) {
-							$ingredient.portion = null;
-						}
-						$ingredient.description = $( li ).find( "input[name='description']" ).val();
-						$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
-						if ( !$ingredient.comment ) {
-							$ingredient.comment = null;
-						}
-					
+						$ingredient = mapFormDataToIngredient( li );
 						updateIngredient( $( li ).is(":hidden"), $ingredient, recipeId );
 					})
 				});
 				$( "body" ).promise().done( deferred.resolve );
 				return deferred.promise();
 			};
-		
+			
+			mapFormDataToRecipe = function() {
+				$recipe = {};
+				$recipe.uuid = $( "#recipe-edit input[name='uuid']" ).val();
+				if ( !$recipe.uuid ) {
+					$recipe.uuid = null;
+				}
+				$recipe.title = $( "#recipe-edit input[name='title']" ).val().trim();
+				$recipe.preamble = CKEDITOR.instances['editPreamble'].getData();
+				if ( !$recipe.preamble ) {
+					$recipe.preamble = null;
+				}
+				$recipe.noOfPerson = $( "#recipe-edit input[name='noOfPerson']" ).val().trim();
+				$recipe.preparation = CKEDITOR.instances['editPreparation'].getData();
+				$recipe.rating = $( "#recipe-edit input[name='rating']:checked" ).val().trim();
+				$recipe.tags = $( "#recipe-edit #tags" ).tagEditor('getTags')[0].tags;
+				return $recipe;
+			}
+			
+			mapFormDataToIngredient = function( li ) {
+				$ingredient = {};
+				$ingredient.resourceId = $( li ).attr( "id" );
+				$ingredient.portion = $( li ).find( "input[name='portion']" ).val();
+				if ( !$ingredient.portion ) {
+					$ingredient.portion = null;
+				}
+				$ingredient.description = $( li ).find( "input[name='description']" ).val();
+				$ingredient.comment = $( li ).find( "input[name='comment']" ).val();
+				if ( !$ingredient.comment ) {
+					$ingredient.comment = null;
+				}
+				return $ingredient;
+			}
+			
 			var updateIngredient = function( isHidden, ingredient, recipeId ) {
 				var $url = $recipesUrl + "/" + recipeId + "/ingredients/";
 				
@@ -1055,7 +1065,7 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 		});
 		$(document).ajaxStop( function() {
 			$( "#loading" ).hide();
-			$( "footer" ).show();
+			$( "footer" ).fadeIn( "slow" );
 		});
 	</script>
 </body>
