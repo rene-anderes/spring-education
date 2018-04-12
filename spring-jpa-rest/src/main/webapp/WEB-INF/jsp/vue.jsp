@@ -34,7 +34,7 @@
 			}
 		});
 		
-		var pagingComponent = {
+		const pagingComponent = {
 			data: function() {
 				return {
 					pageSize: 10,
@@ -64,7 +64,7 @@
 			}
 		};
 		
-		var recipesComponent = {
+		const recipesComponent = {
 			data: function() {
 				return { 
 					recipes: {} 
@@ -99,7 +99,7 @@
 			}
 		};
 		
-		var ingredientsComponent = {
+		const ingredientsComponent = {
 			data : function() {
 				return {
 					ingredients : []
@@ -131,7 +131,7 @@
 			}
 		};
 
-		var recipeComponent = {
+		const recipeComponent = {
 			data : function() {
 				return {
 					recipe : {}
@@ -234,6 +234,7 @@
 	</footer> 
 
 	<script>
+		
 		new Vue({
 			el: '#app',
 			components: {
@@ -241,7 +242,7 @@
 				'recipe' : recipeComponent
 			},
 		});
-		
+				
 		$(document).ajaxStart( function() {
 			$( "#loading" ).show();
 			$( "footer" ).hide();
