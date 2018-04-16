@@ -57,13 +57,16 @@ public class RecipeControllerIT {
     public void shouldBeAllRecipes() throws Exception {
         MvcResult result = mockMvc.perform(get("/recipes")
                         .accept(APPLICATION_JSON)
-                        .param("size", "10"))
+                        .param("size", "2"))
                         .andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
                         .andExpect(jsonPath("content", hasSize(4)))
                         .andExpect(jsonPath("totalElements", is(4)))
                         .andExpect(jsonPath("content[0].uuid", is("c0e5582e-252f-4e94-8a49-e12b4b047afb")))
                         .andExpect(jsonPath("content[0].links[0].rel", is("self")))
+                        .andExpect(jsonPath("totalPages", is(2)))
+                        .andExpect(jsonPath("totalElements", is(4)))
+                        .andExpect(jsonPath("last", is(false)))
                         .andReturn();
         final String content = result.getResponse().getContentAsString();
         System.out.println(content);

@@ -38,7 +38,9 @@
 			data: function() {
 				return {
 					pageSize: 10,
-					pageNo: 0
+					pageNo: 0,
+					last: false,
+					first: true
 				}	
 			},
 			created: function() { 
@@ -46,8 +48,10 @@
 			},
 			methods: {
 				nextPage: function() {
-					this.pageNo++;
-					this.processLoad();
+					if (!this.last) {
+						this.pageNo++;
+						this.processLoad();
+					}
 				},
 				prevPage: function() {
 					if (this.pageNo > 0) {
@@ -55,12 +59,24 @@
 						this.processLoad();
 					};
 				},
+				created: function() { 
+					this.$eventbus.$on( 'paging-update', function( json ) {
+						this.pageSize = json.size;
+						this.last = json.last;
+						this.pageNo = json.number;
+					}.bind(this));
+				},
 				processLoad: function() {
+					var self = this;
 					url = cookbookAPI.getRecipesUrl(this.pageNo, this.pageSize);
 					cookbookAPI.load( url ).then( function( json ) {
 						EventBus.$eventbus.$emit( 'recipes-update', json.content );
-					});
-				}, 
+						self.pageSize = json.size;
+						self.pageNo = json.number;
+						self.last = json.last;
+						self.first = json.first;
+					}).bind( this );
+				} 
 			}
 		};
 		
@@ -190,8 +206,8 @@
 					</ul>
 					<paging inline-template>
 						<div class="w3-bar w3-center">
-							<button v-bind:disabled="pageNo == 0" v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
-							<button v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</button>
+							<button v-bind:disabled="first" v-on:click="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
+							<button v-bind:disabled="last" v-on:click="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</button>
 						</div>
 					</paging>
 				</div>

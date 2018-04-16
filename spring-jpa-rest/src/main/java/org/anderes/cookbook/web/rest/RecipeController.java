@@ -61,7 +61,8 @@ public class RecipeController {
             final Link linkSelfRel = linkTo(RecipeController.class).slash(r.getUuid()).withSelfRel();
             r.add(linkSelfRel);
         });
-        return new PageImpl<RecipeShortResource>(content, pageable, content.size());
+        long total = repository.count();
+        return new PageImpl<RecipeShortResource>(content, pageable, total);
     }
 
     @GetMapping(value = "{id}", produces = { APPLICATION_JSON_VALUE })

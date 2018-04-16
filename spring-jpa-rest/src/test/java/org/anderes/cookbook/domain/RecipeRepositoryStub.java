@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.anderes.cookbook.domain.Ingredient;
 import org.anderes.cookbook.domain.Recipe;
 import org.anderes.cookbook.domain.RecipeRepository;
-import org.apache.poi.ss.formula.eval.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
