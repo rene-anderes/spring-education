@@ -95,7 +95,7 @@ public class Recipe implements Serializable {
 	private String noOfPerson;
 	
 	@NotNull @Size(min = 0, max = 100)
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name="TAGS", joinColumns=@JoinColumn(name="RECIPE_ID"))
 	private Set<String> tags = new HashSet<String>();
 	

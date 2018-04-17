@@ -51,9 +51,10 @@ public class RecipeController {
     
     @GetMapping(produces = { APPLICATION_JSON_VALUE })
     public Page<RecipeShortResource> showRecipeShort(Pageable pageable) {
-        final Page<Recipe> collection = repository.findAll(pageable);
         
-        final List<RecipeShortResource> content = collection.getContent().stream()
+        final Page<Recipe> page = repository.findAll(pageable);
+        
+        final List<RecipeShortResource> content = page.getContent().stream()
                         .map(r -> new RecipeShortResource(r.getUuid(), r.getTitle()))
                         .collect(Collectors.toList());
         
@@ -61,8 +62,7 @@ public class RecipeController {
             final Link linkSelfRel = linkTo(RecipeController.class).slash(r.getUuid()).withSelfRel();
             r.add(linkSelfRel);
         });
-        long total = repository.count();
-        return new PageImpl<RecipeShortResource>(content, pageable, total);
+        return new PageImpl<RecipeShortResource>(content, pageable, page.getTotalElements());
     }
 
     @GetMapping(value = "{id}", produces = { APPLICATION_JSON_VALUE })
