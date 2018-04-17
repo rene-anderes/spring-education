@@ -97,8 +97,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			<div id="recipes">
 				<ul class="w3-ul w3-hoverable w3-large" id="list"></ul>
 				<div class="w3-bar w3-center">
-					<a id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</a>
-					<a id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</a>
+					<button id="prevPage" class="w3-button w3-xxlarge" title="previous">&laquo;</button>
+					<button id="nextPage" class="w3-button w3-xxlarge" title="next">&raquo;</button>
 				</div>
 			</div>
 		</div>
@@ -367,6 +367,8 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 			var url;
 			var pageSize = 10;
 			var pageNo = 0;
+			var last = false;
+			var first = true;
 			var showRecipeCallback;
 			
 			var init = function( recipesUrl, recipeHandler ) {
@@ -375,13 +377,15 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				$( "#recipes" ).hide();
 				$( "#nextPage" ).on( "click", function( e ) {
 					e.preventDefault();
-					pageNo++;
-					$( "#recipes" ).hide();
-					show();
+					if ( !last ) {
+						pageNo++;
+						$( "#recipes" ).hide();
+						show();
+					}
 				});
 				$( "#prevPage" ).on( "click", function( e ) {
 					e.preventDefault();
-					if (pageNo > 0) {
+					if ( !first ) {
 						pageNo--;
 						$( "#recipes" ).hide();
 						show();
@@ -394,7 +398,11 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 				cookbookAPI.load( cookbookAPI.getRecipesUrl( pageNo, pageSize ) )
 					.then( function( json ) {
 						buildRecipesList( json.content );
+						last = json.last;
+						first = json.first;
 						$( "#recipes" ).fadeIn( "slow" );
+						$( "#nextPage" ).prop( "disabled", last );
+						$( "#prevPage" ).prop( "disabled", first );
 						deferred.resolve();
 					})
 					.fail( function( error ) {
@@ -420,11 +428,6 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 					li = $("<li>").append(a);
 					li.appendTo("#list");
 				});
-				if ($("#list li").length < pageSize) {
-					$("#nextPage").fadeOut("fast");
-				} else {
-					$("#nextPage").show();
-				}
 			};
 
 			return {
