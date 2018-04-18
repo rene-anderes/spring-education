@@ -9,7 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.inject.Inject;
 
-import org.anderes.spring.configuration.AppConfig;
+import org.anderes.spring.configuration.DataSourceConfig;
+import org.anderes.spring.configuration.JpaConfig;
 import org.anderes.spring.configuration.WebMvcConfig;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -24,9 +25,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { WebMvcConfig.class, AppConfig.class })
+@ContextConfiguration(classes = { WebMvcConfig.class, DataSourceConfig.class })
 @WebAppConfiguration
-@Ignore
 public class TechInfoControllerIT {
 
     @Inject

@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.anderes.cookbook.domain.RecipeRepositoryStub;
 import org.anderes.cookbook.web.rest.dto.IngredientResource;
 import org.anderes.cookbook.web.rest.dto.RecipeResource;
+import org.anderes.spring.configuration.DataSourceConfig;
 import org.anderes.spring.configuration.WebMvcConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { WebMvcConfig.class })
+@ContextConfiguration(classes = { WebMvcConfig.class, DataSourceConfig.class })
 @WebAppConfiguration
 public class RecipeControllerIT {
 

@@ -2,16 +2,15 @@ package org.anderes.spring.configuration;
 
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.anderes.edu.dbunitburner.CustomDataTypeFactory;
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.dbunit.DataSourceDatabaseTester;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -23,12 +22,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableJpaRepositories("org.anderes.cookbook.domain")
 @ComponentScan(basePackages = { "org.anderes.tech" } )
-public class AppConfig {
+@Import({ DataSourceConfig.class })
+public class JpaConfig {
 
+    @Autowired
+    private DataSourceConfig dataSourceService; 
+    
     @Bean(name="entityManagerFactory")
     public AbstractEntityManagerFactoryBean getEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(getDataSource());
+        entityManagerFactoryBean.setDataSource(dataSourceService.getDerbyEmbeddedDataSource());
         entityManagerFactoryBean.setPackagesToScan("org.anderes.cookbook.domain");
         entityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());
@@ -59,6 +62,7 @@ public class AppConfig {
         return new JpaTransactionManager();
     }
     
+    /*
     @Bean
     public DataSource getDataSource() {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -68,10 +72,11 @@ public class AppConfig {
         dataSource.setPassword("APP");
         return dataSource;
     }
+    */
     
     @Bean
     public DataSourceDatabaseTester getDatabaseTester() {
-        return new DataSourceDatabaseTester(getDataSource());
+        return new DataSourceDatabaseTester(dataSourceService.getDerbyEmbeddedDataSource());
     }
     
     @Bean
