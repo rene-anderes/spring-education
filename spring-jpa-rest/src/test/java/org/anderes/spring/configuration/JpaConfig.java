@@ -8,6 +8,7 @@ import org.anderes.edu.dbunitburner.CustomDataTypeFactory;
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.dbunit.DataSourceDatabaseTester;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,40 +25,23 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableJpaRepositories("org.anderes.cookbook.domain")
 @ComponentScan(basePackages = { "org.anderes.tech" } )
-@Import({ DataSourceConfig.class })
+@Import({ DatabaseConfig.class })
 public class JpaConfig {
 
     @Autowired
     private DataSource dataSource; 
     
     @Bean(name="entityManagerFactory")
-    public AbstractEntityManagerFactoryBean getEntityManagerFactory() {
+    public AbstractEntityManagerFactoryBean getEntityManagerFactory(@Qualifier("derby-properties") Properties jpaProperties) {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setPackagesToScan("org.anderes.cookbook.domain");
         entityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());
-        entityManagerFactoryBean.setJpaProperties(getJpaProperties());
+        entityManagerFactoryBean.setJpaProperties(jpaProperties);
         return entityManagerFactoryBean;
     }
-    
-    private Properties getJpaProperties() {
-        final Properties jpaProperties = new Properties();
-        jpaProperties.setProperty("javax.persistence.validation.mode", "auto");
-        jpaProperties.setProperty("javax.persistence.schema-generation.database.action", "create");
-        jpaProperties.setProperty("javax.persistence.schema-generation.create-database-schemas", "true");
-        jpaProperties.setProperty("javax.persistence.schema-generation.create-source", "metadata");
-        jpaProperties.setProperty("eclipselink.target-database", "Derby");
-        jpaProperties.setProperty("eclipselink.jdbc.native-sql", "true");
-        jpaProperties.setProperty("eclipselink.weaving", "false");
-        jpaProperties.setProperty("eclipselink.logging.level", "FINE");
-        // Note: Setting eclipselink.logging.level to FINE is not sufficient (as of EclipseLink 2.4.0 - Juno),
-        // you have to set eclipselink.logging.level.sql to FINE.
-        jpaProperties.setProperty("eclipselink.logging.level.sql", "FINE");
-        jpaProperties.setProperty("eclipselink.logging.parameters", "true");
-        jpaProperties.setProperty("eclipselink.logging.logger", "JavaLogger");
-        return jpaProperties;
-    }
+
     
     @Bean(name="transactionManager")
     public JpaTransactionManager getJpaTransactionManager() {
