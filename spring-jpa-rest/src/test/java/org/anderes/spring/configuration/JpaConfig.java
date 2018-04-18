@@ -2,6 +2,8 @@ package org.anderes.spring.configuration;
 
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.anderes.edu.dbunitburner.CustomDataTypeFactory;
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.dbunit.DataSourceDatabaseTester;
@@ -26,12 +28,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class JpaConfig {
 
     @Autowired
-    private DataSourceConfig dataSourceService; 
+    private DataSource dataSource; 
     
     @Bean(name="entityManagerFactory")
     public AbstractEntityManagerFactoryBean getEntityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(dataSourceService.getDerbyEmbeddedDataSource());
+        entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setPackagesToScan("org.anderes.cookbook.domain");
         entityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());
@@ -61,22 +63,10 @@ public class JpaConfig {
     public JpaTransactionManager getJpaTransactionManager() {
         return new JpaTransactionManager();
     }
-    
-    /*
-    @Bean
-    public DataSource getDataSource() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
-        dataSource.setUrl("jdbc:derby:memory:myDB;create=true");
-        dataSource.setUsername("APP");
-        dataSource.setPassword("APP");
-        return dataSource;
-    }
-    */
-    
+        
     @Bean
     public DataSourceDatabaseTester getDatabaseTester() {
-        return new DataSourceDatabaseTester(dataSourceService.getDerbyEmbeddedDataSource());
+        return new DataSourceDatabaseTester(dataSource);
     }
     
     @Bean
