@@ -211,6 +211,13 @@
             <artifactId>derbyclient</artifactId>
             <version>${db.derby.version}</version>
         </dependency>
+        <!-- MySQL Database-Driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.38</version>
+        </dependency>
+        <!-- / MySQL Database-Driver -->
         <!-- Apache Commons ... -->
         <dependency>
             <groupId>org.apache.commons</groupId>

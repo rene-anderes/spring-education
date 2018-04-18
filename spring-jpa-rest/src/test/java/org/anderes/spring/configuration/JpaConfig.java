@@ -32,7 +32,7 @@ public class JpaConfig {
     private DataSource dataSource; 
     
     @Bean(name="entityManagerFactory")
-    public AbstractEntityManagerFactoryBean getEntityManagerFactory(@Qualifier("derby-properties") Properties jpaProperties) {
+    public AbstractEntityManagerFactoryBean getEntityManagerFactory(@Qualifier("database-properties") Properties jpaProperties) {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setPackagesToScan("org.anderes.cookbook.domain");
