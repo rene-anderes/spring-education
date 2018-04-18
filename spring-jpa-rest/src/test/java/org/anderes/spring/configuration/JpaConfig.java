@@ -10,7 +10,6 @@ import org.dbunit.DataSourceDatabaseTester;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories("org.anderes.cookbook.domain")
-@ComponentScan(basePackages = { "org.anderes.tech" } )
 @Import({ DatabaseConfig.class })
 public class JpaConfig {
 
