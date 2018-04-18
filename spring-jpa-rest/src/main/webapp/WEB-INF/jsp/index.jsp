@@ -29,18 +29,29 @@ request.setAttribute("release", attributes.getValue("Implementation-Version"));
 	<link rel="stylesheet" href="${ resources }/w3.css">
 	<link rel="stylesheet" href="${ resources }/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Proza+Libre">
-	<style>
+	<style type="text/css">
 		html, body, h1, h2, h3, h4, h5, h6 {
 		    font-family: "Proza Libre", Verdana, Helvetica, sans-serif;
 		}
+		
 		/* tag-editor */
-		.tag-editor-tag {color:#fff !important; background-color:#77a3ca !important}	/* w3-theme-d1 */
-		.tag-editor-spacer {color:#f8fbfc !important; background-color:#f8fbfc !important} /* w3-theme-l5 */
+		/* surrounding tag container */
+		.tag-editor {
+		    border-bottom: 1px solid #ccc !important; 
+		    font: normal "Proza Libre"; color:#000 !important; background:#f8fbfc !important;
+		}
+		
+		/* core styles usually need no change */
+		.tag-editor .tag-editor-spacer {color:#f8fbfc !important; background-color:#f8fbfc !important} /* w3-theme-l5 */
+		.tag-editor input { background:#f8fbfc !important; color:#000 !important; }
+		
+		/* tag style */
+		.tag-editor .tag-editor-tag {color:#fff !important; background-color:#77a3ca !important}	/* w3-theme-d1 */
 		/* delete icon */
 		.tag-editor .tag-editor-delete {color:#fff !important; background-color:#77a3ca !important}	/* w3-theme-d1 */
 		.tag-editor .tag-editor-delete i:before { color:#fff !important; }
 		.tag-editor .tag-editor-delete:hover i:before { color: #f44336 !important; }	/* w3-red */
-		 
+	 
 		/* w3.css theme (siehe https://www.w3schools.com/w3css/w3css_color_generator.asp) */
 		.w3-theme-l5 {color:#000 !important; background-color:#f8fbfc !important}
 		.w3-theme-l4 {color:#000 !important; background-color:#e9f0f6 !important}
