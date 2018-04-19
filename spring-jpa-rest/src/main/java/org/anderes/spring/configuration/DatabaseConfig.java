@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -12,18 +13,25 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 public class DatabaseConfig {
 
-    @Bean
+    /**
+     * DBCP Component
+     * Siehe http://commons.apache.org/proper/commons-dbcp/
+     * 
+     * @return {@code DataSource}
+     */
+    @Bean(destroyMethod="close")
     @Profile("!mysql")
-    public DataSource getDerbyEmbeddedDataSource() {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    public DataSource getDbcpDataSource() {
+        final BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
         dataSource.setUrl("jdbc:derby://localhost:1527/myCookbook;create=true");
         dataSource.setUsername("APP");
         dataSource.setPassword("APP");
+        dataSource.setInitialSize(2);
         return dataSource;
     }
-    
-    @Bean(name="database-properties")
+
+    @Bean(name = "database-properties")
     @Profile("!mysql")
     public Properties getJpaProperties() {
         final Properties jpaProperties = new Properties();
@@ -42,7 +50,7 @@ public class DatabaseConfig {
         jpaProperties.setProperty("eclipselink.logging.logger", "JavaLogger");
         return jpaProperties;
     }
-    
+
     @Bean
     @Profile("mysql")
     public DataSource getMySQLDataSource() {
@@ -53,8 +61,8 @@ public class DatabaseConfig {
         dataSource.setPassword("developer");
         return dataSource;
     }
-    
-    @Bean(name="database-properties")
+
+    @Bean(name = "database-properties")
     @Profile("mysql")
     public Properties getJpaMySqlProperties() {
         final Properties jpaProperties = new Properties();

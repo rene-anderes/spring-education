@@ -160,6 +160,7 @@
             <scope>runtime</scope>
         </dependency>
         <!-- / Java Persistence API -->
+        
         <!-- Derby als Embedded Database -->
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -179,12 +180,19 @@
             <version>5.1.46</version>
         </dependency>
         <!-- / MySQL Database-Driver -->
+        
         <!-- Apache Commons ... -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        
         <!-- JSON Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
