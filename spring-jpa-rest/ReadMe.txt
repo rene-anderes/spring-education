@@ -15,7 +15,9 @@ Dabei werden alle Test's mittels der In-Memory-Datenbank von Apache Derby durchg
 
 
 Projekt auf Web-App-Server deployen (z.B. Tomcat):
+
 Vorbereitung:
+
 1) Es wird eine Derby-Datenbank benötigt. Dazu wird der Derby Network-Server gestartet. 
 	Unter Windows mit folgendem Aufruf: [DERBY_HOME]\bin\startNetworkServer.bat
 
@@ -25,3 +27,17 @@ Vorbereitung:
 5) war-File auf Server deployen
 
 Danach ist die REST-Schnittstelle mittels Pfad 'http://localhost:8080/spring-jpa-rest/recipes' erreichbar.
+
+
+Mittels Spring-Profile kann die Datenbank gewechselt werden.
+Dazu eine Umgebungsvariable beim Start von Tomcat angeben:
+
+	-Dspring.profiles.active=mysql
+
+
+MySQL-Datenbank
+	URL: jdbc:mysql://localhost/recipes?useSSL=false
+	
+Die Tabellen müssen bereits bestehen: siehe mysql-create.sql
+Benutzer: developer
+Password: developer

@@ -13,7 +13,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 public class DatabaseConfig {
 
     @Bean
-//    @Profile("derby")
+    @Profile("!mysql")
     public DataSource getDerbyEmbeddedDataSource() {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
@@ -24,7 +24,7 @@ public class DatabaseConfig {
     }
     
     @Bean(name="database-properties")
-//    @Profile("derby")
+    @Profile("!mysql")
     public Properties getJpaProperties() {
         final Properties jpaProperties = new Properties();
         jpaProperties.setProperty("javax.persistence.validation.mode", "auto");
@@ -49,8 +49,8 @@ public class DatabaseConfig {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost/recipes?useSSL=false");
-        dataSource.setUsername("root");
-        dataSource.setPassword("lernwerkst@tt");
+        dataSource.setUsername("developer");
+        dataSource.setPassword("developer");
         return dataSource;
     }
     

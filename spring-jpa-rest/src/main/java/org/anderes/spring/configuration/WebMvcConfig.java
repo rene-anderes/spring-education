@@ -19,8 +19,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
-@ComponentScan(basePackages = { "org.anderes.cookbook.web.rest", "org.anderes.tech" } )
 @EnableWebMvc
+@ComponentScan(basePackages = { "org.anderes.cookbook.web.rest", "org.anderes.tech" } )
 public class WebMvcConfig implements WebMvcConfigurer {
 
     
