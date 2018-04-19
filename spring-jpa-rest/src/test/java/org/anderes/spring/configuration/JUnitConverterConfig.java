@@ -13,7 +13,7 @@ import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
 @Configuration
-public class ConverterConfig {
+public class JUnitConverterConfig {
 
     @Bean
     public ConversionServiceFactoryBean getConversionServiceFactory() {

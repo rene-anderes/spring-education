@@ -2,13 +2,10 @@ package org.anderes.spring.configuration;
 
 import java.util.List;
 
-import org.anderes.cookbook.domain.RecipeRepository;
-import org.anderes.cookbook.domain.RecipeRepositoryStub;
 import org.anderes.cookbook.web.converter.IngredientEntityToIngredientResource;
 import org.anderes.cookbook.web.converter.IngredientResourceToIngredientEntity;
 import org.anderes.cookbook.web.converter.RecipeEntityToRecipeResource;
 import org.anderes.cookbook.web.converter.RecipeResourceToRecipeEntity;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -61,10 +58,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         viewResolver.setPrefix("/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
         registry.viewResolver(viewResolver);
-    }
-
-    @Bean
-    public RecipeRepository getRecipeRepository() {
-        return new RecipeRepositoryStub();
     }
 }

@@ -22,8 +22,8 @@ import javax.inject.Inject;
 import org.anderes.cookbook.domain.RecipeRepositoryStub;
 import org.anderes.cookbook.web.rest.dto.IngredientResource;
 import org.anderes.cookbook.web.rest.dto.RecipeResource;
-import org.anderes.spring.configuration.DatabaseConfig;
-import org.anderes.spring.configuration.WebMvcConfig;
+import org.anderes.spring.configuration.JUnitDatabaseConfig;
+import org.anderes.spring.configuration.JUnitWebMvcConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { WebMvcConfig.class, DatabaseConfig.class })
+@ContextConfiguration(classes = { JUnitWebMvcConfig.class, JUnitDatabaseConfig.class })
 @WebAppConfiguration
 @ActiveProfiles("derby")
 public class RecipeControllerIT {

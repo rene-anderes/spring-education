@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.anderes.cookbook.domain.Ingredient;
 import org.anderes.cookbook.web.rest.dto.IngredientResource;
-import org.anderes.spring.configuration.ConverterConfig;
+import org.anderes.spring.configuration.JUnitConverterConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.core.convert.ConversionService;
@@ -19,7 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ConverterConfig.class })
+@ContextConfiguration(classes = { JUnitConverterConfig.class })
 public class IngredientEntityToIngredientResourceTest {
 
     @Inject

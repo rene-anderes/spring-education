@@ -18,7 +18,7 @@ import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.anderes.edu.dbunitburner.DbUnitRule.CleanupUsingScript;
 import org.anderes.edu.dbunitburner.DbUnitRule.ShouldMatchDataSet;
 import org.anderes.edu.dbunitburner.DbUnitRule.UsingDataSet;
-import org.anderes.spring.configuration.JpaConfig;
+import org.anderes.spring.configuration.JUnitJpaConfig;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { JpaConfig.class })
+@ContextConfiguration(classes = { JUnitJpaConfig.class })
 @CleanupUsingScript(value = { "/sql/DeleteTableContentScript.sql" })
 @UsingDataSet(value = { "/data/prepare.json" })
 @ActiveProfiles("derby")

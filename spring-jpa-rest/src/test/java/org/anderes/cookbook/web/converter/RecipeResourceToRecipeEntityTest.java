@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import org.anderes.cookbook.domain.Recipe;
 import org.anderes.cookbook.web.rest.dto.RecipeResource;
-import org.anderes.spring.configuration.ConverterConfig;
+import org.anderes.spring.configuration.JUnitConverterConfig;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner; 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ConverterConfig.class })
+@ContextConfiguration(classes = { JUnitConverterConfig.class })
 public class RecipeResourceToRecipeEntityTest {
 
     @Inject

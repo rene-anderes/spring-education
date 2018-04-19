@@ -4,9 +4,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.anderes.edu.dbunitburner.CustomDataTypeFactory;
-import org.anderes.edu.dbunitburner.DbUnitRule;
-import org.dbunit.DataSourceDatabaseTester;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -44,20 +41,5 @@ public class JpaConfig {
     @Bean(name="transactionManager")
     public JpaTransactionManager getJpaTransactionManager() {
         return new JpaTransactionManager();
-    }
-        
-    @Bean
-    public DataSourceDatabaseTester getDatabaseTester() {
-        return new DataSourceDatabaseTester(dataSource);
-    }
-    
-    @Bean
-    public CustomDataTypeFactory getCustomDataTypeFactory() {
-        return new CustomDataTypeFactory();
-    }
-    
-    @Bean
-    public DbUnitRule getDbUnitRule() {
-        return new DbUnitRule(getDatabaseTester());
     }
 }

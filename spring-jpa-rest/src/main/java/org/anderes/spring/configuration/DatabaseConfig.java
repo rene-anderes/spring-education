@@ -13,18 +13,18 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 public class DatabaseConfig {
 
     @Bean
-    @Profile("derby")
+//    @Profile("derby")
     public DataSource getDerbyEmbeddedDataSource() {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
-        dataSource.setUrl("jdbc:derby:memory:myDB;create=true");
+        dataSource.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
+        dataSource.setUrl("jdbc:derby://localhost:1527/myCookbook;create=true");
         dataSource.setUsername("APP");
         dataSource.setPassword("APP");
         return dataSource;
     }
     
     @Bean(name="database-properties")
-    @Profile("derby")
+//    @Profile("derby")
     public Properties getJpaProperties() {
         final Properties jpaProperties = new Properties();
         jpaProperties.setProperty("javax.persistence.validation.mode", "auto");

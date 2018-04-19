@@ -5,13 +5,14 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 
     <display-name>jpa-spring</display-name>
-
+ 
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>
-            classpath:application-context.xml
-            classpath:jpa-context.xml
-        </param-value>
+        <param-value>org.anderes.spring.configuration</param-value>
     </context-param>
 
     <servlet>

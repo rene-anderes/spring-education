@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.inject.Inject;
 
-import org.anderes.spring.configuration.DatabaseConfig;
-import org.anderes.spring.configuration.WebMvcConfig;
+import org.anderes.spring.configuration.JUnitDatabaseConfig;
+import org.anderes.spring.configuration.JUnitWebMvcConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { WebMvcConfig.class, DatabaseConfig.class })
+@ContextConfiguration(classes = { JUnitWebMvcConfig.class, JUnitDatabaseConfig.class })
 @WebAppConfiguration
 @ActiveProfiles("derby")
 public class TechInfoControllerIT {
