@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.anderes.cookbook.domain.Recipe;
 import org.anderes.edu.dbunitburner.CustomDataTypeFactory;
 import org.anderes.edu.dbunitburner.DbUnitRule;
 import org.dbunit.DataSourceDatabaseTester;
@@ -33,7 +34,7 @@ public class JUnitJpaConfig {
     public AbstractEntityManagerFactoryBean getEntityManagerFactory(@Qualifier("database-properties") Properties jpaProperties) {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan("org.anderes.cookbook.domain");
+        entityManagerFactoryBean.setPackagesToScan(Recipe.class.getPackage().getName());
         entityManagerFactoryBean.setJpaDialect(new EclipseLinkJpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(new EclipseLinkJpaVendorAdapter());
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
@@ -42,8 +43,8 @@ public class JUnitJpaConfig {
 
     
     @Bean(name="transactionManager")
-    public JpaTransactionManager getJpaTransactionManager() {
-        return new JpaTransactionManager();
+    public JpaTransactionManager getJpaTransactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory.getObject());
     }
         
     @Bean
