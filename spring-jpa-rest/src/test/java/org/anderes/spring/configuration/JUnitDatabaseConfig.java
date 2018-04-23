@@ -49,8 +49,8 @@ public class JUnitDatabaseConfig {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost/recipes?useSSL=false");
-        dataSource.setUsername("root");
-        dataSource.setPassword("lernwerkst@tt");
+        dataSource.setUsername("developer");
+        dataSource.setPassword("developer");
         return dataSource;
     }
     
