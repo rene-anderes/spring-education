@@ -39,6 +39,11 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
@@ -66,14 +71,38 @@
                     <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
-            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>development</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Appender: Console oder Async -->
+                <log4j2.appender>Console</log4j2.appender>
+                <log4j2.appender.file.path>logs\</log4j2.appender.file.path>
+                <log4j2.appender.file.name>${project.artifactId}</log4j2.appender.file.name>
+                <log4j2.root.level>ALL</log4j2.root.level>
+            </properties>
+        </profile>
+        <profile>
+            <id>live</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Appender: Console oder Async -->
+                <log4j2.appender>Async</log4j2.appender>
+                <log4j2.appender.file.path>e:\temp\logs\</log4j2.appender.file.path>
+                <log4j2.appender.file.name>${project.artifactId}</log4j2.appender.file.name>
+                <log4j2.root.level>INFO</log4j2.root.level>
+            </properties>
+        </profile>
+    </profiles>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -134,7 +163,7 @@
         </dependency>
         <!-- / JSON Web Token -->
 
-        <!-- Bean Validation API -->
+        <!-- Bean Validation 1.1 API -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
