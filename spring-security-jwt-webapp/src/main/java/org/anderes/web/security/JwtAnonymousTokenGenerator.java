@@ -24,7 +24,6 @@ public class JwtAnonymousTokenGenerator implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(JwtAnonymousTokenGenerator.class);
     private final static long DEFAULT_EXPIRATION_HOURS = 2L;
-    private LocalDateTime expirationDate = LocalDateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS);
     @Value("${jwt.algorithm}")
     private String algorithm;
     @Value("${jwt.secret}")
@@ -40,7 +39,7 @@ public class JwtAnonymousTokenGenerator implements InitializingBean {
     }
 
     private Date getExpiration() {
-        return convertToDate(expirationDate);
+        return convertToDate(LocalDateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS));
     }
     
     private Date convertToDate(LocalDateTime localDateTime) {
