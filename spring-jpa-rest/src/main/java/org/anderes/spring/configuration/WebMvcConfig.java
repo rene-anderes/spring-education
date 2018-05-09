@@ -45,6 +45,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
         registry.addViewController("vue.html").setViewName("vue");
+        registry.addViewController("newCkEditor.html").setViewName("newCkEditor");
     }
     
     @Override
