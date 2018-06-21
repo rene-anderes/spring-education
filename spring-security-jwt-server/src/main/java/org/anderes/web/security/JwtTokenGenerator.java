@@ -29,7 +29,7 @@ public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
     
     private final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
     private final static long DEFAULT_EXPIRATION_HOURS = 24L;
-    private LocalDateTime expirationDate = LocalDateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS);
+    private LocalDateTime expirationDate = LocalDateTime.MIN;
     @Value("${jwt.algorithm}")
     private String algorithm;
     @Value("${jwt.secret}")
@@ -57,6 +57,9 @@ public class JwtTokenGenerator implements TokenGenerator, InitializingBean {
     }
 
     private Date getExpiration() {
+        if (expirationDate == LocalDateTime.MIN) {
+            return convertToDate(LocalDateTime.now().plusHours(DEFAULT_EXPIRATION_HOURS));
+        }
         return convertToDate(expirationDate);
     }
     
