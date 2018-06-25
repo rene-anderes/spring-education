@@ -1,5 +1,6 @@
 package org.anderes.edu.security;
 
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,9 +44,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         builder.authenticationProvider(authenticationProvider);
     }
     
-    @Bean
+    @Bean  @Profile("!mock")
     public UsersServiceClient usersService() {
         return new UsersServiceClient();
+    }
+    
+    @Bean @Profile("mock")
+    public UsersServiceClient usersMockService() {
+        return Mockito.mock(UsersServiceClient.class);
     }
     
     @Bean 
