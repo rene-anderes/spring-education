@@ -20,7 +20,8 @@ public class ApplicationContextListener implements ServletContextListener {
     
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-         SecurityWebApplicationInitializer.init();
+//        sce.getServletContext().setInitParameter("spring.profiles.active", "alternativ");
+        SecurityWebApplicationInitializer.init();
     }
 
     @Override

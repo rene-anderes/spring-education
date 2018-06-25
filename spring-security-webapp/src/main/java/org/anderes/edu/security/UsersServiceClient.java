@@ -2,13 +2,20 @@ package org.anderes.edu.security;
 
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
@@ -34,8 +41,10 @@ public class UsersServiceClient {
     public List<String> getRolesForUser(final String username, final String password) throws RestClientException {
 
         final BasicAuthorizationInterceptor interceptor = new BasicAuthorizationInterceptor(username, password);
+        final LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
         try {
             restTemplate.getInterceptors().add(interceptor);
+            restTemplate.getInterceptors().add(loggingInterceptor);
             final ResponseEntity<Token> response = restTemplate.postForEntity(url, null, Token.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 final String token = response.getBody().getToken();
@@ -48,6 +57,7 @@ public class UsersServiceClient {
             throw new HttpServerErrorException(SERVICE_UNAVAILABLE, e.getMessage());
         } finally {
             restTemplate.getInterceptors().remove(interceptor);
+            restTemplate.getInterceptors().remove(loggingInterceptor);
         }
     }
 
@@ -65,5 +75,21 @@ public class UsersServiceClient {
         void setToken(String token) {
             this.token = token;
         }
+    }
+    
+    public static class LoggingInterceptor implements ClientHttpRequestInterceptor {
+        private final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
+
+        @Override
+        public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+            logger.trace("===========================request begin================================================");
+            logger.trace("URI         : {}", request.getURI());
+            logger.trace("Method      : {}", request.getMethod());
+            logger.trace("Headers     : {}", request.getHeaders() );
+            logger.trace("Request body: {}", new String(body, "UTF-8"));
+            logger.trace("==========================request end================================================");
+            return execution.execute(request, body);
+        }
+        
     }
 }

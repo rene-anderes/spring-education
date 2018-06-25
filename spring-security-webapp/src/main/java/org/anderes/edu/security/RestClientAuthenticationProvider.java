@@ -19,7 +19,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 public class RestClientAuthenticationProvider implements AuthenticationProvider {
 
-    final Logger logger = LoggerFactory.getLogger(RestClientAuthenticationProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(RestClientAuthenticationProvider.class);
     
     @Autowired
     private UsersServiceClient service;

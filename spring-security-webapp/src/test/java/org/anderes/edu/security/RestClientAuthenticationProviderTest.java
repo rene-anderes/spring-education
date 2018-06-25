@@ -11,9 +11,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,13 +24,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { WebSecurityConfig.class })
+@ContextConfiguration(classes = { WebSecurityTestConfig.class })
 @WebAppConfiguration
 @ActiveProfiles({"alternativ", "mock"})
 public class RestClientAuthenticationProviderTest {
     
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     @Autowired
     private UsersServiceClient userService;
     @Autowired
@@ -35,12 +41,12 @@ public class RestClientAuthenticationProviderTest {
 
     @Before
     public void setup() throws Exception {
-        when(userService.getRolesForUser("admin", "password")).thenReturn(Arrays.asList("ROLE_ADMIN", "ROLE_USER"));
     }
     
     @Test
     public void shouldBeCorrectList() {
         // given
+        when(userService.getRolesForUser("admin", "password")).thenReturn(Arrays.asList("ROLE_ADMIN", "ROLE_USER"));
         final Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "password");
         // when
         final Authentication result = authenticationProvider.authenticate(authentication);
@@ -56,13 +62,12 @@ public class RestClientAuthenticationProviderTest {
     }
     
     @Test
-    public void shouldBeEmptyList() {
+    public void shouldBeWrongPassword() {
         // given
+        thrown.expect(BadCredentialsException.class);
+        when(userService.getRolesForUser("admin", "wrong")).thenThrow(HttpClientErrorException.class);
         final Authentication authentication = new UsernamePasswordAuthenticationToken("admin", "wrong");
         // when
-        final Authentication result = authenticationProvider.authenticate(authentication);
-        // then
-        assertThat(result.getAuthorities(), is(not(nullValue())));
-        assertThat(result.getAuthorities().isEmpty(), is(true));
+        authenticationProvider.authenticate(authentication);
     }
 }
