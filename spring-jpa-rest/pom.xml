@@ -14,9 +14,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring.version>5.0.5.RELEASE</spring.version>
         <spring.data.jpa.version>2.0.6.RELEASE</spring.data.jpa.version>
-        <jackson.version>2.9.4</jackson.version>
+        <jackson.version>2.9.7</jackson.version>
         <eclipselink.version>2.7.1</eclipselink.version>
-        <log4j2.version>2.11.0</log4j2.version>
+        <log4j2.version>2.11.1</log4j2.version>
         <db.derby.version>10.14.1.0</db.derby.version>
     </properties>
 
